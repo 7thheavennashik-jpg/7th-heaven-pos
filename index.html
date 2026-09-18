@@ -755,6 +755,12 @@ function renderDailyGrids(){
   var sEditable = canEditSales();
   var eEditable = canEditExpenses();
 
+  // Ensure there is always at least one empty buffer row at the bottom to type into
+  var lastSale = sheet.sales[sheet.sales.length - 1];
+  if(!lastSale || (Number(lastSale.cash)||0)>0 || (Number(lastSale.swiggy)||0)>0 || (Number(lastSale.zomato)||0)>0 || (Number(lastSale.other)||0)>0){
+    sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
+  }
+
   var sTbody = document.getElementById('salesTbody');
   sTbody.innerHTML = '';
   var sl = 1;
@@ -770,13 +776,23 @@ function renderDailyGrids(){
       '<td><input type="number" step="0.01" class="cell-input" data-f="swiggy" value="' + (row.swiggy||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
       '<td><input type="number" step="0.01" class="cell-input" data-f="zomato" value="' + (row.zomato||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
       '<td><input type="number" step="0.01" class="cell-input" data-f="other" value="' + (row.other||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td style="text-align:center;">' + (sEditable ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
+      '<td style="text-align:center;">' + (sEditable && idx < sheet.sales.length - 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
 
     tr.querySelectorAll('input').forEach(function(inp){
       inp.oninput = function(e){
         row[e.target.getAttribute('data-f')] = e.target.value;
         saveState();
         updateTotals();
+
+        // Automatically spawn a new empty line if the user types into the last row
+        if(idx === sheet.sales.length - 1){
+          var isFilled = (Number(row.cash)||0)>0 || (Number(row.swiggy)||0)>0 || (Number(row.zomato)||0)>0 || (Number(row.other)||0)>0;
+          if(isFilled){
+            sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
+            saveState();
+            renderDailyGrids();
+          }
+        }
       };
     });
 
@@ -784,18 +800,23 @@ function renderDailyGrids(){
       var delBtn = tr.querySelector('.row-del-btn');
       if(delBtn){
         delBtn.onclick = function(){
-          if(sheet.sales.length > 1){
-            sheet.sales.splice(idx, 1);
-            saveState();
-            renderDailyGrids();
-          }
+          sheet.sales.splice(idx, 1);
+          saveState();
+          renderDailyGrids();
         };
       }
     }
     sTbody.appendChild(tr);
   });
 
-  document.getElementById('salesActionRow').style.display = sEditable ? 'flex' : 'none';
+  // Hide the manual "+ Add Line" button row
+  document.getElementById('salesActionRow').style.display = 'none';
+
+  // Expenditure Grid with Auto-Row Generation
+  var lastExp = sheet.expenses[sheet.expenses.length - 1];
+  if(!lastExp || (Number(lastExp.amount)||0) > 0){
+    sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' });
+  }
 
   var eTbody = document.getElementById('expTbody');
   eTbody.innerHTML = '';
@@ -811,7 +832,7 @@ function renderDailyGrids(){
       '<td><select class="cell-select" data-f="category" ' + (!eEditable?'disabled':'') + '>' + catOpts + '</select></td>' +
       '<td><input type="number" step="0.01" class="cell-input" data-f="amount" value="' + (row.amount||'') + '" ' + (!eEditable?'disabled':'') + ' placeholder="0.00"></td>' +
       '<td><select class="cell-select" data-f="method" ' + (!eEditable?'disabled':'') + '>' + metOpts + '</select></td>' +
-      '<td style="text-align:center;">' + (eEditable ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
+      '<td style="text-align:center;">' + (eEditable && idx < sheet.expenses.length - 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
 
     tr.querySelector('[data-f="category"]').onchange = function(e){ row.category = e.target.value; saveState(); };
     tr.querySelector('[data-f="method"]').onchange = function(e){ row.method = e.target.value; saveState(); };
@@ -819,24 +840,28 @@ function renderDailyGrids(){
       row.amount = e.target.value;
       saveState();
       updateTotals();
+
+      if(idx === sheet.expenses.length - 1 && (Number(row.amount)||0) > 0){
+        sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' });
+        saveState();
+        renderDailyGrids();
+      }
     };
 
     if(eEditable){
       var delBtn = tr.querySelector('.row-del-btn');
       if(delBtn){
         delBtn.onclick = function(){
-          if(sheet.expenses.length > 1){
-            sheet.expenses.splice(idx, 1);
-            saveState();
-            renderDailyGrids();
-          }
+          sheet.expenses.splice(idx, 1);
+          saveState();
+          renderDailyGrids();
         };
       }
     }
     eTbody.appendChild(tr);
   });
 
-  document.getElementById('expActionRow').style.display = eEditable ? 'block' : 'none';
+  document.getElementById('expActionRow').style.display = 'none';
   updateTotals();
 }
 
