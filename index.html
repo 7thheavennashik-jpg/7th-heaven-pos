@@ -52,11 +52,13 @@
     gap: 12px;
   }
   .hdr-logo {
-    height: 46px;
-    width: auto;
+    height: 48px;
+    width: 48px;
+    object-fit: contain;
     background: #FFF;
     border-radius: 4px;
-    padding: 3px 6px;
+    padding: 2px;
+    display: block;
   }
   header.top h1 { font-size: 14.5px; font-weight: 700; letter-spacing: 0.5px; margin: 0; }
   header.top .today { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #F2E6EA; text-align: right; }
@@ -272,7 +274,8 @@
 <div class="wrap">
   <header class="top">
     <div class="hdr-brand">
-      <img class="hdr-logo" id="appLogo" alt="7th Heaven" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'><text x='10' y='36' font-family='Georgia,serif' font-size='26' font-weight='bold' fill='%234A1525'>7th Heaven</text><text x='12' y='50' font-family='Arial,sans-serif' font-size='10' fill='%23605E4E'>A SLICE OF HAPPINESS</text></svg>">
+      <!-- 7th Heaven Official Orange Cake Logo -->
+      <img class="hdr-logo" id="appLogo" alt="7th Heaven Logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxAQEBUQEBAVFhUQFRUQFRAVEBAVFRAQFRUWFhUVFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAOEAzAMBIgACEQEDEQH/xAAbAAACAwEBAQAAAAAAAAAAAAADBAECBQAGB//EADoQAAEDAgQEBAMGBQMFAQAAAAEAAhEDIQQSMUEFUWFxEyKBkaEGMrEUQlLB0eEjM2Jy8ENTkqLxB//EABkBAAMBAQEAAAAAAAAAAAAAAAABAgMEBf/EACQRAAICAgICAgMBAQAAAAAAAAABAhEDMRIhBEFRMmETcaGR/9oADAMBAAIRAxEAPwD5q5iE5iaLUJzV7aZ4zihdyEVW5qG5iqxUBehOWq9iE5qdiM5yG5aL2ITmoGZz0Mpo01Q007EZrkFyaNNUNNOxUZbkBy1DSVDT4o2KgByA5anhrxTSsZluQXLW8JecFNCoyXIb1r+Ep8JFhRiPQnrW8JTNBOwoxHIb1reEp8JOhUYz0N62fCQ30kaEYr0N62PgoD6SNCO0c1Q1p4aZNJd4a0szox/DVPCT/AISvwkwsxvCQzST/AIS7wUDo//Z">
       <div>
         <h1>7TH HEAVEN NASHIK — DAILY SALES &amp; EXPENDITURE TRACKER</h1>
         <span class="sync-indicator"><span class="sync-dot"></span><span id="syncText">Connected &amp; Synced</span></span>
@@ -502,9 +505,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxbWHWqK2zCserM_7nb-17Y8on0m3FwG7Wuhp_-onVwAJMbbkwyTu_RG1Sf4EOJrGh7/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v6";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v7";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v6";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v7";
 
 var DEFAULT_PASSWORDS = {
   admin: '7thHeaven@Admin',
@@ -978,7 +981,7 @@ function openInvoicePrintWindow(inv){
       'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;padding:24px;color:#111;background:#fff;}' +
       '.receipt{max-width:340px;margin:0 auto;}' +
       '.hdr{text-align:center;border-bottom:2px dashed #000;padding-bottom:12px;margin-bottom:12px;}' +
-      '.hdr-img{height:52px;width:auto;margin-bottom:6px;}' +
+      '.hdr-img{height:60px;width:60px;object-fit:contain;margin-bottom:6px;}' +
       '.hdr h2{margin:0;font-size:18px;font-weight:700;letter-spacing:0.5px;color:#4A1525;}' +
       '.hdr p{margin:2px 0;font-size:11.5px;color:#444;}' +
       '.inv-title{font-size:12.5px;font-weight:700;margin-top:6px;color:#000;}' +
