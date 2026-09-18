@@ -75,7 +75,7 @@
   }
   .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; display: inline-block; }
 
-  /* Login / Role Selection Screen */
+  /* Role Selection Screen */
   #roleAuthSection {
     background: #FFF;
     border: 1px solid var(--rule-strong);
@@ -295,7 +295,7 @@
         </div>
         <div class="role-box" onclick="promptRolePass('store')">
           <h3>🏪 Store Partner</h3>
-          <p>Counter access: Enter daily sales, edit sales fields (Cash, Swiggy, Zomato, Other), and create customer bills.</p>
+          <p>Counter access: Enter daily sales, log store expenses, and create customer bills.</p>
         </div>
         <div class="role-box" onclick="promptRolePass('remote')">
           <h3>👁️ Remote Partner</h3>
@@ -385,10 +385,6 @@
             </thead>
             <tbody id="salesTbody"></tbody>
           </table>
-          <div id="salesActionRow" style="padding:8px;background:#FAF8F8;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;">
-            <button class="btn-s" id="addSaleLineBtn">+ Add Line</button>
-            <span style="font-size:11px;color:var(--ink-soft);">Typing an amount auto-generates the Sl No.</span>
-          </div>
         </div>
 
         <div class="table-pane">
@@ -410,9 +406,6 @@
             </thead>
             <tbody id="expTbody"></tbody>
           </table>
-          <div id="expActionRow" style="padding:8px;background:#FAF8F8;border-top:1px solid var(--rule);">
-            <button class="btn-s" id="addExpLineBtn">+ Add Expense</button>
-          </div>
         </div>
       </div>
     </section>
@@ -421,7 +414,7 @@
     <section class="panel" id="panel-invoice">
       <h2 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:6px;">Customer Sale &amp; Bill Generator</h2>
       <p style="font-size:12px;color:var(--ink-soft);margin-bottom:14px;">
-        ℹ️ Invoices generated here are for customer receipts/reprints only. They do <strong>not</strong> add entries into Daily Sales, preventing double counting.
+        ℹ️ Invoices generated here are for customer receipts/reprints only. They do <strong>not</strong> add entries into Daily Sales, preventing double counting[cite: 1].
       </p>
 
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
@@ -503,10 +496,10 @@
 <div class="toast" id="toast"></div>
 
 <script>
-var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxbWHWqK2zCserM_7nb-17Y8on0m3FwG7Wuhp_-onVwAJMbbkwyTu_RG1Sf4EOJrGh7/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v8";
+var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
+var STORAGE_KEY = "7th_heaven_unified_tracker_v9";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v8";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v9";
 
 var DEFAULT_PASSWORDS = {
   admin: '7thHeaven@Admin',
@@ -562,11 +555,11 @@ function canEditSales(){
 }
 
 function canEditExpenses(){
-  if(state.currentRole !== 'admin') return false;
+  if(state.currentRole === 'remote') return false;
   if(state.activeDate !== getTodayStr()){
-    return !!state.unlockedDates[state.activeDate];
+    return state.currentRole === 'admin' && !!state.unlockedDates[state.activeDate];
   }
-  return true;
+  return state.currentRole === 'admin' || state.currentRole === 'store';
 }
 
 function loadStateLocally(){
@@ -755,7 +748,6 @@ function renderDailyGrids(){
   var sEditable = canEditSales();
   var eEditable = canEditExpenses();
 
-  // Ensure at least one line exists
   if(sheet.sales.length === 0){
     sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
   }
@@ -778,29 +770,23 @@ function renderDailyGrids(){
       '<td style="text-align:center;">' + (sEditable && sheet.sales.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
 
     tr.querySelectorAll('input').forEach(function(inp){
-      // 1. Live updating totals without re-drawing the table or losing your cursor
       inp.oninput = function(e){
         row[e.target.getAttribute('data-f')] = e.target.value;
         saveState();
         updateTotals();
       };
 
-      // 2. Press Enter to complete the entry and jump to the next line
       inp.onkeydown = function(e){
         if(e.key === 'Enter'){
           e.preventDefault();
           var fieldName = inp.getAttribute('data-f');
-
-          // If on the last line, add a brand-new row
           if(idx === sheet.sales.length - 1){
             sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
             saveState();
             renderDailyGrids();
-            // Automatically focus the input in the new row
             var nextInp = document.querySelector('input[data-idx="' + (idx + 1) + '"][data-f="' + fieldName + '"]');
             if(nextInp) nextInp.focus();
           } else {
-            // Move cursor directly down to the next existing row
             var nextInp = document.querySelector('input[data-idx="' + (idx + 1) + '"][data-f="' + fieldName + '"]');
             if(nextInp) nextInp.focus();
           }
@@ -821,9 +807,6 @@ function renderDailyGrids(){
     sTbody.appendChild(tr);
   });
 
-  document.getElementById('salesActionRow').style.display = 'none';
-
-  // Expenditure Grid with Enter Key Navigation
   if(sheet.expenses.length === 0){
     sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' });
   }
@@ -883,9 +866,9 @@ function renderDailyGrids(){
     eTbody.appendChild(tr);
   });
 
-  document.getElementById('expActionRow').style.display = 'none';
   updateTotals();
 }
+
 function updateTotals(){
   var sheet = state.daily[state.activeDate];
   var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
@@ -923,7 +906,7 @@ function updateTotals(){
   });
 }
 
-// INVOICES & POS
+// POS & Invoicing
 var curInvItems = [{ name:'', qty:1, rate:'' }];
 function renderInvItems(){
   var tb = document.getElementById('invItemsBody');
@@ -998,7 +981,7 @@ function renderRecentInvoices(){
   }).join('');
 }
 
-// Dedicated Popup Window for Clean Receipts and PDF Generation
+// Dedicated Popup Window for Clean Receipt and PDF Printing
 function openInvoicePrintWindow(inv){
   var printWindow = window.open('', 'ReceiptWindow', 'width=460,height=700,top=100,left=100,scrollbars=yes');
   if(!printWindow){
@@ -1158,19 +1141,6 @@ function renderAll(){
   renderTargetsAndProfit();
   renderRecentInvoices();
 }
-
-// Add Rows
-document.getElementById('addSaleLineBtn').onclick = function(){
-  state.daily[state.activeDate].sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
-  saveState();
-  renderDailyGrids();
-};
-
-document.getElementById('addExpLineBtn').onclick = function(){
-  state.daily[state.activeDate].expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' });
-  saveState();
-  renderDailyGrids();
-};
 
 document.getElementById('unlockSheetBtn').onclick = function(){
   var pass = prompt('Enter Admin Master Password to unlock sheet (' + state.activeDate + '):');
