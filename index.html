@@ -48,7 +48,6 @@
   header.top h1 { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
   header.top .today { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #F2E6EA; }
 
-  /* Cloud Sync Status */
   .sync-indicator {
     font-size: 11px;
     padding: 3px 8px;
@@ -60,7 +59,6 @@
   }
   .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; display: inline-block; }
 
-  /* Login / Role Selection Screen */
   #roleAuthSection {
     background: #FFF;
     border: 1px solid var(--rule-strong);
@@ -85,7 +83,6 @@
   .role-box h3 { font-size: 14px; font-weight: 700; color: var(--maroon-banner); margin-bottom: 4px; }
   .role-box p { font-size: 11.5px; color: var(--ink-soft); line-height: 1.4; }
 
-  /* App Navigation */
   .nav-bar {
     display: flex;
     background: #FFF;
@@ -126,7 +123,6 @@
   section.panel { display: none; background: #FFF; border: 1px solid var(--rule-strong); border-top: none; padding: 18px; border-radius: 0 0 4px 4px; }
   section.panel.active { display: block; }
 
-  /* Daily Sales Page */
   .sheet-tabs-row {
     display: flex;
     justify-content: space-between;
@@ -204,7 +200,6 @@
   .row-del-btn { background: none; border: none; color: #999; cursor: pointer; font-size: 14px; }
   .row-del-btn:hover { color: var(--brick); }
 
-  /* Invoicing Styles */
   .form-group { margin-bottom: 14px; }
   .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); margin-bottom: 4px; }
   .form-group input, .form-group select { width: 100%; padding: 8px 10px; border: 1px solid var(--rule-strong); border-radius: 3px; font-size: 13px; }
@@ -229,6 +224,26 @@
   .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--maroon-banner); color: #FFF; padding: 8px 16px; border-radius: 4px; font-size: 12px; opacity: 0; pointer-events: none; transition: all 0.2s; z-index: 100; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* Printable Slip Area */
+  #printableSlip { display: none; }
+  @media print {
+    body * { visibility: hidden; }
+    #printableSlip, #printableSlip * { visibility: visible; }
+    #printableSlip {
+      display: block !important;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      max-width: 380px;
+      margin: 0 auto;
+      padding: 16px;
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+      color: #000;
+      background: #FFF;
+    }
+  }
+
   @media(max-width: 820px) {
     .role-cards { grid-template-columns: 1fr; }
     .split-tables { grid-template-columns: 1fr; }
@@ -239,7 +254,6 @@
 </head>
 <body>
 
-<!-- Cake Suggestions Datalist -->
 <datalist id="cakeSuggestions">
   <option value="Dutch Dark Chocolate Cake">
   <option value="Black Forest Cake">
@@ -266,7 +280,6 @@
     <div class="today" id="todayClock">--</div>
   </header>
 
-  <!-- Login Modal / Role Selection Screen -->
   <div id="roleAuthSection">
     <div id="roleSelectionStep">
       <h2 class="role-title">Select Access Role</h2>
@@ -297,7 +310,6 @@
     </div>
   </div>
 
-  <!-- Main App Content -->
   <div id="mainAppContent" style="display:none;">
     <nav class="nav-bar">
       <button class="active" data-panel="daily">Daily Sales &amp; Tracker</button>
@@ -344,7 +356,6 @@
       </div>
 
       <div class="split-tables">
-        <!-- Sales Grid -->
         <div class="table-pane">
           <div class="pane-hdr">SALES CHANNELS</div>
           <table class="tracker" id="salesTable">
@@ -374,7 +385,6 @@
           </div>
         </div>
 
-        <!-- Expenditure Grid -->
         <div class="table-pane">
           <div class="pane-hdr">EXPENDITURE</div>
           <table class="tracker" id="expTable">
@@ -403,7 +413,11 @@
 
     <!-- PANEL 2: POS & INVOICES -->
     <section class="panel" id="panel-invoice">
-      <h2 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:12px;">Customer Sale &amp; Bill Generator</h2>
+      <h2 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:6px;">Customer Sale &amp; Bill Generator</h2>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:14px;">
+        ℹ️ Invoices generated here are for customer receipts/reprints only. They do <strong>not</strong> add entries into Daily Sales, preventing double counting.
+      </p>
+
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
         <div class="form-group"><label>Customer Name</label><input type="text" id="invCustName" placeholder="Walk-in Customer"></div>
         <div class="form-group"><label>WhatsApp Phone</label><input type="text" id="invCustPhone" placeholder="10-digit number"></div>
@@ -419,10 +433,11 @@
         <div style="font-size:17px;font-weight:700;">Bill Total: <span id="invTotalBadge" style="color:var(--maroon-banner);">₹0.00</span></div>
       </div>
 
-      <div style="display:flex;gap:8px;margin-bottom:24px;">
-        <button class="btn-p" id="saveInvoiceBtn">Save Sale &amp; Add to Today's Sales</button>
-        <button class="btn-s" id="shareWhatsAppBtn" style="display:none;">Share via WhatsApp</button>
-        <button class="btn-s" id="printInvoiceBtn" style="display:none;">Print Receipt</button>
+      <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
+        <button class="btn-p" id="saveInvoiceBtn">Generate Bill &amp; Save Receipt</button>
+        <button class="btn-s" id="shareWhatsAppBtn" style="display:none;background:#25D366;color:#FFF;border-color:#25D366;font-weight:700;">Share via WhatsApp</button>
+        <button class="btn-s" id="printInvoiceBtn" style="display:none;">🖨️ Print / Save as PDF</button>
+        <button class="btn-s" id="newInvoiceBtn" style="display:none;">+ New Bill</button>
       </div>
 
       <h3 style="font-size:14px;margin-bottom:8px;border-bottom:1px solid var(--rule);padding-bottom:4px;">Recent Invoices</h3>
@@ -444,7 +459,7 @@
     <section class="panel" id="panel-profit">
       <h2 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:6px;">Monthly Profit Sharing</h2>
       <p style="font-size:12.5px;color:var(--ink-soft);background:var(--gold-tint);padding:8px 12px;border:1px solid var(--gold);border-radius:3px;margin-bottom:16px;">
-        Net Profit = Total Sales − Total Expenses. Allocated shares: <strong>Prakash Shetty (43%)</strong>, <strong>Preveen Shetty (28%)</strong>, <strong>Preetham Shetty (14.5%)</strong>, <strong>Umesh Shetty (14.5%)</strong>.
+        Net Profit = Total Sales − Total Expenses. Allocated shares: <strong>Prakash Shetty (43%)</strong>, <strong>Preveen Shetty (28%)</strong>, <strong>Preetham Shetty (14.5%)</strong>, <strong>Umesh Shetty (14.5%)</strong>[cite: 1].
       </p>
       <div style="overflow-x:auto;">
         <table class="profit-table">
@@ -456,12 +471,44 @@
   </div>
 </div>
 
+<!-- Dedicated Clean Print Slip for Physical Print & PDF Save -->
+<div id="printableSlip">
+  <div style="text-align:center;border-bottom:1.5px dashed #000;padding-bottom:10px;margin-bottom:10px;">
+    <h2 style="font-size:17px;font-weight:700;margin:0;">7TH HEAVEN</h2>
+    <p style="font-size:11px;margin:2px 0;">Indira Nagar, Nashik</p>
+    <p style="font-size:11.5px;font-weight:600;margin-top:4px;" id="slipInvoiceNo">INVOICE: #7H-0001</p>
+  </div>
+  <div style="font-size:11px;margin-bottom:8px;line-height:1.5;">
+    <div><strong>Date:</strong> <span id="slipDate"></span></div>
+    <div><strong>Customer:</strong> <span id="slipCust"></span></div>
+    <div id="slipPhoneRow"><strong>Phone:</strong> <span id="slipPhone"></span></div>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px;">
+    <thead>
+      <tr style="border-bottom:1px solid #000;">
+        <th style="text-align:left;padding:3px 0;">Item</th>
+        <th style="text-align:center;padding:3px 0;width:30px;">Qty</th>
+        <th style="text-align:right;padding:3px 0;width:60px;">Rate</th>
+        <th style="text-align:right;padding:3px 0;width:60px;">Amount</th>
+      </tr>
+    </thead>
+    <tbody id="slipItems"></tbody>
+  </table>
+  <div style="border-top:1.5px dashed #000;padding-top:6px;display:flex;justify-content:space-between;font-size:13px;font-weight:700;">
+    <span>TOTAL AMOUNT:</span>
+    <span id="slipGrandTotal"></span>
+  </div>
+  <div style="text-align:center;font-size:10px;margin-top:14px;color:#444;">
+    <p>Thank you for celebrating with us!</p>
+    <p>7th Heaven — A Slice of Happiness</p>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-// Shared Google Apps Script Web App Backend for Multi-Device Cloud Sync
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxbWHWqK2zCserM_7nb-17Y8on0m3FwG7Wuhp_-onVwAJMbbkwyTu_RG1Sf4EOJrGh7/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v4";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v5";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
 
 var ROLE_PASSWORDS = {
@@ -485,6 +532,8 @@ var state = {
   invoices: [],
   targets: {}
 };
+
+var activeInvoiceSlip = null;
 
 function getTodayStr(){
   var d = new Date();
@@ -521,7 +570,6 @@ function canEditExpenses(){
   return true;
 }
 
-// Local + Cloud Sync Logic
 function loadStateLocally(){
   try {
     var raw = localStorage.getItem(STORAGE_KEY);
@@ -553,7 +601,6 @@ function saveState(){
     }));
   } catch(e){}
 
-  // Debounced cloud push to avoid spamming network
   clearTimeout(window._cloudSyncTimer);
   window._cloudSyncTimer = setTimeout(pushToCloud, 1000);
 }
@@ -611,7 +658,6 @@ function syncWithCloud(){
     });
 }
 
-// Authentication & Session Preservation
 var targetRolePending = null;
 function promptRolePass(role){
   targetRolePending = role;
@@ -666,7 +712,6 @@ function applyRoleUI(){
   document.getElementById('targetAdminInputs').style.display = (r === 'admin') ? 'flex' : 'none';
 }
 
-// Render Daily Tracker
 function renderDailyTabs(){
   var cont = document.getElementById('sheetTabsList');
   cont.innerHTML = '';
@@ -817,7 +862,7 @@ function updateTotals(){
   });
 }
 
-// INVOICES & POS (Fix for Rate input + Cake Suggestions)
+// INVOICES & POS
 var curInvItems = [{ name:'', qty:1, rate:'' }];
 function renderInvItems(){
   var tb = document.getElementById('invItemsBody');
@@ -873,6 +918,82 @@ function updateBillGrandTotal(){
   document.getElementById('invTotalBadge').textContent = formatMoney(tot);
 }
 
+function renderRecentInvoices(){
+  var cont = document.getElementById('recentInvoicesList');
+  if(!cont) return;
+  if(state.invoices.length === 0){
+    cont.innerHTML = '<p style="color:var(--ink-soft);padding:6px 0;">No bills generated yet.</p>';
+    return;
+  }
+  cont.innerHTML = state.invoices.slice(0, 10).map(function(inv, i){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule);">' +
+      '<div><strong>' + inv.no + '</strong> &mdash; ' + (inv.customer||'Walk-in') + ' <span style="color:var(--ink-soft);font-size:11px;">(' + inv.date + ')</span></div>' +
+      '<div style="display:flex;gap:8px;align-items:center;">' +
+        '<span style="font-family:\'IBM Plex Mono\',monospace;font-weight:600;">' + formatMoney(inv.total) + '</span>' +
+        '<button class="btn-s" style="padding:3px 8px;font-size:11px;" onclick="printSpecificInvoice(' + i + ')">Print</button>' +
+        '<button class="btn-s" style="padding:3px 8px;font-size:11px;background:#25D366;color:#FFF;border-color:#25D366;" onclick="shareSpecificInvoice(' + i + ')">WhatsApp</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function preparePrintSlip(inv){
+  document.getElementById('slipInvoiceNo').textContent = 'INVOICE: ' + inv.no;
+  document.getElementById('slipDate').textContent = inv.date;
+  document.getElementById('slipCust').textContent = inv.customer || 'Walk-in Customer';
+  if(inv.phone){
+    document.getElementById('slipPhoneRow').style.display = 'block';
+    document.getElementById('slipPhone').textContent = inv.phone;
+  } else {
+    document.getElementById('slipPhoneRow').style.display = 'none';
+  }
+  var tbody = document.getElementById('slipItems');
+  tbody.innerHTML = inv.items.map(function(it){
+    var amt = (Number(it.qty)||0) * (Number(it.rate)||0);
+    return '<tr>' +
+      '<td style="padding:3px 0;">' + (it.name || 'Bakery Item') + '</td>' +
+      '<td style="text-align:center;padding:3px 0;">' + it.qty + '</td>' +
+      '<td style="text-align:right;padding:3px 0;">' + formatMoney(it.rate) + '</td>' +
+      '<td style="text-align:right;padding:3px 0;">' + formatMoney(amt) + '</td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('slipGrandTotal').textContent = formatMoney(inv.total);
+}
+
+function printSpecificInvoice(idx){
+  var inv = state.invoices[idx];
+  if(inv){
+    preparePrintSlip(inv);
+    window.print();
+  }
+}
+
+function shareSpecificInvoice(idx){
+  var inv = state.invoices[idx];
+  if(!inv) return;
+  var phone = (inv.phone||'').replace(/[^0-9]/g,'');
+  if(phone.length === 10) phone = '91' + phone;
+  
+  var lines = [];
+  lines.push('*7TH HEAVEN NASHIK*');
+  lines.push('Invoice: ' + inv.no);
+  lines.push('Date: ' + inv.date);
+  lines.push('Customer: ' + (inv.customer || 'Walk-in'));
+  lines.push('-------------------------');
+  inv.items.forEach(function(it){
+    lines.push('• ' + (it.name || 'Bakery Item') + ' (Qty: ' + it.qty + ') - ' + formatMoney((it.qty||1)*(it.rate||0)));
+  });
+  lines.push('-------------------------');
+  lines.push('*Total Bill: ' + formatMoney(inv.total) + '*');
+  lines.push('Thank you for choosing 7th Heaven!');
+  
+  var msg = encodeURIComponent(lines.join('\n'));
+  var waUrl = phone ? ('https://web.whatsapp.com/send?phone=' + phone + '&text=' + msg) : ('https://web.whatsapp.com/send?text=' + msg);
+  
+  // Reuses the same open tab/window rather than spawning new tabs
+  window.open(waUrl, 'whatsapp_web');
+}
+
 // TARGETS & PROFIT SHARING
 function renderTargetsAndProfit(){
   var months = {};
@@ -925,6 +1046,7 @@ function renderAll(){
   renderDailyTabs();
   renderDailyGrids();
   renderTargetsAndProfit();
+  renderRecentInvoices();
 }
 
 // Add Rows
@@ -940,7 +1062,6 @@ document.getElementById('addExpLineBtn').onclick = function(){
   renderDailyGrids();
 };
 
-// Admin Unlock Past Sheet
 document.getElementById('unlockSheetBtn').onclick = function(){
   var pass = prompt('Enter Admin Master Password to unlock sheet (' + state.activeDate + '):');
   if(pass === ROLE_PASSWORDS.admin){
@@ -952,12 +1073,11 @@ document.getElementById('unlockSheetBtn').onclick = function(){
   }
 };
 
-// EXCEL EXPORT (Proper Formula Evaluation & Format Matching HighLegibility)
+// EXCEL EXPORT
 document.getElementById('exportExcelBtn').onclick = function(){
   var sheet = state.daily[state.activeDate];
   var wb = XLSX.utils.book_new();
 
-  // Compute live subtotal figures
   var cTot = 0, swTot = 0, zTot = 0, oTot = 0, eTot = 0;
   sheet.sales.forEach(function(r){
     cTot += Number(r.cash) || 0;
@@ -999,14 +1119,11 @@ document.getElementById('exportExcelBtn').onclick = function(){
   }
 
   var ws = XLSX.utils.aoa_to_sheet(ws_data);
-
-  // Set proper column widths so figures do not truncate
   ws['!cols'] = [
     { wch: 10 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 16 },
     { wch: 4 },  { wch: 20 }, { wch: 18 }, { wch: 20 }
   ];
 
-  // Set Excel formulas properly on the cells
   ws['D3'] = { t: 'n', v: grandSales, f: 'SUM(B5:E5)' };
   ws['F3'] = { t: 'n', v: eTot, f: 'H5' };
   ws['I3'] = { t: 'n', v: netInHand, f: 'D3-F3' };
@@ -1034,20 +1151,52 @@ document.getElementById('saveInvoiceBtn').onclick = function(){
   var tot = valid.reduce(function(acc,i){ return acc + (Number(i.qty)||0)*(Number(i.rate)||0); }, 0);
   if(tot <= 0){ toast('Please enter a valid rate amount.'); return; }
 
-  var today = getTodayStr();
-  state.daily[today].sales.push({ cash: tot, swiggy:'', zomato:'', other:'' });
+  var invNum = '#7H-' + String(state.invoices.length + 1).padStart(4, '0');
+  var newInv = {
+    no: invNum,
+    date: getTodayStr(),
+    customer: document.getElementById('invCustName').value.trim(),
+    phone: document.getElementById('invCustPhone').value.trim(),
+    email: document.getElementById('invCustEmail').value.trim(),
+    items: valid.map(function(it){ return { name: it.name.trim() || 'Bakery Item', qty: Number(it.qty)||1, rate: Number(it.rate)||0 }; }),
+    total: tot
+  };
+
+  state.invoices.unshift(newInv);
+  activeInvoiceSlip = newInv;
   saveState();
-  toast('Sale saved and added to Today’s Cash sales!');
+
+  toast('Bill ' + invNum + ' saved! (No entry added to Daily Sales)');
   document.getElementById('shareWhatsAppBtn').style.display = 'inline-block';
-  renderAll();
+  document.getElementById('printInvoiceBtn').style.display = 'inline-block';
+  document.getElementById('newInvoiceBtn').style.display = 'inline-block';
+  renderRecentInvoices();
+};
+
+document.getElementById('printInvoiceBtn').onclick = function(){
+  if(activeInvoiceSlip){
+    preparePrintSlip(activeInvoiceSlip);
+    window.print();
+  }
 };
 
 document.getElementById('shareWhatsAppBtn').onclick = function(){
-  var phone = document.getElementById('invCustPhone').value.replace(/[^0-9]/g,'');
-  if(phone.length === 10) phone = '91' + phone;
-  var tot = document.getElementById('invTotalBadge').textContent;
-  var msg = "*7th Heaven Nashik*\nThank you for your purchase! Total Bill: " + tot;
-  window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(msg), '_blank');
+  if(activeInvoiceSlip){
+    var idx = state.invoices.indexOf(activeInvoiceSlip);
+    if(idx >= 0) shareSpecificInvoice(idx);
+  }
+};
+
+document.getElementById('newInvoiceBtn').onclick = function(){
+  curInvItems = [{ name:'', qty:1, rate:'' }];
+  document.getElementById('invCustName').value = '';
+  document.getElementById('invCustPhone').value = '';
+  document.getElementById('invCustEmail').value = '';
+  document.getElementById('shareWhatsAppBtn').style.display = 'none';
+  document.getElementById('printInvoiceBtn').style.display = 'none';
+  document.getElementById('newInvoiceBtn').style.display = 'none';
+  activeInvoiceSlip = null;
+  renderInvItems();
 };
 
 // Target Saving
@@ -1062,7 +1211,7 @@ document.getElementById('saveTargetBtn').onclick = function(){
   renderTargetsAndProfit();
 };
 
-// Navigation
+// Nav Switcher
 document.querySelectorAll('.nav-bar button').forEach(function(b){
   b.onclick = function(){
     document.querySelectorAll('.nav-bar button').forEach(function(x){ x.classList.remove('active'); });
@@ -1077,7 +1226,6 @@ document.getElementById('todayClock').textContent = getTodayStr();
 loadStateLocally();
 renderInvItems();
 
-// Auto-login if previously signed in on this device
 var savedRole = localStorage.getItem(SESSION_ROLE_KEY);
 if(savedRole && ROLE_PASSWORDS[savedRole]){
   state.currentRole = savedRole;
