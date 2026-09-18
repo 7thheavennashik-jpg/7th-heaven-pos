@@ -34,7 +34,7 @@
     min-height: 100vh;
     padding: 12px 14px 60px;
   }
-  .wrap { max-width: 1080px; margin: 0 auto; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
 
   header.top {
     display: flex;
@@ -48,7 +48,19 @@
   header.top h1 { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
   header.top .today { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #F2E6EA; }
 
-  /* Login / Role Picker Screen */
+  /* Cloud Sync Status */
+  .sync-indicator {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; display: inline-block; }
+
+  /* Login / Role Selection Screen */
   #roleAuthSection {
     background: #FFF;
     border: 1px solid var(--rule-strong);
@@ -192,6 +204,7 @@
   .row-del-btn { background: none; border: none; color: #999; cursor: pointer; font-size: 14px; }
   .row-del-btn:hover { color: var(--brick); }
 
+  /* Invoicing Styles */
   .form-group { margin-bottom: 14px; }
   .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); margin-bottom: 4px; }
   .form-group input, .form-group select { width: 100%; padding: 8px 10px; border: 1px solid var(--rule-strong); border-radius: 3px; font-size: 13px; }
@@ -226,9 +239,30 @@
 </head>
 <body>
 
+<!-- Cake Suggestions Datalist -->
+<datalist id="cakeSuggestions">
+  <option value="Dutch Dark Chocolate Cake">
+  <option value="Black Forest Cake">
+  <option value="Red Velvet Cake">
+  <option value="Pineapple Fresh Cream Cake">
+  <option value="Butterscotch Crunch Cake">
+  <option value="Chocolate Truffle Cake">
+  <option value="Fresh Fruit Cake">
+  <option value="Choco Lava Cup">
+  <option value="Pineapple Pastry Slice">
+  <option value="Red Velvet Pastry Slice">
+  <option value="Dark Chocolate Pastry Slice">
+  <option value="Cheese Cake Slice">
+  <option value="Custom Fondant Cake">
+  <option value="Vanilla Sponge Base">
+</datalist>
+
 <div class="wrap">
   <header class="top">
-    <h1>7TH HEAVEN NASHIK — DAILY SALES &amp; EXPENDITURE TRACKER</h1>
+    <div>
+      <h1>7TH HEAVEN NASHIK — DAILY SALES &amp; EXPENDITURE TRACKER</h1>
+      <span class="sync-indicator"><span class="sync-dot"></span><span id="syncText">Connected &amp; Synced</span></span>
+    </div>
     <div class="today" id="todayClock">--</div>
   </header>
 
@@ -240,7 +274,7 @@
       <div class="role-cards">
         <div class="role-box" onclick="promptRolePass('admin')">
           <h3>👑 Admin</h3>
-          <p>Full control: Edit sales, enter expenses, unlock old sheets, set targets, and manage profit sharing.</p>
+          <p>Full control: Edit sales, enter expenses, unlock old sheets, set targets, and view profit sharing.</p>
         </div>
         <div class="role-box" onclick="promptRolePass('store')">
           <h3>🏪 Store Partner</h3>
@@ -263,7 +297,7 @@
     </div>
   </div>
 
-  <!-- Main App Navigation -->
+  <!-- Main App Content -->
   <div id="mainAppContent" style="display:none;">
     <nav class="nav-bar">
       <button class="active" data-panel="daily">Daily Sales &amp; Tracker</button>
@@ -274,7 +308,10 @@
 
     <div class="role-strip">
       <span id="roleBadge">Signed in as: <strong>Admin</strong></span>
-      <button onclick="logoutRole()">Switch Role / Sign Out</button>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <button onclick="syncWithCloud()" style="text-decoration:none;color:var(--ink-soft);font-size:11.5px;">🔄 Refresh Cloud Data</button>
+        <button onclick="logoutRole()">Switch Role / Sign Out</button>
+      </div>
     </div>
 
     <!-- PANEL 1: DAILY SALES & EXPENDITURE TRACKER -->
@@ -374,7 +411,7 @@
       </div>
 
       <table class="invoice-table">
-        <thead><tr><th>Item Description</th><th style="width:70px;">Qty</th><th style="width:100px;">Rate (₹)</th><th style="width:100px;text-align:right;">Total (₹)</th><th style="width:30px;"></th></tr></thead>
+        <thead><tr><th>Item Description (Optional)</th><th style="width:70px;">Qty</th><th style="width:110px;">Rate (₹)</th><th style="width:100px;text-align:right;">Total (₹)</th><th style="width:30px;"></th></tr></thead>
         <tbody id="invItemsBody"></tbody>
       </table>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
@@ -422,12 +459,16 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// Shared Google Apps Script Web App Backend for Multi-Device Cloud Sync
+var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxbWHWqK2zCserM_7nb-17Y8on0m3FwG7Wuhp_-onVwAJMbbkwyTu_RG1Sf4EOJrGh7/exec';
+var STORAGE_KEY = "7th_heaven_unified_tracker_v4";
+var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
+
 var ROLE_PASSWORDS = {
   admin: '7thHeaven@Admin',
   store: '7thHeaven@Store',
   remote: '7thHeaven@View'
 };
-var STORAGE_KEY = "7th_heaven_unified_tracker_v3";
 
 var PROFIT_PARTNERS = [
   { name: 'Prakash Shetty', pct: 43.0 },
@@ -464,7 +505,6 @@ function toast(msg){
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 
-// Role Permissions Logic
 function canEditSales(){
   if(state.currentRole === 'remote') return false;
   if(state.activeDate !== getTodayStr()){
@@ -481,8 +521,8 @@ function canEditExpenses(){
   return true;
 }
 
-// Data Handling
-function loadState(){
+// Local + Cloud Sync Logic
+function loadStateLocally(){
   try {
     var raw = localStorage.getItem(STORAGE_KEY);
     if(raw){
@@ -512,9 +552,66 @@ function saveState(){
       targets: state.targets
     }));
   } catch(e){}
+
+  // Debounced cloud push to avoid spamming network
+  clearTimeout(window._cloudSyncTimer);
+  window._cloudSyncTimer = setTimeout(pushToCloud, 1000);
 }
 
-// Authentication Logic
+function pushToCloud(){
+  if(!CLOUD_BACKEND_URL) return;
+  document.getElementById('syncText').textContent = 'Saving to Cloud…';
+  fetch(CLOUD_BACKEND_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      key: '7th_heaven_master_data',
+      value: JSON.stringify({
+        daily: state.daily,
+        invoices: state.invoices,
+        targets: state.targets
+      })
+    })
+  }).then(function(){
+    document.getElementById('syncText').textContent = 'Synced & Saved';
+  }).catch(function(){
+    document.getElementById('syncText').textContent = 'Saved Locally';
+  });
+}
+
+function syncWithCloud(){
+  if(!CLOUD_BACKEND_URL) return;
+  document.getElementById('syncText').textContent = 'Fetching Cloud Data…';
+  fetch(CLOUD_BACKEND_URL + '?key=7th_heaven_master_data')
+    .then(function(res){ return res.json(); })
+    .then(function(data){
+      if(data && data.value){
+        var cloudObj = JSON.parse(data.value);
+        if(cloudObj.daily) state.daily = cloudObj.daily;
+        if(cloudObj.invoices) state.invoices = cloudObj.invoices;
+        if(cloudObj.targets) state.targets = cloudObj.targets;
+        
+        var today = getTodayStr();
+        if(!state.daily[today]){
+          state.daily[today] = {
+            sales: [{ cash:'', swiggy:'', zomato:'', other:'' }],
+            expenses: [{ category:'Ingredients', amount:'', method:'UPI Direct' }]
+          };
+        }
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            daily: state.daily, invoices: state.invoices, targets: state.targets
+          }));
+        }catch(e){}
+        document.getElementById('syncText').textContent = 'Live Cloud Synced';
+        renderAll();
+      }
+    }).catch(function(){
+      document.getElementById('syncText').textContent = 'Using Local Cache';
+    });
+}
+
+// Authentication & Session Preservation
 var targetRolePending = null;
 function promptRolePass(role){
   targetRolePending = role;
@@ -535,17 +632,24 @@ document.getElementById('submitPassBtn').onclick = function(){
   var typed = document.getElementById('passcodeInput').value;
   if(typed === ROLE_PASSWORDS[targetRolePending]){
     state.currentRole = targetRolePending;
-    document.getElementById('roleAuthSection').style.display = 'none';
-    document.getElementById('mainAppContent').style.display = 'block';
-    applyRoleUI();
-    renderAll();
+    localStorage.setItem(SESSION_ROLE_KEY, state.currentRole);
+    enterAppWithRole();
   } else {
     alert('Incorrect password! Access denied.');
   }
 };
 
+function enterAppWithRole(){
+  document.getElementById('roleAuthSection').style.display = 'none';
+  document.getElementById('mainAppContent').style.display = 'block';
+  applyRoleUI();
+  renderAll();
+  syncWithCloud();
+}
+
 function logoutRole(){
   state.currentRole = null;
+  localStorage.removeItem(SESSION_ROLE_KEY);
   document.getElementById('mainAppContent').style.display = 'none';
   document.getElementById('roleAuthSection').style.display = 'block';
   showRoleStep();
@@ -556,14 +660,13 @@ function applyRoleUI(){
   var roleTitles = { admin:'Admin (Full Master Access)', store:'Store Partner (Sales & Billing)', remote:'Remote Partner (View Only)' };
   document.getElementById('roleBadge').innerHTML = 'Signed in as: <strong>' + roleTitles[r] + '</strong>';
 
-  // Navigation Visibility
   document.getElementById('tabInvoiceBtn').style.display = (r === 'admin' || r === 'store') ? 'block' : 'none';
   document.getElementById('tabTargetBtn').style.display = (r === 'admin' || r === 'remote') ? 'block' : 'none';
   document.getElementById('tabProfitBtn').style.display = (r === 'admin') ? 'block' : 'none';
   document.getElementById('targetAdminInputs').style.display = (r === 'admin') ? 'flex' : 'none';
 }
 
-// Render Daily Sales Sheet
+// Render Daily Tracker
 function renderDailyTabs(){
   var cont = document.getElementById('sheetTabsList');
   cont.innerHTML = '';
@@ -592,7 +695,6 @@ function renderDailyGrids(){
   var sEditable = canEditSales();
   var eEditable = canEditExpenses();
 
-  // Sales Grid
   var sTbody = document.getElementById('salesTbody');
   sTbody.innerHTML = '';
   var sl = 1;
@@ -635,7 +737,6 @@ function renderDailyGrids(){
 
   document.getElementById('salesActionRow').style.display = sEditable ? 'flex' : 'none';
 
-  // Expenses Grid
   var eTbody = document.getElementById('expTbody');
   eTbody.innerHTML = '';
   var cats = ['Ingredients', 'Shop Rent', 'Staff Salaries', 'Electricity (MSEDCL)', 'Packaging & Gas', 'Marketing', 'Maintenance', 'Other'];
@@ -716,35 +817,63 @@ function updateTotals(){
   });
 }
 
-// Invoices & POS
-var curInvItems = [{ name:'', qty:1, rate:0 }];
+// INVOICES & POS (Fix for Rate input + Cake Suggestions)
+var curInvItems = [{ name:'', qty:1, rate:'' }];
 function renderInvItems(){
   var tb = document.getElementById('invItemsBody');
   tb.innerHTML = '';
-  var tot = 0;
+  
   curInvItems.forEach(function(it, idx){
-    var amt = (Number(it.qty)||0) * (Number(it.rate)||0);
-    tot += amt;
     var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td><input type="text" style="width:100%;border:1px solid #DDD;padding:4px;" value="' + it.name + '" placeholder="e.g. Dutch Chocolate 500g"></td>' +
-      '<td><input type="number" style="width:100%;border:1px solid #DDD;padding:4px;text-align:center;" value="' + it.qty + '"></td>' +
-      '<td><input type="number" step="0.01" style="width:100%;border:1px solid #DDD;padding:4px;text-align:right;" value="' + (it.rate||'') + '"></td>' +
-      '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;">' + formatMoney(amt) + '</td>' +
-      '<td style="text-align:center;"><button style="border:none;background:none;color:#A82828;cursor:pointer;">&times;</button></td>';
+    tr.setAttribute('data-idx', idx);
+    var amt = (Number(it.qty)||0) * (Number(it.rate)||0);
 
-    tr.querySelectorAll('input')[0].oninput = function(e){ it.name = e.target.value; };
-    tr.querySelectorAll('input')[1].oninput = function(e){ it.qty = e.target.value; renderInvItems(); };
-    tr.querySelectorAll('input')[2].oninput = function(e){ it.rate = e.target.value; renderInvItems(); };
-    tr.querySelector('button').onclick = function(){
-      if(curInvItems.length > 1){ curInvItems.splice(idx,1); renderInvItems(); }
+    tr.innerHTML =
+      '<td><input type="text" list="cakeSuggestions" class="inv-item-name" style="width:100%;border:1px solid #DDD;padding:5px;" value="' + (it.name||'') + '" placeholder="Start typing cake name (Optional)"></td>' +
+      '<td><input type="number" class="inv-item-qty" style="width:100%;border:1px solid #DDD;padding:5px;text-align:center;" value="' + it.qty + '"></td>' +
+      '<td><input type="number" step="0.01" class="inv-item-rate" style="width:100%;border:1px solid #DDD;padding:5px;text-align:right;" value="' + (it.rate||'') + '" placeholder="0.00"></td>' +
+      '<td class="inv-item-amt" style="text-align:right;font-family:\'IBM Plex Mono\',monospace;">' + formatMoney(amt) + '</td>' +
+      '<td style="text-align:center;"><button class="inv-item-del" style="border:none;background:none;color:#A82828;cursor:pointer;font-size:16px;">&times;</button></td>';
+
+    var nameInput = tr.querySelector('.inv-item-name');
+    var qtyInput = tr.querySelector('.inv-item-qty');
+    var rateInput = tr.querySelector('.inv-item-rate');
+    var amtCell = tr.querySelector('.inv-item-amt');
+    var delBtn = tr.querySelector('.inv-item-del');
+
+    nameInput.oninput = function(e){ it.name = e.target.value; };
+
+    function updateRowTotal(){
+      it.qty = qtyInput.value;
+      it.rate = rateInput.value;
+      var curAmt = (Number(it.qty)||0) * (Number(it.rate)||0);
+      amtCell.textContent = formatMoney(curAmt);
+      updateBillGrandTotal();
+    }
+
+    qtyInput.oninput = updateRowTotal;
+    rateInput.oninput = updateRowTotal;
+
+    delBtn.onclick = function(){
+      if(curInvItems.length > 1){
+        curInvItems.splice(idx, 1);
+        renderInvItems();
+      }
     };
+
     tb.appendChild(tr);
   });
+  updateBillGrandTotal();
+}
+
+function updateBillGrandTotal(){
+  var tot = curInvItems.reduce(function(acc, i){
+    return acc + (Number(i.qty)||0) * (Number(i.rate)||0);
+  }, 0);
   document.getElementById('invTotalBadge').textContent = formatMoney(tot);
 }
 
-// Target & Profit
+// TARGETS & PROFIT SHARING
 function renderTargetsAndProfit(){
   var months = {};
   Object.keys(state.daily).forEach(function(d){
@@ -823,17 +952,31 @@ document.getElementById('unlockSheetBtn').onclick = function(){
   }
 };
 
-// Excel Export
+// EXCEL EXPORT (Proper Formula Evaluation & Format Matching HighLegibility)
 document.getElementById('exportExcelBtn').onclick = function(){
   var sheet = state.daily[state.activeDate];
   var wb = XLSX.utils.book_new();
 
-  var rows = [
+  // Compute live subtotal figures
+  var cTot = 0, swTot = 0, zTot = 0, oTot = 0, eTot = 0;
+  sheet.sales.forEach(function(r){
+    cTot += Number(r.cash) || 0;
+    swTot += Number(r.swiggy) || 0;
+    zTot += Number(r.zomato) || 0;
+    oTot += Number(r.other) || 0;
+  });
+  sheet.expenses.forEach(function(r){
+    eTot += Number(r.amount) || 0;
+  });
+  var grandSales = cTot + swTot + zTot + oTot;
+  var netInHand = grandSales - eTot;
+
+  var ws_data = [
     ["7TH HEAVEN NASHIK — DAILY SALES & EXPENDITURE TRACKER"],
     [],
-    ["DATE: " + state.activeDate, "TOTAL DAILY SALES:", "", "=SUM(B5:E5)", "TOTAL EXPENSES:", "", "=H5", "NET IN-HAND (Sales − Exp):", "=D3-H3"],
+    ["DATE: " + state.activeDate, "", "TOTAL DAILY SALES:", grandSales, "TOTAL EXPENSES:", eTot, "NET IN-HAND (Sales − Exp):", "", netInHand],
     ["Sl No", "Cash", "Swiggy", "Zomato", "Other", "", "Expense Category", "Amount (₹)", "Payment Method"],
-    ["TOTAL", "=SUM(B6:B500)", "=SUM(C6:C500)", "=SUM(D6:D500)", "=SUM(E6:E500)", "", "Total Expenses", "=SUM(H6:H500)", ""]
+    ["TOTAL", cTot, swTot, zTot, oTot, "", "Total Expenses", eTot, ""]
   ];
 
   var max = Math.max(sheet.sales.length, sheet.expenses.length);
@@ -842,7 +985,7 @@ document.getElementById('exportExcelBtn').onclick = function(){
     var s = sheet.sales[i] || {};
     var e = sheet.expenses[i] || {};
     var hasSale = (Number(s.cash)||0) > 0 || (Number(s.swiggy)||0) > 0 || (Number(s.zomato)||0) > 0 || (Number(s.other)||0) > 0;
-    rows.push([
+    ws_data.push([
       hasSale ? sl++ : "",
       s.cash ? Number(s.cash) : "",
       s.swiggy ? Number(s.swiggy) : "",
@@ -855,19 +998,41 @@ document.getElementById('exportExcelBtn').onclick = function(){
     ]);
   }
 
-  var ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:10},{wch:16},{wch:16},{wch:16},{wch:16},{wch:4},{wch:20},{wch:18},{wch:20}];
+  var ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+  // Set proper column widths so figures do not truncate
+  ws['!cols'] = [
+    { wch: 10 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 16 },
+    { wch: 4 },  { wch: 20 }, { wch: 18 }, { wch: 20 }
+  ];
+
+  // Set Excel formulas properly on the cells
+  ws['D3'] = { t: 'n', v: grandSales, f: 'SUM(B5:E5)' };
+  ws['F3'] = { t: 'n', v: eTot, f: 'H5' };
+  ws['I3'] = { t: 'n', v: netInHand, f: 'D3-F3' };
+
+  var lastRow = ws_data.length;
+  ws['B5'] = { t: 'n', v: cTot, f: 'SUM(B6:B' + lastRow + ')' };
+  ws['C5'] = { t: 'n', v: swTot, f: 'SUM(C6:C' + lastRow + ')' };
+  ws['D5'] = { t: 'n', v: zTot, f: 'SUM(D6:D' + lastRow + ')' };
+  ws['E5'] = { t: 'n', v: oTot, f: 'SUM(E6:E' + lastRow + ')' };
+  ws['H5'] = { t: 'n', v: eTot, f: 'SUM(H6:H' + lastRow + ')' };
+
   XLSX.utils.book_append_sheet(wb, ws, state.activeDate);
   XLSX.writeFile(wb, "7th_Heaven_Nashik_" + state.activeDate + ".xlsx");
-  toast("Excel sheet exported successfully!");
+  toast("Excel file exported cleanly!");
 };
 
 // Invoicing Handlers
-document.getElementById('addInvItemRowBtn').onclick = function(){ curInvItems.push({ name:'', qty:1, rate:0 }); renderInvItems(); };
+document.getElementById('addInvItemRowBtn').onclick = function(){
+  curInvItems.push({ name:'', qty:1, rate:'' });
+  renderInvItems();
+};
+
 document.getElementById('saveInvoiceBtn').onclick = function(){
-  var valid = curInvItems.filter(function(i){ return i.name && Number(i.rate) > 0; });
+  var valid = curInvItems.filter(function(i){ return Number(i.rate) > 0; });
   var tot = valid.reduce(function(acc,i){ return acc + (Number(i.qty)||0)*(Number(i.rate)||0); }, 0);
-  if(tot <= 0){ toast('Please add valid items.'); return; }
+  if(tot <= 0){ toast('Please enter a valid rate amount.'); return; }
 
   var today = getTodayStr();
   state.daily[today].sales.push({ cash: tot, swiggy:'', zomato:'', other:'' });
@@ -881,7 +1046,7 @@ document.getElementById('shareWhatsAppBtn').onclick = function(){
   var phone = document.getElementById('invCustPhone').value.replace(/[^0-9]/g,'');
   if(phone.length === 10) phone = '91' + phone;
   var tot = document.getElementById('invTotalBadge').textContent;
-  var msg = "*7th Heaven Nashik*\nThank you for your visit! Total Bill: " + tot;
+  var msg = "*7th Heaven Nashik*\nThank you for your purchase! Total Bill: " + tot;
   window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(msg), '_blank');
 };
 
@@ -897,7 +1062,7 @@ document.getElementById('saveTargetBtn').onclick = function(){
   renderTargetsAndProfit();
 };
 
-// Navigation Switching
+// Navigation
 document.querySelectorAll('.nav-bar button').forEach(function(b){
   b.onclick = function(){
     document.querySelectorAll('.nav-bar button').forEach(function(x){ x.classList.remove('active'); });
@@ -907,10 +1072,17 @@ document.querySelectorAll('.nav-bar button').forEach(function(b){
   };
 });
 
-// Init
+// Initialization
 document.getElementById('todayClock').textContent = getTodayStr();
-loadState();
+loadStateLocally();
 renderInvItems();
+
+// Auto-login if previously signed in on this device
+var savedRole = localStorage.getItem(SESSION_ROLE_KEY);
+if(savedRole && ROLE_PASSWORDS[savedRole]){
+  state.currentRole = savedRole;
+  enterAppWithRole();
+}
 </script>
 </body>
 </html>
