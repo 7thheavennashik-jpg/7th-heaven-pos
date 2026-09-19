@@ -17,7 +17,6 @@
     --kpi-exp-bg: #FFF3F3;
     --net-green: #2D5016;
     --paper: #F6F3EA;
-    --paper-card: #FFFFFF;
     --rule: #DAD4C1;
     --rule-strong: #C7BFA6;
     --ink: #22261E;
@@ -32,152 +31,53 @@
     color: var(--ink);
     font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif;
     min-height: 100vh;
-    padding: 12px 14px 60px;
+    padding: 10px 10px 60px;
   }
   .wrap { max-width: 1100px; margin: 0 auto; }
-
   header.top {
     display: flex;
     align-items: center;
     justify-content: space-between;
     background: var(--maroon-banner);
     color: #FFF;
-    padding: 10px 16px;
+    padding: 10px 14px;
     border-radius: 4px 4px 0 0;
     gap: 12px;
   }
-  .hdr-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .hdr-logo {
-    height: 48px;
-    width: 48px;
-    object-fit: contain;
-    background: #FFF;
-    border-radius: 4px;
-    padding: 2px;
-    display: block;
-  }
-  header.top h1 { font-size: 14.5px; font-weight: 700; letter-spacing: 0.5px; margin: 0; }
-  header.top .today { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #F2E6EA; text-align: right; }
-
-  .sync-indicator {
-    font-size: 11px;
-    padding: 2px 7px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.2);
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 3px;
-  }
+  .hdr-brand { display: flex; align-items: center; gap: 10px; }
+  .hdr-logo { height: 46px; width: 46px; object-fit: contain; background: #FFF; border-radius: 4px; padding: 2px; }
+  header.top h1 { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; margin: 0; }
+  header.top .today { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #F2E6EA; text-align: right; }
+  .sync-indicator { font-size: 11px; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,0.2); display: inline-flex; align-items: center; gap: 4px; margin-top: 3px; }
   .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; display: inline-block; }
 
-  /* Role Selection Screen */
-  #roleAuthSection {
-    background: #FFF;
-    border: 1px solid var(--rule-strong);
-    border-top: none;
-    padding: 24px 20px;
-    border-radius: 0 0 4px 4px;
-    margin-bottom: 20px;
-  }
-  .role-title { font-family: 'Fraunces', serif; font-size: 19px; margin-bottom: 4px; }
-  .role-lead { font-size: 13px; color: var(--ink-soft); margin-bottom: 18px; }
-  .role-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .role-box {
-    background: #FAF8F6;
-    border: 1px solid var(--rule-strong);
-    border-radius: 4px;
-    padding: 14px;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.15s;
-  }
+  #roleAuthSection { background: #FFF; border: 1px solid var(--rule-strong); border-top: none; padding: 20px; border-radius: 0 0 4px 4px; }
+  .role-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .role-box { background: #FAF8F6; border: 1px solid var(--rule-strong); border-radius: 4px; padding: 14px; cursor: pointer; }
   .role-box:hover { border-color: var(--maroon-hdr); background: #FFF; }
   .role-box h3 { font-size: 14px; font-weight: 700; color: var(--maroon-banner); margin-bottom: 4px; }
   .role-box p { font-size: 11.5px; color: var(--ink-soft); line-height: 1.4; }
 
-  /* Navigation */
-  .nav-bar {
-    display: flex;
-    background: #FFF;
-    border: 1px solid var(--rule-strong);
-    border-top: none;
-    border-bottom: 2px solid var(--maroon-hdr);
-    overflow-x: auto;
-  }
-  .nav-bar button {
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
-    padding: 10px 16px;
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink-soft);
-    cursor: pointer;
-    white-space: nowrap;
-  }
-  .nav-bar button.active {
-    color: var(--maroon-banner);
-    border-bottom-color: var(--maroon-banner);
-  }
-  .role-strip {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #FDFBF8;
-    border: 1px solid var(--rule);
-    border-top: none;
-    padding: 6px 14px;
-    font-size: 12px;
-    color: var(--ink-soft);
-  }
+  .nav-bar { display: flex; background: #FFF; border: 1px solid var(--rule-strong); border-top: none; border-bottom: 2px solid var(--maroon-hdr); overflow-x: auto; }
+  .nav-bar button { background: transparent; border: none; border-bottom: 3px solid transparent; padding: 10px 14px; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); cursor: pointer; white-space: nowrap; }
+  .nav-bar button.active { color: var(--maroon-banner); border-bottom-color: var(--maroon-banner); }
+
+  .role-strip { display: flex; justify-content: space-between; align-items: center; background: #FDFBF8; border: 1px solid var(--rule); border-top: none; padding: 6px 12px; font-size: 11.5px; color: var(--ink-soft); flex-wrap: wrap; gap: 6px; }
   .role-strip button { background: none; border: none; color: var(--maroon-hdr); text-decoration: underline; cursor: pointer; font-weight: 600; }
 
-  section.panel { display: none; background: #FFF; border: 1px solid var(--rule-strong); border-top: none; padding: 18px; border-radius: 0 0 4px 4px; }
+  section.panel { display: none; background: #FFF; border: 1px solid var(--rule-strong); border-top: none; padding: 14px; border-radius: 0 0 4px 4px; }
   section.panel.active { display: block; }
 
-  /* Daily Tracker */
-  .sheet-tabs-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #F2E6EA;
-    padding: 8px 12px;
-    border-radius: 3px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .tabs-list { display: flex; gap: 6px; overflow-x: auto; }
-  .tab-item {
-    background: #FFF;
-    border: 1px solid var(--rule-strong);
-    padding: 5px 10px;
-    border-radius: 3px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    color: var(--maroon-hdr);
-  }
+  .sheet-tabs-row { display: flex; justify-content: space-between; align-items: center; background: #F2E6EA; padding: 8px 10px; border-radius: 3px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .tabs-list { display: flex; gap: 6px; overflow-x: auto; align-items: center; }
+  .tab-item { background: #FFF; border: 1px solid var(--rule-strong); padding: 4px 8px; border-radius: 3px; font-size: 11.5px; font-weight: 600; cursor: pointer; color: var(--maroon-hdr); }
   .tab-item.active { background: var(--maroon-hdr); color: #FFF; border-color: var(--maroon-hdr); }
-  .tab-item.locked::after { content: " 🔒"; font-size: 10px; }
 
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: 140px 1.2fr 1fr 1fr;
-    border: 1px solid var(--rule-strong);
-    border-bottom: 2px solid var(--maroon-hdr);
-    margin-bottom: 14px;
-  }
-  .kpi-card { padding: 10px 14px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: center; }
+  .kpi-grid { display: grid; grid-template-columns: 120px 1.2fr 1fr 1fr; border: 1px solid var(--rule-strong); border-bottom: 2px solid var(--maroon-hdr); margin-bottom: 14px; }
+  .kpi-card { padding: 8px 10px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: center; }
   .kpi-card:last-child { border-right: none; }
-  .kpi-card .lbl { font-size: 10.5px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; margin-bottom: 3px; }
-  .kpi-card .amt { font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; }
+  .kpi-card .lbl { font-size: 10px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; margin-bottom: 2px; }
+  .kpi-card .amt { font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 600; }
   .kpi-sales { background: var(--kpi-sales-bg); }
   .kpi-sales .amt { color: var(--maroon-hdr); }
   .kpi-exp { background: var(--kpi-exp-bg); }
@@ -189,58 +89,33 @@
   .split-tables { display: grid; grid-template-columns: 58% 42%; border: 1px solid var(--rule-strong); }
   .table-pane { border-right: 2px solid var(--rule-strong); }
   .table-pane:last-child { border-right: none; }
-  .pane-hdr { background: var(--maroon-hdr); color: #FFF; padding: 7px 10px; font-size: 12px; font-weight: 700; text-align: center; }
-  
+  .pane-hdr { background: var(--maroon-hdr); color: #FFF; padding: 6px 10px; font-size: 11.5px; font-weight: 700; text-align: center; }
+
   table.tracker { width: 100%; border-collapse: collapse; font-size: 12px; }
-  table.tracker th {
-    background: var(--maroon-hdr);
-    color: #FFF;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 6px 4px;
-    text-align: center;
-    border-right: 1px solid rgba(255,255,255,0.2);
-  }
-  table.tracker td {
-    padding: 4px 6px;
-    border-bottom: 1px solid var(--rule);
-    border-right: 1px solid var(--rule);
-    height: 32px;
-  }
+  table.tracker th { background: var(--maroon-hdr); color: #FFF; font-size: 11px; font-weight: 600; padding: 6px 3px; text-align: center; border-right: 1px solid rgba(255,255,255,0.2); }
+  table.tracker td { padding: 3px 4px; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); height: 32px; }
   table.tracker td:last-child { border-right: none; }
   .subtotal-line td { background: var(--subtotal-bg); font-weight: 700; border-bottom: 2px solid var(--maroon-hdr); }
-  .subtotal-line .val { font-family: 'IBM Plex Mono', monospace; font-size: 12px; text-align: right; color: var(--maroon-hdr); }
+  .subtotal-line .val { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; text-align: right; color: var(--maroon-hdr); }
   .subtotal-line .val.exp { color: var(--brick); }
 
-  .sl-box { text-align: center; font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--maroon-hdr); width: 42px; background: #FAF7F7; }
-  .cell-input { width: 100%; border: none; background: transparent; font-family: 'IBM Plex Mono', monospace; font-size: 12px; text-align: right; padding: 4px 2px; outline: none; }
+  .sl-box { text-align: center; font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--maroon-hdr); width: 38px; background: #FAF7F7; }
+  .cell-input { width: 100%; border: none; background: transparent; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; text-align: right; padding: 4px 2px; outline: none; }
   .cell-input:focus:not([disabled]) { background: #FFFDF0; }
-  .cell-select { width: 100%; border: none; background: transparent; font-size: 11.5px; outline: none; }
+  .cell-select { width: 100%; border: none; background: transparent; font-size: 11px; outline: none; }
   .row-del-btn { background: none; border: none; color: #999; cursor: pointer; font-size: 14px; }
-  .row-del-btn:hover { color: var(--brick); }
 
-  /* Invoicing & Inputs */
-  .form-group { margin-bottom: 14px; }
-  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); margin-bottom: 4px; }
-  .form-group input, .form-group select { width: 100%; padding: 8px 10px; border: 1px solid var(--rule-strong); border-radius: 3px; font-size: 13px; }
-  .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-  .invoice-table th { font-size: 11px; text-align: left; padding: 6px; border-bottom: 2px solid var(--ink); }
-  .invoice-table td { padding: 6px; border-bottom: 1px solid var(--rule); }
-  
-  button.btn-p { background: var(--maroon-hdr); color: #FFF; border: none; padding: 8px 14px; font-size: 12.5px; font-weight: 600; border-radius: 3px; cursor: pointer; }
-  button.btn-p:hover { background: var(--maroon-banner); }
-  button.btn-s { background: #FFF; border: 1px solid var(--rule-strong); color: var(--ink); padding: 8px 14px; font-size: 12.5px; border-radius: 3px; cursor: pointer; }
-  button.btn-s:hover { background: #F4EFE6; }
+  .mobile-add-strip { display: flex; gap: 6px; padding: 6px 8px; background: #FAF8F8; border-top: 1px solid var(--rule); }
+  .mobile-next-btn { flex: 1; padding: 6px; background: #FFF; border: 1px dashed var(--maroon-hdr); color: var(--maroon-hdr); font-weight: 600; border-radius: 3px; font-size: 11.5px; cursor: pointer; }
 
-  .target-row { display: grid; grid-template-columns: 90px 1fr 85px 85px 44px; gap: 8px; align-items: center; padding: 10px 4px; border-bottom: 1px solid var(--rule); font-size: 12.5px; }
-  .bar-bg { background: var(--rule); height: 7px; border-radius: 4px; overflow: hidden; }
-  .bar-fill { height: 100%; background: var(--net-green); }
-  .profit-table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px; }
-  .profit-table th { font-size: 11px; text-align: right; padding: 8px; border-bottom: 2px solid var(--ink); }
-  .profit-table th:first-child { text-align: left; }
-  .profit-table td { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; text-align: right; padding: 8px; border-bottom: 1px solid var(--rule); }
-  .profit-table td:first-child { text-align: left; font-family: 'Fraunces', serif; }
+  button.btn-p { background: var(--maroon-hdr); color: #FFF; border: none; padding: 7px 12px; font-size: 12px; font-weight: 600; border-radius: 3px; cursor: pointer; }
+  button.btn-s { background: #FFF; border: 1px solid var(--rule-strong); color: var(--ink); padding: 7px 12px; font-size: 12px; border-radius: 3px; cursor: pointer; }
 
+  .form-group { margin-bottom: 12px; }
+  .form-group label { display: block; font-size: 11.5px; font-weight: 600; color: var(--ink-soft); margin-bottom: 3px; }
+  .form-group input, .form-group select { width: 100%; padding: 7px 9px; border: 1px solid var(--rule-strong); border-radius: 3px; font-size: 12.5px; }
+
+  .report-box { background: #FAF8F5; border: 1px solid var(--rule-strong); border-radius: 4px; padding: 14px; margin-top: 14px; font-size: 12px; }
   .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--maroon-banner); color: #FFF; padding: 8px 16px; border-radius: 4px; font-size: 12px; opacity: 0; pointer-events: none; transition: all 0.2s; z-index: 100; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -254,58 +129,39 @@
 </head>
 <body>
 
-<datalist id="cakeSuggestions">
-  <option value="Dutch Dark Chocolate Cake">
-  <option value="Black Forest Cake">
-  <option value="Red Velvet Cake">
-  <option value="Pineapple Fresh Cream Cake">
-  <option value="Butterscotch Crunch Cake">
-  <option value="Chocolate Truffle Cake">
-  <option value="Fresh Fruit Cake">
-  <option value="Choco Lava Cup">
-  <option value="Pineapple Pastry Slice">
-  <option value="Red Velvet Pastry Slice">
-  <option value="Dark Chocolate Pastry Slice">
-  <option value="Cheese Cake Slice">
-  <option value="Custom Fondant Cake">
-  <option value="Vanilla Sponge Base">
-</datalist>
-
 <div class="wrap">
   <header class="top">
     <div class="hdr-brand">
       <img class="hdr-logo" id="appLogo" alt="7th Heaven Logo" src="logo.jpg">
       <div>
-        <h1>7TH HEAVEN NASHIK — DAILY SALES &amp; EXPENDITURE TRACKER</h1>
+        <h1>7TH HEAVEN NASHIK — SALES &amp; EXPENDITURE TRACKER</h1>
         <span class="sync-indicator"><span class="sync-dot"></span><span id="syncText">Connected &amp; Synced</span></span>
       </div>
     </div>
     <div class="today" id="todayClock">--</div>
   </header>
 
-  <!-- Login Modal / Role Selection Screen -->
   <div id="roleAuthSection">
     <div id="roleSelectionStep">
-      <h2 class="role-title">Select Access Role</h2>
-      <p class="role-lead">Choose your role to open the daily tracker:</p>
+      <h2 style="font-family:'Fraunces',serif;font-size:18px;">Select Access Role</h2>
+      <p style="font-size:12px;color:var(--ink-soft);">Choose your role to open the daily tracker:</p>
       <div class="role-cards">
         <div class="role-box" onclick="promptRolePass('admin')">
           <h3>👑 Admin</h3>
-          <p>Full control: Edit sales, enter expenses, unlock old sheets, set targets, manage profit sharing, and change passwords.</p>
+          <p>Full control: Edit any date, monthly reports with WhatsApp share, manage targets, and profit shares.</p>
         </div>
         <div class="role-box" onclick="promptRolePass('store')">
           <h3>🏪 Store Partner</h3>
-          <p>Counter access: Enter daily sales, log store expenses, and create customer bills.</p>
+          <p>Counter access: Record daily sales and shop expenses, view past reports, and print receipts.</p>
         </div>
         <div class="role-box" onclick="promptRolePass('remote')">
           <h3>👁️ Remote Partner</h3>
-          <p>View-only access: Monitor daily sales, expenditures, and net balance in real-time without editing.</p>
+          <p>Real-time monitor: View daily sales, all previous days' reports, expenditures, and net balance.</p>
         </div>
       </div>
     </div>
-    <div id="rolePasswordStep" style="display:none;max-width:400px;">
+    <div id="rolePasswordStep" style="display:none;max-width:380px;">
       <h3 id="rolePassTitle" style="font-family:'Fraunces',serif;margin-bottom:6px;">Enter Password</h3>
-      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Enter the passcode for this role to proceed.</p>
       <div class="form-group"><input type="password" id="passcodeInput" placeholder="Enter password"></div>
       <div style="display:flex;gap:8px;">
         <button class="btn-p" id="submitPassBtn">Unlock &amp; Enter</button>
@@ -314,20 +170,20 @@
     </div>
   </div>
 
-  <!-- Main App Content -->
   <div id="mainAppContent" style="display:none;">
     <nav class="nav-bar">
       <button class="active" data-panel="daily">Daily Sales &amp; Tracker</button>
+      <button data-panel="reports">Previous Days Reports</button>
+      <button data-panel="monthly" id="tabMonthlyBtn">Monthly Report &amp; Share</button>
       <button data-panel="invoice" id="tabInvoiceBtn">POS &amp; Invoices</button>
-      <button data-panel="target" id="tabTargetBtn">Targets</button>
       <button data-panel="profit" id="tabProfitBtn">Profit Sharing</button>
-      <button data-panel="passwords" id="tabPasswordsBtn">Security / Passwords</button>
+      <button data-panel="passwords" id="tabPasswordsBtn">Security</button>
     </nav>
 
     <div class="role-strip">
       <span id="roleBadge">Signed in as: <strong>Admin</strong></span>
-      <div style="display:flex;gap:12px;align-items:center;">
-        <button onclick="syncWithCloud()" style="text-decoration:none;color:var(--ink-soft);font-size:11.5px;">🔄 Refresh Cloud Data</button>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button onclick="syncWithCloud()" style="text-decoration:none;color:var(--ink-soft);">🔄 Refresh Cloud Data</button>
         <button onclick="logoutRole()">Switch Role / Sign Out</button>
       </div>
     </div>
@@ -345,7 +201,7 @@
       <div class="kpi-grid">
         <div class="kpi-card" style="background:#F2E6EA;">
           <span class="lbl">Date</span>
-          <span class="amt" id="kpiDate" style="color:var(--maroon-hdr);font-size:13.5px;">--</span>
+          <span class="amt" id="kpiDate" style="color:var(--maroon-hdr);font-size:13px;">--</span>
         </div>
         <div class="kpi-card kpi-sales">
           <span class="lbl">Total Daily Sales</span>
@@ -356,7 +212,7 @@
           <span class="amt" id="kpiExp">₹0.00</span>
         </div>
         <div class="kpi-card kpi-net">
-          <span class="lbl">Net In-Hand (Sales − Exp)</span>
+          <span class="lbl">Net In-Hand</span>
           <span class="amt" id="kpiNet">₹0.00</span>
         </div>
       </div>
@@ -367,12 +223,12 @@
           <table class="tracker" id="salesTable">
             <thead>
               <tr>
-                <th style="width:42px;">Sl No</th>
+                <th style="width:38px;">Sl No</th>
                 <th>Cash (₹)</th>
                 <th>Swiggy (₹)</th>
                 <th>Zomato (₹)</th>
                 <th>Other (₹)</th>
-                <th style="width:24px;"></th>
+                <th style="width:22px;"></th>
               </tr>
               <tr class="subtotal-line">
                 <td style="text-align:center;">TOTAL</td>
@@ -385,6 +241,9 @@
             </thead>
             <tbody id="salesTbody"></tbody>
           </table>
+          <div class="mobile-add-strip" id="salesMobileStrip">
+            <button class="mobile-next-btn" onclick="addNewSaleLine(true)">+ Next Line (Tap to Add Entry)</button>
+          </div>
         </div>
 
         <div class="table-pane">
@@ -393,9 +252,9 @@
             <thead>
               <tr>
                 <th>Expense Category</th>
-                <th style="width:90px;">Amount (₹)</th>
+                <th style="width:85px;">Amount (₹)</th>
                 <th>Payment Method</th>
-                <th style="width:24px;"></th>
+                <th style="width:22px;"></th>
               </tr>
               <tr class="subtotal-line">
                 <td style="text-align:center;">Total Expenses</td>
@@ -406,88 +265,121 @@
             </thead>
             <tbody id="expTbody"></tbody>
           </table>
+          <div class="mobile-add-strip" id="expMobileStrip">
+            <button class="mobile-next-btn" onclick="addNewExpLine(true)">+ Next Line (Tap to Add Expense)</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- PANEL 2: POS & INVOICES -->
-    <section class="panel" id="panel-invoice">
-      <h2 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:6px;">Customer Sale &amp; Bill Generator</h2>
-      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:14px;">
-        ℹ️ Invoices generated here are for customer receipts/reprints only. They do <strong>not</strong> add entries into Daily Sales, preventing double counting[cite: 1].
-      </p>
+    <!-- PANEL 2: PREVIOUS DAYS REPORTS (All Partners) -->
+    <section class="panel" id="panel-reports">
+      <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Previous Days Ledger &amp; Reports</h2>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Available to all partners (Admin, Store, and Remote) to view any previous day's breakdown.</p>
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
+        <div class="form-group" style="margin:0;"><label>Select Date</label><input type="date" id="historyDateInput"></div>
+        <button class="btn-p" onclick="loadHistoryDateReport()">View Report</button>
+      </div>
+      <div id="historyReportOutput"></div>
+    </section>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
+    <!-- PANEL 3: MONTHLY REPORT & WHATSAPP SHARE (Admin Only) -->
+    <section class="panel" id="panel-monthly">
+      <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Sales &amp; Expenditure Report</h2>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:14px;">Generate an executive summary with full partner shares, ready to share via WhatsApp or print.</p>
+      
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
+        <div class="form-group" style="margin:0;"><label>Select Month</label><input type="month" id="monthlyReportMonth"></div>
+        <button class="btn-p" onclick="generateMonthlyReport()">Generate Monthly Summary</button>
+      </div>
+
+      <div id="monthlyReportArea" style="display:none;">
+        <div class="report-box" id="monthlyPrintContainer">
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--maroon-hdr);padding-bottom:8px;margin-bottom:12px;">
+            <div>
+              <h3 style="color:var(--maroon-hdr);font-size:16px;">7TH HEAVEN NASHIK</h3>
+              <p style="font-size:12px;color:var(--ink-soft);" id="repMonthTitle">MONTHLY PERFORMANCE REPORT</p>
+            </div>
+            <img src="logo.jpg" alt="Logo" style="height:44px;object-fit:contain;">
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+            <div style="background:#FFF;padding:8px;border:1px solid var(--rule);border-radius:3px;">
+              <div style="font-size:10.5px;color:var(--ink-soft);">TOTAL SALES</div>
+              <div id="mRepSales" style="font-size:16px;font-weight:700;color:var(--maroon-hdr);">₹0.00</div>
+            </div>
+            <div style="background:#FFF;padding:8px;border:1px solid var(--rule);border-radius:3px;">
+              <div style="font-size:10.5px;color:var(--ink-soft);">TOTAL EXPENSES</div>
+              <div id="mRepExp" style="font-size:16px;font-weight:700;color:var(--brick);">₹0.00</div>
+            </div>
+            <div style="background:var(--net-green);color:#FFF;padding:8px;border-radius:3px;">
+              <div style="font-size:10.5px;color:#D8EAC8;">NET PROFIT</div>
+              <div id="mRepNet" style="font-size:16px;font-weight:700;">₹0.00</div>
+            </div>
+          </div>
+
+          <h4 style="margin:10px 0 4px;font-size:12px;">Sales Channel Breakdown:</h4>
+          <div style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;margin-bottom:12px;background:#FFF;padding:6px 10px;border:1px solid var(--rule);">
+            <span>Cash: <strong id="mRepCash">₹0.00</strong></span>
+            <span>Swiggy: <strong id="mRepSwiggy">₹0.00</strong></span>
+            <span>Zomato: <strong id="mRepZomato">₹0.00</strong></span>
+            <span>Other: <strong id="mRepOther">₹0.00</strong></span>
+          </div>
+
+          <h4 style="margin:10px 0 4px;font-size:12px;">Partner Profit Sharing:</h4>
+          <div id="mRepPartners" style="background:#FFF;border:1px solid var(--rule);padding:8px 10px;line-height:1.8;"></div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button class="btn-p" style="background:#25D366;border-color:#25D366;font-weight:700;" onclick="shareMonthlyReportWhatsApp()">📲 Share via WhatsApp</button>
+          <button class="btn-s" onclick="printMonthlyReport()">🖨️ Print / Save as PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 4: POS & INVOICES -->
+    <section class="panel" id="panel-invoice">
+      <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Customer Sale &amp; Bill Generator</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
         <div class="form-group"><label>Customer Name</label><input type="text" id="invCustName" placeholder="Walk-in Customer"></div>
         <div class="form-group"><label>WhatsApp Phone</label><input type="text" id="invCustPhone" placeholder="10-digit number"></div>
-        <div class="form-group"><label>Email (Optional)</label><input type="text" id="invCustEmail" placeholder="customer@email.com"></div>
+        <div class="form-group"><label>Email</label><input type="text" id="invCustEmail" placeholder="customer@email.com"></div>
       </div>
-
-      <table class="invoice-table">
-        <thead><tr><th>Item Description (Optional)</th><th style="width:70px;">Qty</th><th style="width:110px;">Rate (₹)</th><th style="width:100px;text-align:right;">Total (₹)</th><th style="width:30px;"></th></tr></thead>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+        <thead><tr><th>Item Description</th><th style="width:60px;">Qty</th><th style="width:100px;">Rate (₹)</th><th style="width:90px;text-align:right;">Total</th><th style="width:24px;"></th></tr></thead>
         <tbody id="invItemsBody"></tbody>
       </table>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
         <button class="btn-s" id="addInvItemRowBtn">+ Add Item</button>
-        <div style="font-size:17px;font-weight:700;">Bill Total: <span id="invTotalBadge" style="color:var(--maroon-banner);">₹0.00</span></div>
+        <div style="font-size:16px;font-weight:700;">Bill Total: <span id="invTotalBadge" style="color:var(--maroon-banner);">₹0.00</span></div>
       </div>
-
-      <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
         <button class="btn-p" id="saveInvoiceBtn">Generate Bill &amp; Save Receipt</button>
-        <button class="btn-s" id="shareWhatsAppBtn" style="display:none;background:#25D366;color:#FFF;border-color:#25D366;font-weight:700;">Share via WhatsApp</button>
-        <button class="btn-s" id="printInvoiceBtn" style="display:none;">🖨️ Print / Save as PDF</button>
+        <button class="btn-s" id="printInvoiceBtn" style="display:none;">🖨️ Print Receipt</button>
+        <button class="btn-s" id="shareWhatsAppBtn" style="display:none;background:#25D366;color:#FFF;border-color:#25D366;">WhatsApp</button>
         <button class="btn-s" id="newInvoiceBtn" style="display:none;">+ New Bill</button>
       </div>
-
-      <h3 style="font-size:14px;margin-bottom:8px;border-bottom:1px solid var(--rule);padding-bottom:4px;">Recent Invoices</h3>
-      <div id="recentInvoicesList" style="font-size:12.5px;"></div>
     </section>
 
-    <!-- PANEL 3: TARGETS -->
-    <section class="panel" id="panel-target">
-      <h2 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:12px;">Monthly Sales Targets</h2>
-      <div id="targetAdminInputs" style="display:flex;gap:10px;margin-bottom:20px;align-items:flex-end;">
-        <div class="form-group" style="margin:0;"><label>Select Month</label><input type="month" id="targetMonthInput"></div>
-        <div class="form-group" style="margin:0;"><label>Target Amount (₹)</label><input type="number" id="targetAmtInput" placeholder="850000"></div>
-        <button class="btn-p" id="saveTargetBtn">Save Target</button>
-      </div>
-      <div id="targetListContainer"></div>
-    </section>
-
-    <!-- PANEL 4: PROFIT SHARING (Admin Only) -->
+    <!-- PANEL 5: PROFIT SHARING -->
     <section class="panel" id="panel-profit">
-      <h2 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:6px;">Monthly Profit Sharing</h2>
-      <p style="font-size:12.5px;color:var(--ink-soft);background:var(--gold-tint);padding:8px 12px;border:1px solid var(--gold);border-radius:3px;margin-bottom:16px;">
-        Net Profit = Total Sales − Total Expenses. Allocated shares: <strong>Prakash Shetty (43%)</strong>, <strong>Preveen Shetty (28%)</strong>, <strong>Preetham Shetty (14.5%)</strong>, <strong>Umesh Shetty (14.5%)</strong>[cite: 1].
-      </p>
+      <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Profit Summary</h2>
       <div style="overflow-x:auto;">
-        <table class="profit-table">
-          <thead><tr><th>Month</th><th>Sales</th><th>Expenses</th><th>Net Profit</th><th>Prakash (43%)</th><th>Preveen (28%)</th><th>Preetham (14.5%)</th><th>Umesh (14.5%)</th></tr></thead>
+        <table style="width:100%;border-collapse:collapse;margin-top:10px;" class="profit-table">
+          <thead><tr style="border-bottom:2px solid var(--ink);font-size:11px;"><th style="text-align:left;padding:6px;">Month</th><th>Sales</th><th>Expenses</th><th>Net Profit</th><th>Prakash (43%)</th><th>Preveen (28%)</th><th>Preetham (14.5%)</th><th>Umesh (14.5%)</th></tr></thead>
           <tbody id="profitTableBody"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- PANEL 5: SECURITY / PASSWORDS (Admin Only) -->
+    <!-- PANEL 6: PASSWORDS -->
     <section class="panel" id="panel-passwords">
-      <h2 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:6px;">Manage Role Passwords</h2>
-      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:16px;">
-        As Admin, you can change the access password for any account role. Changes sync across all devices.
-      </p>
-      <div style="max-width:420px;">
-        <div class="form-group">
-          <label>Admin Password</label>
-          <input type="text" id="pwFieldAdmin">
-        </div>
-        <div class="form-group">
-          <label>Store Partner Password</label>
-          <input type="text" id="pwFieldStore">
-        </div>
-        <div class="form-group">
-          <label>Remote Partner Password</label>
-          <input type="text" id="pwFieldRemote">
-        </div>
-        <button class="btn-p" id="savePasswordsBtn" style="margin-top:6px;">Save New Passwords</button>
+      <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Security &amp; Passwords</h2>
+      <div style="max-width:400px;">
+        <div class="form-group"><label>Admin Password</label><input type="text" id="pwFieldAdmin"></div>
+        <div class="form-group"><label>Store Partner Password</label><input type="text" id="pwFieldStore"></div>
+        <div class="form-group"><label>Remote Partner Password</label><input type="text" id="pwFieldRemote"></div>
+        <button class="btn-p" id="savePasswordsBtn">Save New Passwords</button>
       </div>
     </section>
   </div>
@@ -497,16 +389,11 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v9";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v10";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v9";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v10";
 
-var DEFAULT_PASSWORDS = {
-  admin: '7thHeaven@Admin',
-  store: '7thHeaven@Store',
-  remote: '7thHeaven@View'
-};
-
+var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
 
 var PROFIT_PARTNERS = [
@@ -524,8 +411,6 @@ var state = {
   invoices: [],
   targets: {}
 };
-
-var activeInvoiceSlip = null;
 
 function getTodayStr(){
   var d = new Date();
@@ -551,7 +436,7 @@ function canEditSales(){
   if(state.activeDate !== getTodayStr()){
     return state.currentRole === 'admin' && !!state.unlockedDates[state.activeDate];
   }
-  return state.currentRole === 'admin' || state.currentRole === 'store';
+  return true;
 }
 
 function canEditExpenses(){
@@ -559,7 +444,7 @@ function canEditExpenses(){
   if(state.activeDate !== getTodayStr()){
     return state.currentRole === 'admin' && !!state.unlockedDates[state.activeDate];
   }
-  return state.currentRole === 'admin' || state.currentRole === 'store';
+  return true;
 }
 
 function loadStateLocally(){
@@ -573,8 +458,7 @@ function loadStateLocally(){
     }
     var pwRaw = localStorage.getItem(PASSWORDS_STORAGE_KEY);
     if(pwRaw){
-      var loadedPw = JSON.parse(pwRaw);
-      Object.assign(ROLE_PASSWORDS, loadedPw);
+      Object.assign(ROLE_PASSWORDS, JSON.parse(pwRaw));
     }
   } catch(e){}
 
@@ -591,16 +475,11 @@ function loadStateLocally(){
 
 function saveState(){
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      daily: state.daily,
-      invoices: state.invoices,
-      targets: state.targets
-    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ daily: state.daily, invoices: state.invoices, targets: state.targets }));
     localStorage.setItem(PASSWORDS_STORAGE_KEY, JSON.stringify(ROLE_PASSWORDS));
   } catch(e){}
-
   clearTimeout(window._cloudSyncTimer);
-  window._cloudSyncTimer = setTimeout(pushToCloud, 1000);
+  window._cloudSyncTimer = setTimeout(pushToCloud, 800);
 }
 
 function pushToCloud(){
@@ -611,12 +490,7 @@ function pushToCloud(){
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({
       key: '7th_heaven_master_data',
-      value: JSON.stringify({
-        daily: state.daily,
-        invoices: state.invoices,
-        targets: state.targets,
-        passwords: ROLE_PASSWORDS
-      })
+      value: JSON.stringify({ daily: state.daily, invoices: state.invoices, targets: state.targets, passwords: ROLE_PASSWORDS })
     })
   }).then(function(){
     document.getElementById('syncText').textContent = 'Synced & Saved';
@@ -637,20 +511,6 @@ function syncWithCloud(){
         if(cloudObj.invoices) state.invoices = cloudObj.invoices;
         if(cloudObj.targets) state.targets = cloudObj.targets;
         if(cloudObj.passwords) Object.assign(ROLE_PASSWORDS, cloudObj.passwords);
-        
-        var today = getTodayStr();
-        if(!state.daily[today]){
-          state.daily[today] = {
-            sales: [{ cash:'', swiggy:'', zomato:'', other:'' }],
-            expenses: [{ category:'Ingredients', amount:'', method:'UPI Direct' }]
-          };
-        }
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify({
-            daily: state.daily, invoices: state.invoices, targets: state.targets
-          }));
-          localStorage.setItem(PASSWORDS_STORAGE_KEY, JSON.stringify(ROLE_PASSWORDS));
-        }catch(e){}
         document.getElementById('syncText').textContent = 'Live Cloud Synced';
         renderAll();
       }
@@ -659,12 +519,346 @@ function syncWithCloud(){
     });
 }
 
+// Mobile & Enter-Key Friendly Row Addition
+function addNewSaleLine(focusNew){
+  var sheet = state.daily[state.activeDate];
+  sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
+  saveState();
+  renderDailyGrids();
+  if(focusNew){
+    var inputs = document.querySelectorAll('#salesTbody input[data-f="cash"]');
+    if(inputs.length > 0) inputs[inputs.length - 1].focus();
+  }
+}
+
+function addNewExpLine(focusNew){
+  var sheet = state.daily[state.activeDate];
+  sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' });
+  saveState();
+  renderDailyGrids();
+  if(focusNew){
+    var inputs = document.querySelectorAll('#expTbody input[data-f="amount"]');
+    if(inputs.length > 0) inputs[inputs.length - 1].focus();
+  }
+}
+
+function renderDailyGrids(){
+  var sheet = state.daily[state.activeDate];
+  var sEditable = canEditSales();
+  var eEditable = canEditExpenses();
+
+  if(sheet.sales.length === 0){
+    sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
+  }
+
+  var sTbody = document.getElementById('salesTbody');
+  sTbody.innerHTML = '';
+  var sl = 1;
+
+  sheet.sales.forEach(function(row, idx){
+    var tr = document.createElement('tr');
+    var hasVal = (Number(row.cash)||0) > 0 || (Number(row.swiggy)||0) > 0 || (Number(row.zomato)||0) > 0 || (Number(row.other)||0) > 0;
+    var curSl = hasVal ? sl++ : '';
+
+    tr.innerHTML =
+      '<td class="sl-box">' + curSl + '</td>' +
+      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="cash" value="' + (row.cash||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="swiggy" value="' + (row.swiggy||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="zomato" value="' + (row.zomato||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="other" value="' + (row.other||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td style="text-align:center;">' + (sEditable && sheet.sales.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
+
+    tr.querySelectorAll('input').forEach(function(inp){
+      inp.oninput = function(e){
+        row[e.target.getAttribute('data-f')] = e.target.value;
+        saveState();
+        updateTotals();
+      };
+
+      // Desktop: Enter key moves to next row or creates one
+      inp.onkeydown = function(e){
+        if(e.key === 'Enter'){
+          e.preventDefault();
+          var f = inp.getAttribute('data-f');
+          if(idx === sheet.sales.length - 1){
+            addNewSaleLine(false);
+          }
+          var nextInp = document.querySelector('input[data-idx="' + (idx + 1) + '"][data-f="' + f + '"]');
+          if(nextInp) nextInp.focus();
+        }
+      };
+
+      // Mobile: Automatically create next line when typing finishes on last row
+      inp.onblur = function(){
+        if(idx === sheet.sales.length - 1 && hasAnySaleVal(row)){
+          addNewSaleLine(false);
+        }
+      };
+    });
+
+    if(sEditable){
+      var delBtn = tr.querySelector('.row-del-btn');
+      if(delBtn){
+        delBtn.onclick = function(){
+          sheet.sales.splice(idx, 1);
+          saveState();
+          renderDailyGrids();
+        };
+      }
+    }
+    sTbody.appendChild(tr);
+  });
+
+  document.getElementById('salesMobileStrip').style.display = sEditable ? 'flex' : 'none';
+
+  // Expenditure Grid
+  if(sheet.expenses.length === 0){
+    sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' });
+  }
+
+  var eTbody = document.getElementById('expTbody');
+  eTbody.innerHTML = '';
+  var cats = ['Ingredients', 'Shop Rent', 'Staff Salaries', 'Electricity (MSEDCL)', 'Packaging & Gas', 'Marketing', 'Maintenance', 'Other'];
+  var mets = ['UPI Direct', 'Cash', 'NetBanking', 'Credit Card', 'Vendor Credit'];
+
+  sheet.expenses.forEach(function(row, idx){
+    var tr = document.createElement('tr');
+    var catOpts = cats.map(function(c){ return '<option value="'+c+'" '+(row.category===c?'selected':'')+'>'+c+'</option>'; }).join('');
+    var metOpts = mets.map(function(m){ return '<option value="'+m+'" '+(row.method===m?'selected':'')+'>'+m+'</option>'; }).join('');
+
+    tr.innerHTML =
+      '<td><select class="cell-select" data-f="category" ' + (!eEditable?'disabled':'') + '>' + catOpts + '</select></td>' +
+      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-exp-idx="' + idx + '" data-f="amount" value="' + (row.amount||'') + '" ' + (!eEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><select class="cell-select" data-f="method" ' + (!eEditable?'disabled':'') + '>' + metOpts + '</select></td>' +
+      '<td style="text-align:center;">' + (eEditable && sheet.expenses.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
+
+    tr.querySelector('[data-f="category"]').onchange = function(e){ row.category = e.target.value; saveState(); };
+    tr.querySelector('[data-f="method"]').onchange = function(e){ row.method = e.target.value; saveState(); };
+    
+    var expAmtInp = tr.querySelector('[data-f="amount"]');
+    expAmtInp.oninput = function(e){
+      row.amount = e.target.value;
+      saveState();
+      updateTotals();
+    };
+
+    expAmtInp.onkeydown = function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        if(idx === sheet.expenses.length - 1){
+          addNewExpLine(false);
+        }
+        var nextInp = document.querySelector('input[data-exp-idx="' + (idx + 1) + '"]');
+        if(nextInp) nextInp.focus();
+      }
+    };
+
+    expAmtInp.onblur = function(){
+      if(idx === sheet.expenses.length - 1 && (Number(row.amount)||0) > 0){
+        addNewExpLine(false);
+      }
+    };
+
+    if(eEditable){
+      var delBtn = tr.querySelector('.row-del-btn');
+      if(delBtn){
+        delBtn.onclick = function(){
+          sheet.expenses.splice(idx, 1);
+          saveState();
+          renderDailyGrids();
+        };
+      }
+    }
+    eTbody.appendChild(tr);
+  });
+
+  document.getElementById('expMobileStrip').style.display = eEditable ? 'flex' : 'none';
+  updateTotals();
+}
+
+function hasAnySaleVal(r){
+  return (Number(r.cash)||0)>0 || (Number(r.swiggy)||0)>0 || (Number(r.zomato)||0)>0 || (Number(r.other)||0)>0;
+}
+
+function updateTotals(){
+  var sheet = state.daily[state.activeDate];
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
+
+  sheet.sales.forEach(function(r){
+    c += Number(r.cash) || 0;
+    sw += Number(r.swiggy) || 0;
+    z += Number(r.zomato) || 0;
+    ot += Number(r.other) || 0;
+  });
+
+  sheet.expenses.forEach(function(r){
+    ex += Number(r.amount) || 0;
+  });
+
+  var totalSales = c + sw + z + ot;
+  var net = totalSales - ex;
+
+  document.getElementById('subCash').textContent = formatMoney(c);
+  document.getElementById('subSwiggy').textContent = formatMoney(sw);
+  document.getElementById('subZomato').textContent = formatMoney(z);
+  document.getElementById('subOther').textContent = formatMoney(ot);
+  document.getElementById('subExp').textContent = formatMoney(ex);
+
+  document.getElementById('kpiDate').textContent = state.activeDate;
+  document.getElementById('kpiSales').textContent = formatMoney(totalSales);
+  document.getElementById('kpiExp').textContent = formatMoney(ex);
+  document.getElementById('kpiNet').textContent = formatMoney(net);
+
+  var sl = 1;
+  document.querySelectorAll('#salesTbody tr').forEach(function(tr, i){
+    var r = sheet.sales[i];
+    tr.querySelector('.sl-box').textContent = hasAnySaleVal(r) ? sl++ : '';
+  });
+}
+
+// PREVIOUS DAYS REPORT (All Partners)
+function loadHistoryDateReport(){
+  var rawDate = document.getElementById('historyDateInput').value;
+  if(!rawDate){ alert('Please select a date.'); return; }
+  var parts = rawDate.split('-');
+  var dKey = parts[2] + '-' + parts[1] + '-' + parts[0];
+  
+  var dData = state.daily[dKey];
+  var out = document.getElementById('historyReportOutput');
+  if(!dData){
+    out.innerHTML = '<div class="report-box" style="color:var(--brick);">No records found for ' + dKey + '.</div>';
+    return;
+  }
+
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
+  dData.sales.forEach(function(r){ c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0; });
+  dData.expenses.forEach(function(r){ ex += Number(r.amount)||0; });
+  var totSales = c + sw + z + ot;
+  var net = totSales - ex;
+
+  var expList = dData.expenses.filter(function(e){ return (Number(e.amount)||0)>0; }).map(function(e){
+    return '• ' + e.category + ': ' + formatMoney(e.amount) + ' (' + e.method + ')';
+  }).join('<br>') || 'None';
+
+  out.innerHTML =
+    '<div class="report-box">' +
+      '<div style="display:flex;justify-content:space-between;margin-bottom:8px;border-bottom:1px solid var(--rule);padding-bottom:4px;">' +
+        '<strong>Date: ' + dKey + '</strong>' +
+        '<button class="btn-s" style="padding:2px 8px;font-size:11px;" onclick="state.activeDate=\''+dKey+'\';renderAll();document.querySelector(\'[data-panel=daily]\').click();">Open in Tracker</button>' +
+      '</div>' +
+      '<div><strong>Total Daily Sales:</strong> ' + formatMoney(totSales) + '</div>' +
+      '<div style="font-size:11px;color:var(--ink-soft);margin-bottom:6px;">Cash: ' + formatMoney(c) + ' | Swiggy: ' + formatMoney(sw) + ' | Zomato: ' + formatMoney(z) + ' | Other: ' + formatMoney(ot) + '</div>' +
+      '<div><strong>Total Expenses:</strong> ' + formatMoney(ex) + '</div>' +
+      '<div style="font-size:11.5px;margin:4px 0 8px;padding-left:8px;color:#444;">' + expList + '</div>' +
+      '<div style="font-size:14px;font-weight:700;color:' + (net>=0?'var(--net-green)':'var(--brick)') + '">Net In-Hand: ' + formatMoney(net) + '</div>' +
+    '</div>';
+}
+
+// MONTHLY REPORT & WHATSAPP SHARE (Admin Only)
+var activeMonthlyData = null;
+function generateMonthlyReport(){
+  var ym = document.getElementById('monthlyReportMonth').value;
+  if(!ym){ alert('Please choose a month.'); return; }
+  var parts = ym.split('-');
+  var mFilter = parts[1] + '-' + parts[0]; // "09-2026"
+  
+  var totC = 0, totSw = 0, totZ = 0, totOt = 0, totE = 0;
+  var daysLogged = 0;
+
+  Object.keys(state.daily).forEach(function(dKey){
+    if(dKey.endsWith(mFilter)){
+      daysLogged++;
+      var d = state.daily[dKey];
+      d.sales.forEach(function(r){
+        totC += Number(r.cash)||0;
+        totSw += Number(r.swiggy)||0;
+        totZ += Number(r.zomato)||0;
+        totOt += Number(r.other)||0;
+      });
+      d.expenses.forEach(function(r){
+        totE += Number(r.amount)||0;
+      });
+    }
+  });
+
+  var totSales = totC + totSw + totZ + totOt;
+  var netProfit = totSales - totE;
+
+  activeMonthlyData = {
+    monthStr: ym,
+    daysLogged: daysLogged,
+    sales: totSales,
+    cash: totC,
+    swiggy: totSw,
+    zomato: totZ,
+    other: totOt,
+    expenses: totE,
+    net: netProfit
+  };
+
+  document.getElementById('repMonthTitle').textContent = 'MONTHLY REPORT — ' + ym + ' (' + daysLogged + ' Days Recorded)';
+  document.getElementById('mRepSales').textContent = formatMoney(totSales);
+  document.getElementById('mRepExp').textContent = formatMoney(totE);
+  document.getElementById('mRepNet').textContent = formatMoney(netProfit);
+  document.getElementById('mRepCash').textContent = formatMoney(totC);
+  document.getElementById('mRepSwiggy').textContent = formatMoney(totSw);
+  document.getElementById('mRepZomato').textContent = formatMoney(totZ);
+  document.getElementById('mRepOther').textContent = formatMoney(totOt);
+
+  var pHtml = PROFIT_PARTNERS.map(function(p){
+    var share = netProfit * p.pct / 100;
+    return '<div style="display:flex;justify-content:space-between;border-bottom:1px dashed #DDD;padding:2px 0;">' +
+      '<span>' + p.name + ' (' + p.pct + '%):</span>' +
+      '<strong>' + formatMoney(share) + '</strong>' +
+    '</div>';
+  }).join('');
+  document.getElementById('mRepPartners').innerHTML = pHtml;
+  document.getElementById('monthlyReportArea').style.display = 'block';
+}
+
+function shareMonthlyReportWhatsApp(){
+  if(!activeMonthlyData) return;
+  var d = activeMonthlyData;
+  var lines = [];
+  lines.push('*7TH HEAVEN NASHIK — MONTHLY LEDGER*');
+  lines.push('Period: ' + d.monthStr + ' (' + d.daysLogged + ' Days Logged)');
+  lines.push('----------------------------------');
+  lines.push('*Total Sales:* ' + formatMoney(d.sales));
+  lines.push('• Cash: ' + formatMoney(d.cash));
+  lines.push('• Swiggy: ' + formatMoney(d.swiggy));
+  lines.push('• Zomato: ' + formatMoney(d.zomato));
+  lines.push('• Other: ' + formatMoney(d.other));
+  lines.push('----------------------------------');
+  lines.push('*Total Expenses:* ' + formatMoney(d.expenses));
+  lines.push('*Net Profit:* ' + formatMoney(d.net));
+  lines.push('----------------------------------');
+  lines.push('*Partner Shares:*');
+  PROFIT_PARTNERS.forEach(function(p){
+    lines.push('• ' + p.name + ' (' + p.pct + '%): ' + formatMoney(d.net * p.pct / 100));
+  });
+  lines.push('----------------------------------');
+  lines.push('Automated Store Sync');
+
+  var url = 'https://web.whatsapp.com/send?text=' + encodeURIComponent(lines.join('\n'));
+  window.open(url, '_blank');
+}
+
+function printMonthlyReport(){
+  var content = document.getElementById('monthlyPrintContainer').innerHTML;
+  var pWin = window.open('', 'MonthlyReport', 'width=650,height=750');
+  pWin.document.write('<html><head><title>Monthly Report</title><style>body{font-family:sans-serif;padding:20px;color:#111;}</style></head><body>' + content + '</body></html>');
+  pWin.document.close();
+  pWin.focus();
+  setTimeout(function(){ pWin.print(); }, 250);
+}
+
+// Role Authentication
 var targetRolePending = null;
 function promptRolePass(role){
   targetRolePending = role;
   document.getElementById('roleSelectionStep').style.display = 'none';
   document.getElementById('rolePasswordStep').style.display = 'block';
-  var names = { admin:'Admin', store:'Store Partner', remote:'Remote Partner (View Only)' };
+  var names = { admin:'Admin', store:'Store Partner', remote:'Remote Partner' };
   document.getElementById('rolePassTitle').textContent = names[role] + " Password";
   document.getElementById('passcodeInput').value = '';
   document.getElementById('passcodeInput').focus();
@@ -704,14 +898,13 @@ function logoutRole(){
 
 function applyRoleUI(){
   var r = state.currentRole;
-  var roleTitles = { admin:'Admin (Full Master Access)', store:'Store Partner (Sales & Billing)', remote:'Remote Partner (View Only)' };
+  var roleTitles = { admin:'Admin (Full Master Access)', store:'Store Partner (Counter Access)', remote:'Remote Partner (View Only)' };
   document.getElementById('roleBadge').innerHTML = 'Signed in as: <strong>' + roleTitles[r] + '</strong>';
 
+  document.getElementById('tabMonthlyBtn').style.display = (r === 'admin') ? 'block' : 'none';
   document.getElementById('tabInvoiceBtn').style.display = (r === 'admin' || r === 'store') ? 'block' : 'none';
-  document.getElementById('tabTargetBtn').style.display = (r === 'admin' || r === 'remote') ? 'block' : 'none';
   document.getElementById('tabProfitBtn').style.display = (r === 'admin') ? 'block' : 'none';
   document.getElementById('tabPasswordsBtn').style.display = (r === 'admin') ? 'block' : 'none';
-  document.getElementById('targetAdminInputs').style.display = (r === 'admin') ? 'flex' : 'none';
 
   if(r === 'admin'){
     document.getElementById('pwFieldAdmin').value = ROLE_PASSWORDS.admin;
@@ -729,585 +922,17 @@ function renderDailyTabs(){
 
   dates.forEach(function(dKey){
     var b = document.createElement('button');
-    var isPastLocked = (dKey !== getTodayStr()) && !state.unlockedDates[dKey];
-    b.className = 'tab-item' + (dKey === state.activeDate ? ' active' : '') + (isPastLocked ? ' locked' : '');
+    b.className = 'tab-item' + (dKey === state.activeDate ? ' active' : '');
     b.textContent = dKey;
-    b.onclick = function(){
-      state.activeDate = dKey;
-      renderAll();
-    };
+    b.onclick = function(){ state.activeDate = dKey; renderAll(); };
     cont.appendChild(b);
   });
-
-  var canUnlock = state.currentRole === 'admin' && (state.activeDate !== getTodayStr()) && !state.unlockedDates[state.activeDate];
-  document.getElementById('unlockSheetBtn').style.display = canUnlock ? 'inline-block' : 'none';
-}
-
-function renderDailyGrids(){
-  var sheet = state.daily[state.activeDate];
-  var sEditable = canEditSales();
-  var eEditable = canEditExpenses();
-
-  if(sheet.sales.length === 0){
-    sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
-  }
-
-  var sTbody = document.getElementById('salesTbody');
-  sTbody.innerHTML = '';
-  var sl = 1;
-
-  sheet.sales.forEach(function(row, idx){
-    var tr = document.createElement('tr');
-    var hasVal = (Number(row.cash)||0) > 0 || (Number(row.swiggy)||0) > 0 || (Number(row.zomato)||0) > 0 || (Number(row.other)||0) > 0;
-    var curSl = hasVal ? sl++ : '';
-
-    tr.innerHTML =
-      '<td class="sl-box">' + curSl + '</td>' +
-      '<td><input type="number" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="cash" value="' + (row.cash||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><input type="number" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="swiggy" value="' + (row.swiggy||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><input type="number" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="zomato" value="' + (row.zomato||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><input type="number" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="other" value="' + (row.other||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td style="text-align:center;">' + (sEditable && sheet.sales.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
-
-    tr.querySelectorAll('input').forEach(function(inp){
-      inp.oninput = function(e){
-        row[e.target.getAttribute('data-f')] = e.target.value;
-        saveState();
-        updateTotals();
-      };
-
-      inp.onkeydown = function(e){
-        if(e.key === 'Enter'){
-          e.preventDefault();
-          var fieldName = inp.getAttribute('data-f');
-          if(idx === sheet.sales.length - 1){
-            sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
-            saveState();
-            renderDailyGrids();
-            var nextInp = document.querySelector('input[data-idx="' + (idx + 1) + '"][data-f="' + fieldName + '"]');
-            if(nextInp) nextInp.focus();
-          } else {
-            var nextInp = document.querySelector('input[data-idx="' + (idx + 1) + '"][data-f="' + fieldName + '"]');
-            if(nextInp) nextInp.focus();
-          }
-        }
-      };
-    });
-
-    if(sEditable){
-      var delBtn = tr.querySelector('.row-del-btn');
-      if(delBtn){
-        delBtn.onclick = function(){
-          sheet.sales.splice(idx, 1);
-          saveState();
-          renderDailyGrids();
-        };
-      }
-    }
-    sTbody.appendChild(tr);
-  });
-
-  if(sheet.expenses.length === 0){
-    sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' });
-  }
-
-  var eTbody = document.getElementById('expTbody');
-  eTbody.innerHTML = '';
-  var cats = ['Ingredients', 'Shop Rent', 'Staff Salaries', 'Electricity (MSEDCL)', 'Packaging & Gas', 'Marketing', 'Maintenance', 'Other'];
-  var mets = ['UPI Direct', 'Cash', 'NetBanking', 'Credit Card', 'Vendor Credit'];
-
-  sheet.expenses.forEach(function(row, idx){
-    var tr = document.createElement('tr');
-    var catOpts = cats.map(function(c){ return '<option value="'+c+'" '+(row.category===c?'selected':'')+'>'+c+'</option>'; }).join('');
-    var metOpts = mets.map(function(m){ return '<option value="'+m+'" '+(row.method===m?'selected':'')+'>'+m+'</option>'; }).join('');
-
-    tr.innerHTML =
-      '<td><select class="cell-select" data-f="category" ' + (!eEditable?'disabled':'') + '>' + catOpts + '</select></td>' +
-      '<td><input type="number" step="0.01" class="cell-input" data-exp-idx="' + idx + '" data-f="amount" value="' + (row.amount||'') + '" ' + (!eEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><select class="cell-select" data-f="method" ' + (!eEditable?'disabled':'') + '>' + metOpts + '</select></td>' +
-      '<td style="text-align:center;">' + (eEditable && sheet.expenses.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
-
-    tr.querySelector('[data-f="category"]').onchange = function(e){ row.category = e.target.value; saveState(); };
-    tr.querySelector('[data-f="method"]').onchange = function(e){ row.method = e.target.value; saveState(); };
-    
-    var expAmtInp = tr.querySelector('[data-f="amount"]');
-    expAmtInp.oninput = function(e){
-      row.amount = e.target.value;
-      saveState();
-      updateTotals();
-    };
-
-    expAmtInp.onkeydown = function(e){
-      if(e.key === 'Enter'){
-        e.preventDefault();
-        if(idx === sheet.expenses.length - 1){
-          sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' });
-          saveState();
-          renderDailyGrids();
-          var nextExpInp = document.querySelector('input[data-exp-idx="' + (idx + 1) + '"]');
-          if(nextExpInp) nextExpInp.focus();
-        } else {
-          var nextExpInp = document.querySelector('input[data-exp-idx="' + (idx + 1) + '"]');
-          if(nextExpInp) nextExpInp.focus();
-        }
-      }
-    };
-
-    if(eEditable){
-      var delBtn = tr.querySelector('.row-del-btn');
-      if(delBtn){
-        delBtn.onclick = function(){
-          sheet.expenses.splice(idx, 1);
-          saveState();
-          renderDailyGrids();
-        };
-      }
-    }
-    eTbody.appendChild(tr);
-  });
-
-  updateTotals();
-}
-
-function updateTotals(){
-  var sheet = state.daily[state.activeDate];
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
-
-  sheet.sales.forEach(function(r){
-    c += Number(r.cash) || 0;
-    sw += Number(r.swiggy) || 0;
-    z += Number(r.zomato) || 0;
-    ot += Number(r.other) || 0;
-  });
-
-  sheet.expenses.forEach(function(r){
-    ex += Number(r.amount) || 0;
-  });
-
-  var totalSales = c + sw + z + ot;
-  var net = totalSales - ex;
-
-  document.getElementById('subCash').textContent = formatMoney(c);
-  document.getElementById('subSwiggy').textContent = formatMoney(sw);
-  document.getElementById('subZomato').textContent = formatMoney(z);
-  document.getElementById('subOther').textContent = formatMoney(ot);
-  document.getElementById('subExp').textContent = formatMoney(ex);
-
-  document.getElementById('kpiDate').textContent = state.activeDate;
-  document.getElementById('kpiSales').textContent = formatMoney(totalSales);
-  document.getElementById('kpiExp').textContent = formatMoney(ex);
-  document.getElementById('kpiNet').textContent = formatMoney(net);
-
-  var sl = 1;
-  document.querySelectorAll('#salesTbody tr').forEach(function(tr, i){
-    var r = sheet.sales[i];
-    var hasVal = (Number(r.cash)||0) > 0 || (Number(r.swiggy)||0) > 0 || (Number(r.zomato)||0) > 0 || (Number(r.other)||0) > 0;
-    tr.querySelector('.sl-box').textContent = hasVal ? sl++ : '';
-  });
-}
-
-// POS & Invoicing
-var curInvItems = [{ name:'', qty:1, rate:'' }];
-function renderInvItems(){
-  var tb = document.getElementById('invItemsBody');
-  tb.innerHTML = '';
-  
-  curInvItems.forEach(function(it, idx){
-    var tr = document.createElement('tr');
-    tr.setAttribute('data-idx', idx);
-    var amt = (Number(it.qty)||0) * (Number(it.rate)||0);
-
-    tr.innerHTML =
-      '<td><input type="text" list="cakeSuggestions" class="inv-item-name" style="width:100%;border:1px solid #DDD;padding:5px;" value="' + (it.name||'') + '" placeholder="Start typing cake name (Optional)"></td>' +
-      '<td><input type="number" class="inv-item-qty" style="width:100%;border:1px solid #DDD;padding:5px;text-align:center;" value="' + it.qty + '"></td>' +
-      '<td><input type="number" step="0.01" class="inv-item-rate" style="width:100%;border:1px solid #DDD;padding:5px;text-align:right;" value="' + (it.rate||'') + '" placeholder="0.00"></td>' +
-      '<td class="inv-item-amt" style="text-align:right;font-family:\'IBM Plex Mono\',monospace;">' + formatMoney(amt) + '</td>' +
-      '<td style="text-align:center;"><button class="inv-item-del" style="border:none;background:none;color:#A82828;cursor:pointer;font-size:16px;">&times;</button></td>';
-
-    var nameInput = tr.querySelector('.inv-item-name');
-    var qtyInput = tr.querySelector('.inv-item-qty');
-    var rateInput = tr.querySelector('.inv-item-rate');
-    var amtCell = tr.querySelector('.inv-item-amt');
-    var delBtn = tr.querySelector('.inv-item-del');
-
-    nameInput.oninput = function(e){ it.name = e.target.value; };
-
-    function updateRowTotal(){
-      it.qty = qtyInput.value;
-      it.rate = rateInput.value;
-      var curAmt = (Number(it.qty)||0) * (Number(it.rate)||0);
-      amtCell.textContent = formatMoney(curAmt);
-      updateBillGrandTotal();
-    }
-
-    qtyInput.oninput = updateRowTotal;
-    rateInput.oninput = updateRowTotal;
-
-    delBtn.onclick = function(){
-      if(curInvItems.length > 1){
-        curInvItems.splice(idx, 1);
-        renderInvItems();
-      }
-    };
-
-    tb.appendChild(tr);
-  });
-  updateBillGrandTotal();
-}
-
-function updateBillGrandTotal(){
-  var tot = curInvItems.reduce(function(acc, i){
-    return acc + (Number(i.qty)||0) * (Number(i.rate)||0);
-  }, 0);
-  document.getElementById('invTotalBadge').textContent = formatMoney(tot);
-}
-
-function renderRecentInvoices(){
-  var cont = document.getElementById('recentInvoicesList');
-  if(!cont) return;
-  if(state.invoices.length === 0){
-    cont.innerHTML = '<p style="color:var(--ink-soft);padding:6px 0;">No bills generated yet.</p>';
-    return;
-  }
-  cont.innerHTML = state.invoices.slice(0, 10).map(function(inv, i){
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule);">' +
-      '<div><strong>' + inv.no + '</strong> &mdash; ' + (inv.customer||'Walk-in') + ' <span style="color:var(--ink-soft);font-size:11px;">(' + inv.date + ')</span></div>' +
-      '<div style="display:flex;gap:8px;align-items:center;">' +
-        '<span style="font-family:\'IBM Plex Mono\',monospace;font-weight:600;">' + formatMoney(inv.total) + '</span>' +
-        '<button class="btn-s" style="padding:3px 8px;font-size:11px;" onclick="openInvoicePrintWindow(state.invoices[' + i + '])">Print</button>' +
-        '<button class="btn-s" style="padding:3px 8px;font-size:11px;background:#25D366;color:#FFF;border-color:#25D366;" onclick="shareSpecificInvoice(' + i + ')">WhatsApp</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-}
-
-// Dedicated Popup Window for Clean Receipt and PDF Printing
-function openInvoicePrintWindow(inv){
-  var printWindow = window.open('', 'ReceiptWindow', 'width=460,height=700,top=100,left=100,scrollbars=yes');
-  if(!printWindow){
-    alert('Popup blocked! Please allow popups for this site to print receipts.');
-    return;
-  }
-
-  var logoSrc = document.getElementById('appLogo').getAttribute('src');
-
-  var itemsHtml = inv.items.map(function(it){
-    var rateNum = Number(it.rate) || 0;
-    var qtyNum = Number(it.qty) || 1;
-    var amt = qtyNum * rateNum;
-    return '<tr>' +
-      '<td style="padding:6px 0;border-bottom:1px dotted #ccc;">' + (it.name || 'Bakery Item') + '</td>' +
-      '<td style="text-align:center;padding:6px 0;border-bottom:1px dotted #ccc;">' + qtyNum + '</td>' +
-      '<td style="text-align:right;padding:6px 0;border-bottom:1px dotted #ccc;">₹' + rateNum.toFixed(2) + '</td>' +
-      '<td style="text-align:right;padding:6px 0;border-bottom:1px dotted #ccc;">₹' + amt.toFixed(2) + '</td>' +
-    '</tr>';
-  }).join('');
-
-  var slipContent = '<!DOCTYPE html>' +
-    '<html><head><title>Receipt - ' + inv.no + '</title>' +
-    '<style>' +
-      'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;padding:24px;color:#111;background:#fff;}' +
-      '.receipt{max-width:340px;margin:0 auto;}' +
-      '.hdr{text-align:center;border-bottom:2px dashed #000;padding-bottom:12px;margin-bottom:12px;}' +
-      '.hdr-img{height:60px;width:60px;object-fit:contain;margin-bottom:6px;}' +
-      '.hdr h2{margin:0;font-size:18px;font-weight:700;letter-spacing:0.5px;color:#4A1525;}' +
-      '.hdr p{margin:2px 0;font-size:11.5px;color:#444;}' +
-      '.inv-title{font-size:12.5px;font-weight:700;margin-top:6px;color:#000;}' +
-      '.meta{font-size:11.5px;line-height:1.6;margin-bottom:12px;}' +
-      'table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:14px;}' +
-      'th{border-bottom:1.5px solid #000;padding:4px 0;}' +
-      '.tot-row{border-top:2px dashed #000;padding-top:8px;display:flex;justify-content:space-between;font-size:14px;font-weight:700;}' +
-      '.footer{text-align:center;margin-top:22px;font-size:11px;color:#555;line-height:1.4;}' +
-      '@media print{@page{margin:6mm;}}' +
-    '</style></head><body>' +
-    '<div class="receipt">' +
-      '<div class="hdr">' +
-        '<img class="hdr-img" src="' + logoSrc + '" alt="7th Heaven Logo">' +
-        '<h2>7TH HEAVEN</h2>' +
-        '<p>Indira Nagar, Nashik</p>' +
-        '<div class="inv-title">BILL / RECEIPT: ' + inv.no + '</div>' +
-      '</div>' +
-      '<div class="meta">' +
-        '<div><strong>Date:</strong> ' + inv.date + '</div>' +
-        '<div><strong>Customer:</strong> ' + (inv.customer || 'Walk-in Customer') + '</div>' +
-        (inv.phone ? '<div><strong>Phone:</strong> ' + inv.phone + '</div>' : '') +
-      '</div>' +
-      '<table>' +
-        '<thead><tr>' +
-          '<th style="text-align:left;">Item</th>' +
-          '<th style="text-align:center;width:35px;">Qty</th>' +
-          '<th style="text-align:right;width:65px;">Rate</th>' +
-          '<th style="text-align:right;width:65px;">Total</th>' +
-        '</tr></thead>' +
-        '<tbody>' + itemsHtml + '</tbody>' +
-      '</table>' +
-      '<div class="tot-row">' +
-        '<span>GRAND TOTAL:</span>' +
-        '<span>₹' + (Number(inv.total) || 0).toFixed(2) + '</span>' +
-      '</div>' +
-      '<div class="footer">' +
-        '<p>Thank you for celebrating with us!</p>' +
-        '<p><strong>7th Heaven — A Slice of Happiness</strong></p>' +
-      '</div>' +
-    '</div>' +
-    '</body></html>';
-
-  printWindow.document.open();
-  printWindow.document.write(slipContent);
-  printWindow.document.close();
-
-  printWindow.focus();
-  setTimeout(function(){
-    printWindow.print();
-  }, 300);
-}
-
-function shareSpecificInvoice(idx){
-  var inv = state.invoices[idx];
-  if(!inv) return;
-  var phone = (inv.phone||'').replace(/[^0-9]/g,'');
-  if(phone.length === 10) phone = '91' + phone;
-  
-  var lines = [];
-  lines.push('*7TH HEAVEN NASHIK*');
-  lines.push('Invoice: ' + inv.no);
-  lines.push('Date: ' + inv.date);
-  lines.push('Customer: ' + (inv.customer || 'Walk-in'));
-  lines.push('-------------------------');
-  inv.items.forEach(function(it){
-    lines.push('• ' + (it.name || 'Bakery Item') + ' (Qty: ' + it.qty + ') - ' + formatMoney((it.qty||1)*(it.rate||0)));
-  });
-  lines.push('-------------------------');
-  lines.push('*Total Bill: ' + formatMoney(inv.total) + '*');
-  lines.push('Thank you for choosing 7th Heaven!');
-  
-  var msg = encodeURIComponent(lines.join('\n'));
-  var waUrl = phone ? ('https://web.whatsapp.com/send?phone=' + phone + '&text=' + msg) : ('https://web.whatsapp.com/send?text=' + msg);
-  
-  window.open(waUrl, 'whatsapp_web');
-}
-
-// TARGETS & PROFIT SHARING
-function renderTargetsAndProfit(){
-  var months = {};
-  Object.keys(state.daily).forEach(function(d){
-    var m = d.slice(3);
-    months[m] = months[m] || { sales:0, exp:0 };
-    var s = state.daily[d];
-    s.sales.forEach(function(r){ months[m].sales += (Number(r.cash)||0) + (Number(r.swiggy)||0) + (Number(r.zomato)||0) + (Number(r.other)||0); });
-    s.expenses.forEach(function(r){ months[m].exp += (Number(r.amount)||0); });
-  });
-
-  var tCont = document.getElementById('targetListContainer');
-  tCont.innerHTML = '';
-  var mKeys = Object.keys(months).sort().reverse();
-  mKeys.forEach(function(m){
-    var tAmt = state.targets[m] || 0;
-    var sAmt = months[m].sales;
-    var pct = tAmt > 0 ? Math.min(100, Math.round((sAmt / tAmt) * 100)) : 0;
-    var row = document.createElement('div');
-    row.className = 'target-row';
-    row.innerHTML =
-      '<strong>' + m + '</strong>' +
-      '<div class="bar-bg"><div class="bar-fill" style="width:'+pct+'%;"></div></div>' +
-      '<div style="text-align:right;">' + (tAmt > 0 ? formatMoney(tAmt) : '—') + '</div>' +
-      '<div style="text-align:right;">' + formatMoney(sAmt) + '</div>' +
-      '<div style="text-align:right;color:var(--ink-soft);">' + pct + '%</div>';
-    tCont.appendChild(row);
-  });
-
-  if(state.currentRole === 'admin'){
-    var pBody = document.getElementById('profitTableBody');
-    pBody.innerHTML = '';
-    mKeys.forEach(function(m){
-      var s = months[m].sales;
-      var e = months[m].exp;
-      var net = s - e;
-      var tr = document.createElement('tr');
-      tr.innerHTML =
-        '<td>' + m + '</td>' +
-        '<td>' + formatMoney(s) + '</td>' +
-        '<td>' + formatMoney(e) + '</td>' +
-        '<td style="font-weight:700;color:'+(net>=0?'var(--net-green)':'var(--brick)')+'">' + formatMoney(net) + '</td>' +
-        PROFIT_PARTNERS.map(function(p){ return '<td>' + formatMoney(net * p.pct / 100) + '</td>'; }).join('');
-      pBody.appendChild(tr);
-    });
-  }
 }
 
 function renderAll(){
   renderDailyTabs();
   renderDailyGrids();
-  renderTargetsAndProfit();
-  renderRecentInvoices();
 }
-
-document.getElementById('unlockSheetBtn').onclick = function(){
-  var pass = prompt('Enter Admin Master Password to unlock sheet (' + state.activeDate + '):');
-  if(pass === ROLE_PASSWORDS.admin){
-    state.unlockedDates[state.activeDate] = true;
-    toast('Sheet unlocked! Admin can now edit previous entries.');
-    renderAll();
-  } else if(pass !== null){
-    alert('Incorrect Admin Password!');
-  }
-};
-
-// EXCEL EXPORT
-document.getElementById('exportExcelBtn').onclick = function(){
-  var sheet = state.daily[state.activeDate];
-  var wb = XLSX.utils.book_new();
-
-  var cTot = 0, swTot = 0, zTot = 0, oTot = 0, eTot = 0;
-  sheet.sales.forEach(function(r){
-    cTot += Number(r.cash) || 0;
-    swTot += Number(r.swiggy) || 0;
-    zTot += Number(r.zomato) || 0;
-    oTot += Number(r.other) || 0;
-  });
-  sheet.expenses.forEach(function(r){
-    eTot += Number(r.amount) || 0;
-  });
-  var grandSales = cTot + swTot + zTot + oTot;
-  var netInHand = grandSales - eTot;
-
-  var ws_data = [
-    ["7TH HEAVEN NASHIK — DAILY SALES & EXPENDITURE TRACKER"],
-    [],
-    ["DATE: " + state.activeDate, "", "TOTAL DAILY SALES:", grandSales, "TOTAL EXPENSES:", eTot, "NET IN-HAND (Sales − Exp):", "", netInHand],
-    ["Sl No", "Cash", "Swiggy", "Zomato", "Other", "", "Expense Category", "Amount (₹)", "Payment Method"],
-    ["TOTAL", cTot, swTot, zTot, oTot, "", "Total Expenses", eTot, ""]
-  ];
-
-  var max = Math.max(sheet.sales.length, sheet.expenses.length);
-  var sl = 1;
-  for(var i = 0; i < max; i++){
-    var s = sheet.sales[i] || {};
-    var e = sheet.expenses[i] || {};
-    var hasSale = (Number(s.cash)||0) > 0 || (Number(s.swiggy)||0) > 0 || (Number(s.zomato)||0) > 0 || (Number(s.other)||0) > 0;
-    ws_data.push([
-      hasSale ? sl++ : "",
-      s.cash ? Number(s.cash) : "",
-      s.swiggy ? Number(s.swiggy) : "",
-      s.zomato ? Number(s.zomato) : "",
-      s.other ? Number(s.other) : "",
-      "",
-      e.category || "",
-      e.amount ? Number(e.amount) : "",
-      e.method || ""
-    ]);
-  }
-
-  var ws = XLSX.utils.aoa_to_sheet(ws_data);
-  ws['!cols'] = [
-    { wch: 10 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 16 },
-    { wch: 4 },  { wch: 20 }, { wch: 18 }, { wch: 20 }
-  ];
-
-  ws['D3'] = { t: 'n', v: grandSales, f: 'SUM(B5:E5)' };
-  ws['F3'] = { t: 'n', v: eTot, f: 'H5' };
-  ws['I3'] = { t: 'n', v: netInHand, f: 'D3-F3' };
-
-  var lastRow = ws_data.length;
-  ws['B5'] = { t: 'n', v: cTot, f: 'SUM(B6:B' + lastRow + ')' };
-  ws['C5'] = { t: 'n', v: swTot, f: 'SUM(C6:C' + lastRow + ')' };
-  ws['D5'] = { t: 'n', v: zTot, f: 'SUM(D6:D' + lastRow + ')' };
-  ws['E5'] = { t: 'n', v: oTot, f: 'SUM(E6:E' + lastRow + ')' };
-  ws['H5'] = { t: 'n', v: eTot, f: 'SUM(H6:H' + lastRow + ')' };
-
-  XLSX.utils.book_append_sheet(wb, ws, state.activeDate);
-  XLSX.writeFile(wb, "7th_Heaven_Nashik_" + state.activeDate + ".xlsx");
-  toast("Excel file exported cleanly!");
-};
-
-// Invoicing Handlers
-document.getElementById('addInvItemRowBtn').onclick = function(){
-  curInvItems.push({ name:'', qty:1, rate:'' });
-  renderInvItems();
-};
-
-document.getElementById('saveInvoiceBtn').onclick = function(){
-  var valid = curInvItems.filter(function(i){ return Number(i.rate) > 0; });
-  var tot = valid.reduce(function(acc,i){ return acc + (Number(i.qty)||0)*(Number(i.rate)||0); }, 0);
-  if(tot <= 0){ toast('Please enter a valid rate amount.'); return; }
-
-  var invNum = '#7H-' + String(state.invoices.length + 1).padStart(4, '0');
-  var newInv = {
-    no: invNum,
-    date: getTodayStr(),
-    customer: document.getElementById('invCustName').value.trim(),
-    phone: document.getElementById('invCustPhone').value.trim(),
-    email: document.getElementById('invCustEmail').value.trim(),
-    items: valid.map(function(it){ return { name: it.name.trim() || 'Bakery Item', qty: Number(it.qty)||1, rate: Number(it.rate)||0 }; }),
-    total: tot
-  };
-
-  state.invoices.unshift(newInv);
-  activeInvoiceSlip = newInv;
-  saveState();
-
-  toast('Bill ' + invNum + ' saved! (No entry added to Daily Sales)');
-  document.getElementById('shareWhatsAppBtn').style.display = 'inline-block';
-  document.getElementById('printInvoiceBtn').style.display = 'inline-block';
-  document.getElementById('newInvoiceBtn').style.display = 'inline-block';
-  renderRecentInvoices();
-};
-
-document.getElementById('printInvoiceBtn').onclick = function(){
-  if(activeInvoiceSlip){
-    openInvoicePrintWindow(activeInvoiceSlip);
-  }
-};
-
-document.getElementById('shareWhatsAppBtn').onclick = function(){
-  if(activeInvoiceSlip){
-    var idx = state.invoices.indexOf(activeInvoiceSlip);
-    if(idx >= 0) shareSpecificInvoice(idx);
-  }
-};
-
-document.getElementById('newInvoiceBtn').onclick = function(){
-  curInvItems = [{ name:'', qty:1, rate:'' }];
-  document.getElementById('invCustName').value = '';
-  document.getElementById('invCustPhone').value = '';
-  document.getElementById('invCustEmail').value = '';
-  document.getElementById('shareWhatsAppBtn').style.display = 'none';
-  document.getElementById('printInvoiceBtn').style.display = 'none';
-  document.getElementById('newInvoiceBtn').style.display = 'none';
-  activeInvoiceSlip = null;
-  renderInvItems();
-};
-
-// Target Saving
-document.getElementById('saveTargetBtn').onclick = function(){
-  var m = document.getElementById('targetMonthInput').value;
-  var a = document.getElementById('targetAmtInput').value;
-  if(!m || !a) return;
-  var key = m.split('-').reverse().join('-');
-  state.targets[key] = Number(a);
-  saveState();
-  toast('Target saved!');
-  renderTargetsAndProfit();
-};
-
-// Admin Password Update Handler
-document.getElementById('savePasswordsBtn').onclick = function(){
-  if(state.currentRole !== 'admin') return;
-  var a = document.getElementById('pwFieldAdmin').value.trim();
-  var s = document.getElementById('pwFieldStore').value.trim();
-  var r = document.getElementById('pwFieldRemote').value.trim();
-
-  if(!a || !s || !r){
-    alert('Passwords cannot be left blank.');
-    return;
-  }
-
-  ROLE_PASSWORDS.admin = a;
-  ROLE_PASSWORDS.store = s;
-  ROLE_PASSWORDS.remote = r;
-  saveState();
-  toast('New passwords saved and synced across devices!');
-};
 
 // Navigation
 document.querySelectorAll('.nav-bar button').forEach(function(b){
@@ -1319,10 +944,22 @@ document.querySelectorAll('.nav-bar button').forEach(function(b){
   };
 });
 
-// Initialization
+// Admin Passwords
+document.getElementById('savePasswordsBtn').onclick = function(){
+  if(state.currentRole !== 'admin') return;
+  ROLE_PASSWORDS.admin = document.getElementById('pwFieldAdmin').value.trim();
+  ROLE_PASSWORDS.store = document.getElementById('pwFieldStore').value.trim();
+  ROLE_PASSWORDS.remote = document.getElementById('pwFieldRemote').value.trim();
+  saveState();
+  toast('Passwords saved and synced across devices!');
+};
+
+// Start
 document.getElementById('todayClock').textContent = getTodayStr();
+var now = new Date();
+document.getElementById('historyDateInput').value = now.toISOString().slice(0,10);
+document.getElementById('monthlyReportMonth').value = now.toISOString().slice(0,7);
 loadStateLocally();
-renderInvItems();
 
 var savedRole = localStorage.getItem(SESSION_ROLE_KEY);
 if(savedRole && ROLE_PASSWORDS[savedRole]){
