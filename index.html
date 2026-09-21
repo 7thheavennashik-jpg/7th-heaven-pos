@@ -57,7 +57,6 @@
   .tab-item { background: #FFF; border: 1px solid var(--rule-strong); padding: 4px 8px; border-radius: 3px; font-size: 11.5px; font-weight: 600; cursor: pointer; color: var(--maroon-hdr); }
   .tab-item.active { background: var(--maroon-hdr); color: #FFF; border-color: var(--maroon-hdr); }
 
-  /* Monthly / Carried Balance Bar */
   .ledger-carryover-bar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; background: #FFFDF8; border: 1px solid var(--rule-strong); padding: 8px; border-radius: 4px; }
   .carry-card { border-right: 1px dashed var(--rule-strong); padding: 0 8px; }
   .carry-card:last-child { border-right: none; }
@@ -92,9 +91,20 @@
 
   .sl-box { text-align: center; font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--maroon-hdr); width: 38px; background: #FAF7F7; }
   .cell-input { width: 100%; border: none; background: transparent; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; text-align: right; padding: 4px 2px; outline: none; }
+  .cell-input.text-left { text-align: left; font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; }
   .cell-input:focus:not([disabled]) { background: #FFFDF0; }
   .cell-select { width: 100%; border: none; background: transparent; font-size: 11px; outline: none; }
   .row-del-btn { background: none; border: none; color: #999; cursor: pointer; font-size: 14px; }
+
+  /* REMOVE ARROW SPINNERS FROM NUMBER INPUTS */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
 
   .mobile-add-strip { display: flex; gap: 6px; padding: 6px 8px; background: #FAF8F8; border-top: 1px solid var(--rule); }
   .mobile-next-btn { flex: 1; padding: 6px; background: #FFF; border: 1px dashed var(--maroon-hdr); color: var(--maroon-hdr); font-weight: 600; border-radius: 3px; font-size: 11.5px; cursor: pointer; }
@@ -189,14 +199,14 @@
         </div>
       </div>
 
-      <!-- SEPARATE AREA: PREVIOUS DAY CARRIED OVER & MTD TOTALS -->
+      <!-- MONTH-BASED PREVIOUS IN-HAND CARRY-OVER & MTD -->
       <div class="ledger-carryover-bar">
         <div class="carry-card">
-          <div class="clbl">Prev Day In-Hand Carry</div>
+          <div class="clbl">Month Prev In-Hand Carry</div>
           <div class="camt" id="carryPrevInHand" style="color:var(--gold);">₹0.00</div>
         </div>
         <div class="carry-card">
-          <div class="clbl">Today Net Cumulative</div>
+          <div class="clbl">Today Cumulative In-Hand</div>
           <div class="camt" id="carryCumulativeTotal" style="color:var(--maroon-banner);">₹0.00</div>
         </div>
         <div class="carry-card">
@@ -262,7 +272,7 @@
           <table class="tracker" id="expTable">
             <thead>
               <tr>
-                <th>Expense Category</th>
+                <th>Expense Category (Manual)</th>
                 <th style="width:85px;">Amount (₹)</th>
                 <th>Payment Method</th>
                 <th style="width:22px;"></th>
@@ -381,9 +391,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v11";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v12";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v11";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v12";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -428,13 +438,8 @@ function toast(msg){
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 
-function canEditSales(){
-  return state.currentRole !== 'remote';
-}
-
-function canEditExpenses(){
-  return state.currentRole !== 'remote';
-}
+function canEditSales(){ return state.currentRole !== 'remote'; }
+function canEditExpenses(){ return state.currentRole !== 'remote'; }
 
 function loadStateLocally(){
   try {
@@ -506,7 +511,6 @@ function syncWithCloud(){
     });
 }
 
-// POS Item Handling
 function addInvoiceItemRow(){
   currentInvoiceItems.push({ desc: '', qty: 1, rate: '' });
   renderInvoiceRows();
@@ -525,8 +529,8 @@ function renderInvoiceRows(){
     grandTot += amt;
     var tr = document.createElement('tr');
     tr.innerHTML =
-      '<td><input type="text" class="cell-input" style="text-align:left;" data-idx="' + idx + '" data-f="desc" value="' + (item.desc||'') + '" placeholder="e.g. Chocolate Truffle Cake"></td>' +
-      '<td><input type="number" min="1" class="cell-input" data-idx="' + idx + '" data-f="qty" value="' + (item.qty||1) + '"></td>' +
+      '<td><input type="text" class="cell-input text-left" data-idx="' + idx + '" data-f="desc" value="' + (item.desc||'') + '" placeholder="Item name"></td>' +
+      '<td><input type="number" class="cell-input" data-idx="' + idx + '" data-f="qty" value="' + (item.qty||1) + '"></td>' +
       '<td><input type="number" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="rate" value="' + (item.rate||'') + '" placeholder="0.00"></td>' +
       '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:8px;">' + formatMoney(amt) + '</td>' +
       '<td><button class="row-del-btn" onclick="removeInvoiceItem(' + idx + ')">&times;</button></td>';
@@ -562,14 +566,13 @@ function saveAndPrintInvoice(){
   var payMode = document.getElementById('invPayMode').value;
   var items = currentInvoiceItems.filter(function(i){ return (Number(i.qty)||0) > 0 && (Number(i.rate)||0) > 0; });
   
-  if(items.length === 0){ alert('Please add at least one item with quantity and rate.'); return; }
+  if(items.length === 0){ alert('Please enter at least one item.'); return; }
 
   var total = items.reduce(function(acc, i){ return acc + (Number(i.qty)*Number(i.rate)); }, 0);
   var inv = { id: 'INV-' + Date.now(), date: getTodayStr(), customer: custName, phone: custPhone, mode: payMode, items: items, total: total };
   state.invoices.push(inv);
   saveState();
 
-  // Printable receipt window
   var printContent = '<h3>7TH HEAVEN NASHIK</h3><p>Date: ' + inv.date + '<br>Bill To: ' + inv.customer + ' (' + inv.phone + ')<br>Mode: ' + inv.mode + '</p><hr>';
   printContent += '<table style="width:100%;text-align:left;"><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Total</th></tr>';
   items.forEach(function(it){
@@ -586,7 +589,6 @@ function saveAndPrintInvoice(){
   resetInvoiceForm();
 }
 
-// Excel Export (.xlsx)
 function exportActiveDayToExcel(){
   if(typeof XLSX === 'undefined'){ alert('Excel library not loaded.'); return; }
   var dKey = state.activeDate;
@@ -594,7 +596,6 @@ function exportActiveDayToExcel(){
 
   var wb = XLSX.utils.book_new();
 
-  // Sales Table
   var salesRows = [["Sl No", "Cash", "Swiggy", "Zomato", "Other"]];
   sheetData.sales.forEach(function(r, i){
     salesRows.push([i+1, Number(r.cash)||0, Number(r.swiggy)||0, Number(r.zomato)||0, Number(r.other)||0]);
@@ -602,7 +603,6 @@ function exportActiveDayToExcel(){
   var wsSales = XLSX.utils.aoa_to_sheet(salesRows);
   XLSX.utils.book_append_sheet(wb, wsSales, "Sales");
 
-  // Expenses Table
   var expRows = [["Expense Category", "Amount", "Payment Method"]];
   sheetData.expenses.forEach(function(e){
     expRows.push([e.category, Number(e.amount)||0, e.method]);
@@ -613,7 +613,6 @@ function exportActiveDayToExcel(){
   XLSX.writeFile(wb, "7th_Heaven_" + dKey + ".xlsx");
 }
 
-// Daily Grid Handlers
 function addNewSaleLine(focusNew){
   var sheet = state.daily[state.activeDate];
   sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
@@ -627,11 +626,11 @@ function addNewSaleLine(focusNew){
 
 function addNewExpLine(focusNew){
   var sheet = state.daily[state.activeDate];
-  sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' });
+  sheet.expenses.push({ category:'', amount:'', method:'UPI Direct' });
   saveState();
   renderDailyGrids();
   if(focusNew){
-    var inputs = document.querySelectorAll('#expTbody input[data-f="amount"]');
+    var inputs = document.querySelectorAll('#expTbody input[data-f="category"]');
     if(inputs.length > 0) inputs[inputs.length - 1].focus();
   }
 }
@@ -654,10 +653,10 @@ function renderDailyGrids(){
 
     tr.innerHTML =
       '<td class="sl-box">' + curSl + '</td>' +
-      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="cash" value="' + (row.cash||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="swiggy" value="' + (row.swiggy||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="zomato" value="' + (row.zomato||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="other" value="' + (row.other||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" class="cell-input" data-idx="' + idx + '" data-f="cash" value="' + (row.cash||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" class="cell-input" data-idx="' + idx + '" data-f="swiggy" value="' + (row.swiggy||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" class="cell-input" data-idx="' + idx + '" data-f="zomato" value="' + (row.zomato||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" class="cell-input" data-idx="' + idx + '" data-f="other" value="' + (row.other||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
       '<td style="text-align:center;">' + (sEditable && sheet.sales.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
 
     tr.querySelectorAll('input').forEach(function(inp){
@@ -683,25 +682,23 @@ function renderDailyGrids(){
 
   document.getElementById('salesMobileStrip').style.display = sEditable ? 'flex' : 'none';
 
-  // Expenses
-  if(sheet.expenses.length === 0){ sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' }); }
+  // Manual Text Input for Expenses
+  if(sheet.expenses.length === 0){ sheet.expenses.push({ category:'', amount:'', method:'UPI Direct' }); }
   var eTbody = document.getElementById('expTbody');
   eTbody.innerHTML = '';
-  var cats = ['Ingredients', 'Shop Rent', 'Staff Salaries', 'Electricity (MSEDCL)', 'Packaging & Gas', 'Marketing', 'Maintenance', 'Other'];
   var mets = ['UPI Direct', 'Cash', 'NetBanking', 'Credit Card', 'Vendor Credit'];
 
   sheet.expenses.forEach(function(row, idx){
     var tr = document.createElement('tr');
-    var catOpts = cats.map(function(c){ return '<option value="'+c+'" '+(row.category===c?'selected':'')+'>'+c+'</option>'; }).join('');
     var metOpts = mets.map(function(m){ return '<option value="'+m+'" '+(row.method===m?'selected':'')+'>'+m+'</option>'; }).join('');
 
     tr.innerHTML =
-      '<td><select class="cell-select" data-f="category" ' + (!eEditable?'disabled':'') + '>' + catOpts + '</select></td>' +
-      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-exp-idx="' + idx + '" data-f="amount" value="' + (row.amount||'') + '" ' + (!eEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="text" class="cell-input text-left" data-f="category" value="' + (row.category||'') + '" placeholder="e.g. Shop Rent, Gas, Sugar" ' + (!eEditable?'disabled':'') + '></td>' +
+      '<td><input type="number" class="cell-input" data-exp-idx="' + idx + '" data-f="amount" value="' + (row.amount||'') + '" ' + (!eEditable?'disabled':'') + ' placeholder="0.00"></td>' +
       '<td><select class="cell-select" data-f="method" ' + (!eEditable?'disabled':'') + '>' + metOpts + '</select></td>' +
       '<td style="text-align:center;">' + (eEditable && sheet.expenses.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
 
-    tr.querySelector('[data-f="category"]').onchange = function(e){ row.category = e.target.value; saveState(); };
+    tr.querySelector('[data-f="category"]').oninput = function(e){ row.category = e.target.value; saveState(); };
     tr.querySelector('[data-f="method"]').onchange = function(e){ row.method = e.target.value; saveState(); };
     
     var expAmtInp = tr.querySelector('[data-f="amount"]');
@@ -757,46 +754,51 @@ function updateTotals(){
   document.getElementById('kpiExp').textContent = formatMoney(ex);
   document.getElementById('kpiNet').textContent = formatMoney(net);
 
-  // Compute Previous Day Carry-Over & MTD
   calculateLedgerCarryAndMTD(net);
 }
 
+// Monthly calculation for Previous Days In-Hand Carry-Over
 function calculateLedgerCarryAndMTD(todayNet){
-  var curD = parseDateStr(state.activeDate);
-  var prevDate = new Date(curD);
-  prevDate.setDate(prevDate.getDate() - 1);
-  
-  var prevDd = String(prevDate.getDate()).padStart(2,'0');
-  var prevMm = String(prevDate.getMonth()+1).padStart(2,'0');
-  var prevYyyy = prevDate.getFullYear();
-  var prevKey = prevDd + "-" + prevMm + "-" + prevYyyy;
+  var activeDateParts = state.activeDate.split('-');
+  var activeDay = parseInt(activeDateParts[0], 10);
+  var curMonthSuffix = activeDateParts[1] + '-' + activeDateParts[2]; // "MM-YYYY"
 
-  var prevInHand = 0;
-  if(state.daily[prevKey]){
-    var pSales = 0, pExp = 0;
-    state.daily[prevKey].sales.forEach(function(r){ pSales += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0); });
-    state.daily[prevKey].expenses.forEach(function(e){ pExp += Number(e.amount)||0; });
-    prevInHand = pSales - pExp;
-  }
+  var prevMonthInHand = 0;
+  var mtdS = 0;
+  var mtdE = 0;
 
-  document.getElementById('carryPrevInHand').textContent = formatMoney(prevInHand);
-  document.getElementById('carryCumulativeTotal').textContent = formatMoney(prevInHand + todayNet);
-
-  // Calculate Month To Date
-  var curMonthSuffix = state.activeDate.substring(3); // "MM-YYYY"
-  var mtdS = 0, mtdE = 0;
   Object.keys(state.daily).forEach(function(k){
     if(k.endsWith(curMonthSuffix)){
-      state.daily[k].sales.forEach(function(r){ mtdS += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0); });
-      state.daily[k].expenses.forEach(function(e){ mtdE += Number(e.amount)||0; });
+      var dayNum = parseInt(k.split('-')[0], 10);
+      var daySales = 0;
+      var dayExp = 0;
+
+      state.daily[k].sales.forEach(function(r){
+        daySales += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0);
+      });
+      state.daily[k].expenses.forEach(function(e){
+        dayExp += Number(e.amount)||0;
+      });
+
+      // Accumulate MTD totals up to the active date
+      if(dayNum <= activeDay){
+        mtdS += daySales;
+        mtdE += dayExp;
+      }
+
+      // Previous days' net carry-over (from day 1 to day prior)
+      if(dayNum < activeDay){
+        prevMonthInHand += (daySales - dayExp);
+      }
     }
   });
 
+  document.getElementById('carryPrevInHand').textContent = formatMoney(prevMonthInHand);
+  document.getElementById('carryCumulativeTotal').textContent = formatMoney(prevMonthInHand + todayNet);
   document.getElementById('mtdSalesTotal').textContent = formatMoney(mtdS);
   document.getElementById('mtdExpTotal').textContent = formatMoney(mtdE);
 }
 
-// Previous Days Reports
 function loadHistoryDateReport(){
   var rawDate = document.getElementById('historyDateInput').value;
   if(!rawDate){ alert('Please select a date.'); return; }
@@ -828,7 +830,6 @@ function loadHistoryDateReport(){
     '</div>';
 }
 
-// Monthly Summary
 function generateMonthlyReport(){
   var ym = document.getElementById('monthlyReportMonth').value;
   if(!ym){ alert('Please choose a month.'); return; }
@@ -861,7 +862,6 @@ function generateMonthlyReport(){
   document.getElementById('monthlyReportArea').style.display = 'block';
 }
 
-// Authentication
 var targetRolePending = null;
 function promptRolePass(role){
   targetRolePending = role;
@@ -944,7 +944,6 @@ function renderAll(){
   renderDailyGrids();
 }
 
-// Navigation
 document.querySelectorAll('.nav-bar button').forEach(function(b){
   b.onclick = function(){
     document.querySelectorAll('.nav-bar button').forEach(function(x){ x.classList.remove('active'); });
@@ -954,7 +953,6 @@ document.querySelectorAll('.nav-bar button').forEach(function(b){
   };
 });
 
-// Passwords Save
 document.getElementById('savePasswordsBtn').onclick = function(){
   if(state.currentRole !== 'admin') return;
   ROLE_PASSWORDS.admin = document.getElementById('pwFieldAdmin').value.trim();
@@ -964,7 +962,6 @@ document.getElementById('savePasswordsBtn').onclick = function(){
   toast('Passwords saved and synced across devices!');
 };
 
-// Initialize
 document.getElementById('todayClock').textContent = getTodayStr();
 var now = new Date();
 document.getElementById('historyDateInput').value = now.toISOString().slice(0,10);
