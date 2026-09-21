@@ -23,27 +23,11 @@
     --ink-soft: #605E4E;
     --brick: #93412E;
     --gold: #B8862E;
-    --gold-tint: #F3E8D1;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif;
-    min-height: 100vh;
-    padding: 10px 10px 60px;
-  }
+  body { background: var(--paper); color: var(--ink); font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; min-height: 100vh; padding: 10px 10px 60px; }
   .wrap { max-width: 1100px; margin: 0 auto; }
-  header.top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--maroon-banner);
-    color: #FFF;
-    padding: 10px 14px;
-    border-radius: 4px 4px 0 0;
-    gap: 12px;
-  }
+  header.top { display: flex; align-items: center; justify-content: space-between; background: var(--maroon-banner); color: #FFF; padding: 10px 14px; border-radius: 4px 4px 0 0; gap: 12px; }
   .hdr-brand { display: flex; align-items: center; gap: 10px; }
   .hdr-logo { height: 46px; width: 46px; object-fit: contain; background: #FFF; border-radius: 4px; padding: 2px; }
   header.top h1 { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; margin: 0; }
@@ -72,6 +56,13 @@
   .tabs-list { display: flex; gap: 6px; overflow-x: auto; align-items: center; }
   .tab-item { background: #FFF; border: 1px solid var(--rule-strong); padding: 4px 8px; border-radius: 3px; font-size: 11.5px; font-weight: 600; cursor: pointer; color: var(--maroon-hdr); }
   .tab-item.active { background: var(--maroon-hdr); color: #FFF; border-color: var(--maroon-hdr); }
+
+  /* Monthly / Carried Balance Bar */
+  .ledger-carryover-bar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; background: #FFFDF8; border: 1px solid var(--rule-strong); padding: 8px; border-radius: 4px; }
+  .carry-card { border-right: 1px dashed var(--rule-strong); padding: 0 8px; }
+  .carry-card:last-child { border-right: none; }
+  .carry-card .clbl { font-size: 10px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; }
+  .carry-card .camt { font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; font-weight: 700; margin-top: 2px; }
 
   .kpi-grid { display: grid; grid-template-columns: 120px 1.2fr 1fr 1fr; border: 1px solid var(--rule-strong); border-bottom: 2px solid var(--maroon-hdr); margin-bottom: 14px; }
   .kpi-card { padding: 8px 10px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: center; }
@@ -124,6 +115,7 @@
     .split-tables { grid-template-columns: 1fr; }
     .table-pane { border-right: none; border-bottom: 2px solid var(--rule-strong); }
     .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .ledger-carryover-bar { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
@@ -132,7 +124,7 @@
 <div class="wrap">
   <header class="top">
     <div class="hdr-brand">
-      <img class="hdr-logo" id="appLogo" alt="7th Heaven Logo" src="logo.jpg">
+      <img class="hdr-logo" id="appLogo" alt="Logo" src="logo.jpg" onerror="this.style.display='none'">
       <div>
         <h1>7TH HEAVEN NASHIK — SALES &amp; EXPENDITURE TRACKER</h1>
         <span class="sync-indicator"><span class="sync-dot"></span><span id="syncText">Connected &amp; Synced</span></span>
@@ -144,7 +136,7 @@
   <div id="roleAuthSection">
     <div id="roleSelectionStep">
       <h2 style="font-family:'Fraunces',serif;font-size:18px;">Select Access Role</h2>
-      <p style="font-size:12px;color:var(--ink-soft);">Choose your role to open the daily tracker:</p>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:10px;">Choose your role to open the daily tracker:</p>
       <div class="role-cards">
         <div class="role-box" onclick="promptRolePass('admin')">
           <h3>👑 Admin</h3>
@@ -193,26 +185,45 @@
       <div class="sheet-tabs-row">
         <div class="tabs-list" id="sheetTabsList"></div>
         <div style="display:flex;gap:6px;">
-          <button class="btn-s" id="unlockSheetBtn" style="display:none;">🔒 Unlock Sheet (Admin)</button>
-          <button class="btn-p" id="exportExcelBtn">📥 Export Excel (.xlsx)</button>
+          <button class="btn-p" id="exportExcelBtn" onclick="exportActiveDayToExcel()">📥 Export Active Day (.xlsx)</button>
+        </div>
+      </div>
+
+      <!-- SEPARATE AREA: PREVIOUS DAY CARRIED OVER & MTD TOTALS -->
+      <div class="ledger-carryover-bar">
+        <div class="carry-card">
+          <div class="clbl">Prev Day In-Hand Carry</div>
+          <div class="camt" id="carryPrevInHand" style="color:var(--gold);">₹0.00</div>
+        </div>
+        <div class="carry-card">
+          <div class="clbl">Today Net Cumulative</div>
+          <div class="camt" id="carryCumulativeTotal" style="color:var(--maroon-banner);">₹0.00</div>
+        </div>
+        <div class="carry-card">
+          <div class="clbl">MTD Total Sales (Month)</div>
+          <div class="camt" id="mtdSalesTotal" style="color:var(--maroon-hdr);">₹0.00</div>
+        </div>
+        <div class="carry-card">
+          <div class="clbl">MTD Total Expenses</div>
+          <div class="camt" id="mtdExpTotal" style="color:var(--brick);">₹0.00</div>
         </div>
       </div>
 
       <div class="kpi-grid">
         <div class="kpi-card" style="background:#F2E6EA;">
-          <span class="lbl">Date</span>
+          <span class="lbl">Active Date</span>
           <span class="amt" id="kpiDate" style="color:var(--maroon-hdr);font-size:13px;">--</span>
         </div>
         <div class="kpi-card kpi-sales">
-          <span class="lbl">Total Daily Sales</span>
+          <span class="lbl">Today Sales</span>
           <span class="amt" id="kpiSales">₹0.00</span>
         </div>
         <div class="kpi-card kpi-exp">
-          <span class="lbl">Total Expenses</span>
+          <span class="lbl">Today Expenses</span>
           <span class="amt" id="kpiExp">₹0.00</span>
         </div>
         <div class="kpi-card kpi-net">
-          <span class="lbl">Net In-Hand</span>
+          <span class="lbl">Today Net In-Hand</span>
           <span class="amt" id="kpiNet">₹0.00</span>
         </div>
       </div>
@@ -272,10 +283,9 @@
       </div>
     </section>
 
-    <!-- PANEL 2: PREVIOUS DAYS REPORTS (All Partners) -->
+    <!-- PANEL 2: PREVIOUS DAYS REPORTS -->
     <section class="panel" id="panel-reports">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Previous Days Ledger &amp; Reports</h2>
-      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Available to all partners (Admin, Store, and Remote) to view any previous day's breakdown.</p>
       <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
         <div class="form-group" style="margin:0;"><label>Select Date</label><input type="date" id="historyDateInput"></div>
         <button class="btn-p" onclick="loadHistoryDateReport()">View Report</button>
@@ -283,56 +293,23 @@
       <div id="historyReportOutput"></div>
     </section>
 
-    <!-- PANEL 3: MONTHLY REPORT & WHATSAPP SHARE (Admin Only) -->
+    <!-- PANEL 3: MONTHLY REPORT -->
     <section class="panel" id="panel-monthly">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Sales &amp; Expenditure Report</h2>
-      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:14px;">Generate an executive summary with full partner shares, ready to share via WhatsApp or print.</p>
-      
       <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
         <div class="form-group" style="margin:0;"><label>Select Month</label><input type="month" id="monthlyReportMonth"></div>
         <button class="btn-p" onclick="generateMonthlyReport()">Generate Monthly Summary</button>
       </div>
-
       <div id="monthlyReportArea" style="display:none;">
         <div class="report-box" id="monthlyPrintContainer">
-          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--maroon-hdr);padding-bottom:8px;margin-bottom:12px;">
-            <div>
-              <h3 style="color:var(--maroon-hdr);font-size:16px;">7TH HEAVEN NASHIK</h3>
-              <p style="font-size:12px;color:var(--ink-soft);" id="repMonthTitle">MONTHLY PERFORMANCE REPORT</p>
-            </div>
-            <img src="logo.jpg" alt="Logo" style="height:44px;object-fit:contain;">
+          <h3 style="color:var(--maroon-hdr);font-size:16px;" id="repMonthTitle">MONTHLY PERFORMANCE</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">
+            <div style="background:#FFF;padding:8px;border:1px solid var(--rule);"><span style="font-size:10px;">TOTAL SALES</span><div id="mRepSales" style="font-weight:700;">₹0.00</div></div>
+            <div style="background:#FFF;padding:8px;border:1px solid var(--rule);"><span style="font-size:10px;">TOTAL EXPENSES</span><div id="mRepExp" style="font-weight:700;color:var(--brick);">₹0.00</div></div>
+            <div style="background:var(--net-green);color:#FFF;padding:8px;"><span style="font-size:10px;color:#D8EAC8;">NET PROFIT</span><div id="mRepNet" style="font-weight:700;">₹0.00</div></div>
           </div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
-            <div style="background:#FFF;padding:8px;border:1px solid var(--rule);border-radius:3px;">
-              <div style="font-size:10.5px;color:var(--ink-soft);">TOTAL SALES</div>
-              <div id="mRepSales" style="font-size:16px;font-weight:700;color:var(--maroon-hdr);">₹0.00</div>
-            </div>
-            <div style="background:#FFF;padding:8px;border:1px solid var(--rule);border-radius:3px;">
-              <div style="font-size:10.5px;color:var(--ink-soft);">TOTAL EXPENSES</div>
-              <div id="mRepExp" style="font-size:16px;font-weight:700;color:var(--brick);">₹0.00</div>
-            </div>
-            <div style="background:var(--net-green);color:#FFF;padding:8px;border-radius:3px;">
-              <div style="font-size:10.5px;color:#D8EAC8;">NET PROFIT</div>
-              <div id="mRepNet" style="font-size:16px;font-weight:700;">₹0.00</div>
-            </div>
-          </div>
-
-          <h4 style="margin:10px 0 4px;font-size:12px;">Sales Channel Breakdown:</h4>
-          <div style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;margin-bottom:12px;background:#FFF;padding:6px 10px;border:1px solid var(--rule);">
-            <span>Cash: <strong id="mRepCash">₹0.00</strong></span>
-            <span>Swiggy: <strong id="mRepSwiggy">₹0.00</strong></span>
-            <span>Zomato: <strong id="mRepZomato">₹0.00</strong></span>
-            <span>Other: <strong id="mRepOther">₹0.00</strong></span>
-          </div>
-
           <h4 style="margin:10px 0 4px;font-size:12px;">Partner Profit Sharing:</h4>
           <div id="mRepPartners" style="background:#FFF;border:1px solid var(--rule);padding:8px 10px;line-height:1.8;"></div>
-        </div>
-
-        <div style="display:flex;gap:8px;margin-top:14px;">
-          <button class="btn-p" style="background:#25D366;border-color:#25D366;font-weight:700;" onclick="shareMonthlyReportWhatsApp()">📲 Share via WhatsApp</button>
-          <button class="btn-s" onclick="printMonthlyReport()">🖨️ Print / Save as PDF</button>
         </div>
       </div>
     </section>
@@ -343,21 +320,36 @@
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
         <div class="form-group"><label>Customer Name</label><input type="text" id="invCustName" placeholder="Walk-in Customer"></div>
         <div class="form-group"><label>WhatsApp Phone</label><input type="text" id="invCustPhone" placeholder="10-digit number"></div>
-        <div class="form-group"><label>Email</label><input type="text" id="invCustEmail" placeholder="customer@email.com"></div>
+        <div class="form-group"><label>Payment Mode</label>
+          <select id="invPayMode">
+            <option value="Cash">Cash</option>
+            <option value="UPI">UPI</option>
+            <option value="Card">Card</option>
+          </select>
+        </div>
       </div>
-      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
-        <thead><tr><th>Item Description</th><th style="width:60px;">Qty</th><th style="width:100px;">Rate (₹)</th><th style="width:90px;text-align:right;">Total</th><th style="width:24px;"></th></tr></thead>
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;" class="tracker">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding-left:8px;">Item Description</th>
+            <th style="width:80px;">Qty</th>
+            <th style="width:100px;">Rate (₹)</th>
+            <th style="width:100px;text-align:right;padding-right:8px;">Amount</th>
+            <th style="width:30px;"></th>
+          </tr>
+        </thead>
         <tbody id="invItemsBody"></tbody>
       </table>
-      <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
-        <button class="btn-s" id="addInvItemRowBtn">+ Add Item</button>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <button class="btn-s" onclick="addInvoiceItemRow()">+ Add Item</button>
         <div style="font-size:16px;font-weight:700;">Bill Total: <span id="invTotalBadge" style="color:var(--maroon-banner);">₹0.00</span></div>
       </div>
-      <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <button class="btn-p" id="saveInvoiceBtn">Generate Bill &amp; Save Receipt</button>
-        <button class="btn-s" id="printInvoiceBtn" style="display:none;">🖨️ Print Receipt</button>
-        <button class="btn-s" id="shareWhatsAppBtn" style="display:none;background:#25D366;color:#FFF;border-color:#25D366;">WhatsApp</button>
-        <button class="btn-s" id="newInvoiceBtn" style="display:none;">+ New Bill</button>
+
+      <div style="display:flex;gap:8px;">
+        <button class="btn-p" onclick="saveAndPrintInvoice()">Save Bill &amp; Print Receipt</button>
+        <button class="btn-s" onclick="resetInvoiceForm()">Clear Bill</button>
       </div>
     </section>
 
@@ -389,9 +381,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v10";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v11";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v10";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v11";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -406,11 +398,11 @@ var PROFIT_PARTNERS = [
 var state = {
   currentRole: null,
   activeDate: getTodayStr(),
-  unlockedDates: {},
   daily: {},
-  invoices: [],
-  targets: {}
+  invoices: []
 };
+
+var currentInvoiceItems = [];
 
 function getTodayStr(){
   var d = new Date();
@@ -418,6 +410,11 @@ function getTodayStr(){
   var mm = String(d.getMonth()+1).padStart(2,'0');
   var yyyy = d.getFullYear();
   return dd + "-" + mm + "-" + yyyy;
+}
+
+function parseDateStr(s){
+  var parts = s.split('-');
+  return new Date(parts[2], parts[1]-1, parts[0]);
 }
 
 function formatMoney(n){
@@ -432,19 +429,11 @@ function toast(msg){
 }
 
 function canEditSales(){
-  if(state.currentRole === 'remote') return false;
-  if(state.activeDate !== getTodayStr()){
-    return state.currentRole === 'admin' && !!state.unlockedDates[state.activeDate];
-  }
-  return true;
+  return state.currentRole !== 'remote';
 }
 
 function canEditExpenses(){
-  if(state.currentRole === 'remote') return false;
-  if(state.activeDate !== getTodayStr()){
-    return state.currentRole === 'admin' && !!state.unlockedDates[state.activeDate];
-  }
-  return true;
+  return state.currentRole !== 'remote';
 }
 
 function loadStateLocally(){
@@ -454,7 +443,6 @@ function loadStateLocally(){
       var p = JSON.parse(raw);
       state.daily = p.daily || {};
       state.invoices = p.invoices || [];
-      state.targets = p.targets || {};
     }
     var pwRaw = localStorage.getItem(PASSWORDS_STORAGE_KEY);
     if(pwRaw){
@@ -475,7 +463,7 @@ function loadStateLocally(){
 
 function saveState(){
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ daily: state.daily, invoices: state.invoices, targets: state.targets }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ daily: state.daily, invoices: state.invoices }));
     localStorage.setItem(PASSWORDS_STORAGE_KEY, JSON.stringify(ROLE_PASSWORDS));
   } catch(e){}
   clearTimeout(window._cloudSyncTimer);
@@ -490,7 +478,7 @@ function pushToCloud(){
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({
       key: '7th_heaven_master_data',
-      value: JSON.stringify({ daily: state.daily, invoices: state.invoices, targets: state.targets, passwords: ROLE_PASSWORDS })
+      value: JSON.stringify({ daily: state.daily, invoices: state.invoices, passwords: ROLE_PASSWORDS })
     })
   }).then(function(){
     document.getElementById('syncText').textContent = 'Synced & Saved';
@@ -509,7 +497,6 @@ function syncWithCloud(){
         var cloudObj = JSON.parse(data.value);
         if(cloudObj.daily) state.daily = cloudObj.daily;
         if(cloudObj.invoices) state.invoices = cloudObj.invoices;
-        if(cloudObj.targets) state.targets = cloudObj.targets;
         if(cloudObj.passwords) Object.assign(ROLE_PASSWORDS, cloudObj.passwords);
         document.getElementById('syncText').textContent = 'Live Cloud Synced';
         renderAll();
@@ -519,7 +506,114 @@ function syncWithCloud(){
     });
 }
 
-// Mobile & Enter-Key Friendly Row Addition
+// POS Item Handling
+function addInvoiceItemRow(){
+  currentInvoiceItems.push({ desc: '', qty: 1, rate: '' });
+  renderInvoiceRows();
+}
+
+function renderInvoiceRows(){
+  var tbody = document.getElementById('invItemsBody');
+  tbody.innerHTML = '';
+  if(currentInvoiceItems.length === 0){
+    currentInvoiceItems.push({ desc: '', qty: 1, rate: '' });
+  }
+
+  var grandTot = 0;
+  currentInvoiceItems.forEach(function(item, idx){
+    var amt = (Number(item.qty)||0) * (Number(item.rate)||0);
+    grandTot += amt;
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><input type="text" class="cell-input" style="text-align:left;" data-idx="' + idx + '" data-f="desc" value="' + (item.desc||'') + '" placeholder="e.g. Chocolate Truffle Cake"></td>' +
+      '<td><input type="number" min="1" class="cell-input" data-idx="' + idx + '" data-f="qty" value="' + (item.qty||1) + '"></td>' +
+      '<td><input type="number" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="rate" value="' + (item.rate||'') + '" placeholder="0.00"></td>' +
+      '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:8px;">' + formatMoney(amt) + '</td>' +
+      '<td><button class="row-del-btn" onclick="removeInvoiceItem(' + idx + ')">&times;</button></td>';
+
+    tr.querySelectorAll('input').forEach(function(inp){
+      inp.oninput = function(e){
+        var f = e.target.getAttribute('data-f');
+        item[f] = e.target.value;
+        renderInvoiceRows();
+      };
+    });
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('invTotalBadge').textContent = formatMoney(grandTot);
+}
+
+function removeInvoiceItem(idx){
+  currentInvoiceItems.splice(idx, 1);
+  renderInvoiceRows();
+}
+
+function resetInvoiceForm(){
+  document.getElementById('invCustName').value = '';
+  document.getElementById('invCustPhone').value = '';
+  currentInvoiceItems = [{ desc: '', qty: 1, rate: '' }];
+  renderInvoiceRows();
+}
+
+function saveAndPrintInvoice(){
+  var custName = document.getElementById('invCustName').value || 'Customer';
+  var custPhone = document.getElementById('invCustPhone').value || '';
+  var payMode = document.getElementById('invPayMode').value;
+  var items = currentInvoiceItems.filter(function(i){ return (Number(i.qty)||0) > 0 && (Number(i.rate)||0) > 0; });
+  
+  if(items.length === 0){ alert('Please add at least one item with quantity and rate.'); return; }
+
+  var total = items.reduce(function(acc, i){ return acc + (Number(i.qty)*Number(i.rate)); }, 0);
+  var inv = { id: 'INV-' + Date.now(), date: getTodayStr(), customer: custName, phone: custPhone, mode: payMode, items: items, total: total };
+  state.invoices.push(inv);
+  saveState();
+
+  // Printable receipt window
+  var printContent = '<h3>7TH HEAVEN NASHIK</h3><p>Date: ' + inv.date + '<br>Bill To: ' + inv.customer + ' (' + inv.phone + ')<br>Mode: ' + inv.mode + '</p><hr>';
+  printContent += '<table style="width:100%;text-align:left;"><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Total</th></tr>';
+  items.forEach(function(it){
+    printContent += '<tr><td>' + it.desc + '</td><td>' + it.qty + '</td><td>' + it.rate + '</td><td>' + (it.qty*it.rate).toFixed(2) + '</td></tr>';
+  });
+  printContent += '</table><hr><h4>Grand Total: ₹' + total.toFixed(2) + '</h4>';
+  
+  var pWin = window.open('', 'Receipt', 'width=350,height=500');
+  pWin.document.write('<html><head><title>Receipt</title><style>body{font-family:monospace;font-size:12px;padding:10px;}</style></head><body>' + printContent + '</body></html>');
+  pWin.document.close();
+  pWin.focus();
+  setTimeout(function(){ pWin.print(); }, 250);
+
+  resetInvoiceForm();
+}
+
+// Excel Export (.xlsx)
+function exportActiveDayToExcel(){
+  if(typeof XLSX === 'undefined'){ alert('Excel library not loaded.'); return; }
+  var dKey = state.activeDate;
+  var sheetData = state.daily[dKey] || { sales:[], expenses:[] };
+
+  var wb = XLSX.utils.book_new();
+
+  // Sales Table
+  var salesRows = [["Sl No", "Cash", "Swiggy", "Zomato", "Other"]];
+  sheetData.sales.forEach(function(r, i){
+    salesRows.push([i+1, Number(r.cash)||0, Number(r.swiggy)||0, Number(r.zomato)||0, Number(r.other)||0]);
+  });
+  var wsSales = XLSX.utils.aoa_to_sheet(salesRows);
+  XLSX.utils.book_append_sheet(wb, wsSales, "Sales");
+
+  // Expenses Table
+  var expRows = [["Expense Category", "Amount", "Payment Method"]];
+  sheetData.expenses.forEach(function(e){
+    expRows.push([e.category, Number(e.amount)||0, e.method]);
+  });
+  var wsExp = XLSX.utils.aoa_to_sheet(expRows);
+  XLSX.utils.book_append_sheet(wb, wsExp, "Expenses");
+
+  XLSX.writeFile(wb, "7th_Heaven_" + dKey + ".xlsx");
+}
+
+// Daily Grid Handlers
 function addNewSaleLine(focusNew){
   var sheet = state.daily[state.activeDate];
   sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
@@ -547,9 +641,7 @@ function renderDailyGrids(){
   var sEditable = canEditSales();
   var eEditable = canEditExpenses();
 
-  if(sheet.sales.length === 0){
-    sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
-  }
+  if(sheet.sales.length === 0){ sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' }); }
 
   var sTbody = document.getElementById('salesTbody');
   sTbody.innerHTML = '';
@@ -574,26 +666,6 @@ function renderDailyGrids(){
         saveState();
         updateTotals();
       };
-
-      // Desktop: Enter key moves to next row or creates one
-      inp.onkeydown = function(e){
-        if(e.key === 'Enter'){
-          e.preventDefault();
-          var f = inp.getAttribute('data-f');
-          if(idx === sheet.sales.length - 1){
-            addNewSaleLine(false);
-          }
-          var nextInp = document.querySelector('input[data-idx="' + (idx + 1) + '"][data-f="' + f + '"]');
-          if(nextInp) nextInp.focus();
-        }
-      };
-
-      // Mobile: Automatically create next line when typing finishes on last row
-      inp.onblur = function(){
-        if(idx === sheet.sales.length - 1 && hasAnySaleVal(row)){
-          addNewSaleLine(false);
-        }
-      };
     });
 
     if(sEditable){
@@ -611,11 +683,8 @@ function renderDailyGrids(){
 
   document.getElementById('salesMobileStrip').style.display = sEditable ? 'flex' : 'none';
 
-  // Expenditure Grid
-  if(sheet.expenses.length === 0){
-    sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' });
-  }
-
+  // Expenses
+  if(sheet.expenses.length === 0){ sheet.expenses.push({ category:'Ingredients', amount:'', method:'UPI Direct' }); }
   var eTbody = document.getElementById('expTbody');
   eTbody.innerHTML = '';
   var cats = ['Ingredients', 'Shop Rent', 'Staff Salaries', 'Electricity (MSEDCL)', 'Packaging & Gas', 'Marketing', 'Maintenance', 'Other'];
@@ -642,23 +711,6 @@ function renderDailyGrids(){
       updateTotals();
     };
 
-    expAmtInp.onkeydown = function(e){
-      if(e.key === 'Enter'){
-        e.preventDefault();
-        if(idx === sheet.expenses.length - 1){
-          addNewExpLine(false);
-        }
-        var nextInp = document.querySelector('input[data-exp-idx="' + (idx + 1) + '"]');
-        if(nextInp) nextInp.focus();
-      }
-    };
-
-    expAmtInp.onblur = function(){
-      if(idx === sheet.expenses.length - 1 && (Number(row.amount)||0) > 0){
-        addNewExpLine(false);
-      }
-    };
-
     if(eEditable){
       var delBtn = tr.querySelector('.row-del-btn');
       if(delBtn){
@@ -674,10 +726,6 @@ function renderDailyGrids(){
 
   document.getElementById('expMobileStrip').style.display = eEditable ? 'flex' : 'none';
   updateTotals();
-}
-
-function hasAnySaleVal(r){
-  return (Number(r.cash)||0)>0 || (Number(r.swiggy)||0)>0 || (Number(r.zomato)||0)>0 || (Number(r.other)||0)>0;
 }
 
 function updateTotals(){
@@ -709,14 +757,46 @@ function updateTotals(){
   document.getElementById('kpiExp').textContent = formatMoney(ex);
   document.getElementById('kpiNet').textContent = formatMoney(net);
 
-  var sl = 1;
-  document.querySelectorAll('#salesTbody tr').forEach(function(tr, i){
-    var r = sheet.sales[i];
-    tr.querySelector('.sl-box').textContent = hasAnySaleVal(r) ? sl++ : '';
-  });
+  // Compute Previous Day Carry-Over & MTD
+  calculateLedgerCarryAndMTD(net);
 }
 
-// PREVIOUS DAYS REPORT (All Partners)
+function calculateLedgerCarryAndMTD(todayNet){
+  var curD = parseDateStr(state.activeDate);
+  var prevDate = new Date(curD);
+  prevDate.setDate(prevDate.getDate() - 1);
+  
+  var prevDd = String(prevDate.getDate()).padStart(2,'0');
+  var prevMm = String(prevDate.getMonth()+1).padStart(2,'0');
+  var prevYyyy = prevDate.getFullYear();
+  var prevKey = prevDd + "-" + prevMm + "-" + prevYyyy;
+
+  var prevInHand = 0;
+  if(state.daily[prevKey]){
+    var pSales = 0, pExp = 0;
+    state.daily[prevKey].sales.forEach(function(r){ pSales += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0); });
+    state.daily[prevKey].expenses.forEach(function(e){ pExp += Number(e.amount)||0; });
+    prevInHand = pSales - pExp;
+  }
+
+  document.getElementById('carryPrevInHand').textContent = formatMoney(prevInHand);
+  document.getElementById('carryCumulativeTotal').textContent = formatMoney(prevInHand + todayNet);
+
+  // Calculate Month To Date
+  var curMonthSuffix = state.activeDate.substring(3); // "MM-YYYY"
+  var mtdS = 0, mtdE = 0;
+  Object.keys(state.daily).forEach(function(k){
+    if(k.endsWith(curMonthSuffix)){
+      state.daily[k].sales.forEach(function(r){ mtdS += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0); });
+      state.daily[k].expenses.forEach(function(e){ mtdE += Number(e.amount)||0; });
+    }
+  });
+
+  document.getElementById('mtdSalesTotal').textContent = formatMoney(mtdS);
+  document.getElementById('mtdExpTotal').textContent = formatMoney(mtdE);
+}
+
+// Previous Days Reports
 function loadHistoryDateReport(){
   var rawDate = document.getElementById('historyDateInput').value;
   if(!rawDate){ alert('Please select a date.'); return; }
@@ -736,123 +816,52 @@ function loadHistoryDateReport(){
   var totSales = c + sw + z + ot;
   var net = totSales - ex;
 
-  var expList = dData.expenses.filter(function(e){ return (Number(e.amount)||0)>0; }).map(function(e){
-    return '• ' + e.category + ': ' + formatMoney(e.amount) + ' (' + e.method + ')';
-  }).join('<br>') || 'None';
-
   out.innerHTML =
     '<div class="report-box">' +
       '<div style="display:flex;justify-content:space-between;margin-bottom:8px;border-bottom:1px solid var(--rule);padding-bottom:4px;">' +
         '<strong>Date: ' + dKey + '</strong>' +
-        '<button class="btn-s" style="padding:2px 8px;font-size:11px;" onclick="state.activeDate=\''+dKey+'\';renderAll();document.querySelector(\'[data-panel=daily]\').click();">Open in Tracker</button>' +
+        '<button class="btn-s" style="padding:2px 8px;font-size:11px;" onclick="state.activeDate=\''+dKey+'\';renderAll();document.querySelector(\'[data-panel=daily]\').click();">Open in Daily Tracker</button>' +
       '</div>' +
       '<div><strong>Total Daily Sales:</strong> ' + formatMoney(totSales) + '</div>' +
-      '<div style="font-size:11px;color:var(--ink-soft);margin-bottom:6px;">Cash: ' + formatMoney(c) + ' | Swiggy: ' + formatMoney(sw) + ' | Zomato: ' + formatMoney(z) + ' | Other: ' + formatMoney(ot) + '</div>' +
       '<div><strong>Total Expenses:</strong> ' + formatMoney(ex) + '</div>' +
-      '<div style="font-size:11.5px;margin:4px 0 8px;padding-left:8px;color:#444;">' + expList + '</div>' +
-      '<div style="font-size:14px;font-weight:700;color:' + (net>=0?'var(--net-green)':'var(--brick)') + '">Net In-Hand: ' + formatMoney(net) + '</div>' +
+      '<div style="font-size:14px;font-weight:700;color:' + (net>=0?'var(--net-green)':'var(--brick)') + ';margin-top:6px;">Net In-Hand: ' + formatMoney(net) + '</div>' +
     '</div>';
 }
 
-// MONTHLY REPORT & WHATSAPP SHARE (Admin Only)
-var activeMonthlyData = null;
+// Monthly Summary
 function generateMonthlyReport(){
   var ym = document.getElementById('monthlyReportMonth').value;
   if(!ym){ alert('Please choose a month.'); return; }
   var parts = ym.split('-');
-  var mFilter = parts[1] + '-' + parts[0]; // "09-2026"
+  var mFilter = parts[1] + '-' + parts[0];
   
-  var totC = 0, totSw = 0, totZ = 0, totOt = 0, totE = 0;
-  var daysLogged = 0;
-
+  var totS = 0, totE = 0, days = 0;
   Object.keys(state.daily).forEach(function(dKey){
     if(dKey.endsWith(mFilter)){
-      daysLogged++;
+      days++;
       var d = state.daily[dKey];
-      d.sales.forEach(function(r){
-        totC += Number(r.cash)||0;
-        totSw += Number(r.swiggy)||0;
-        totZ += Number(r.zomato)||0;
-        totOt += Number(r.other)||0;
-      });
-      d.expenses.forEach(function(r){
-        totE += Number(r.amount)||0;
-      });
+      d.sales.forEach(function(r){ totS += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0); });
+      d.expenses.forEach(function(r){ totE += Number(r.amount)||0; });
     }
   });
 
-  var totSales = totC + totSw + totZ + totOt;
-  var netProfit = totSales - totE;
-
-  activeMonthlyData = {
-    monthStr: ym,
-    daysLogged: daysLogged,
-    sales: totSales,
-    cash: totC,
-    swiggy: totSw,
-    zomato: totZ,
-    other: totOt,
-    expenses: totE,
-    net: netProfit
-  };
-
-  document.getElementById('repMonthTitle').textContent = 'MONTHLY REPORT — ' + ym + ' (' + daysLogged + ' Days Recorded)';
-  document.getElementById('mRepSales').textContent = formatMoney(totSales);
+  var net = totS - totE;
+  document.getElementById('repMonthTitle').textContent = 'MONTHLY REPORT — ' + ym + ' (' + days + ' Days)';
+  document.getElementById('mRepSales').textContent = formatMoney(totS);
   document.getElementById('mRepExp').textContent = formatMoney(totE);
-  document.getElementById('mRepNet').textContent = formatMoney(netProfit);
-  document.getElementById('mRepCash').textContent = formatMoney(totC);
-  document.getElementById('mRepSwiggy').textContent = formatMoney(totSw);
-  document.getElementById('mRepZomato').textContent = formatMoney(totZ);
-  document.getElementById('mRepOther').textContent = formatMoney(totOt);
+  document.getElementById('mRepNet').textContent = formatMoney(net);
 
   var pHtml = PROFIT_PARTNERS.map(function(p){
-    var share = netProfit * p.pct / 100;
     return '<div style="display:flex;justify-content:space-between;border-bottom:1px dashed #DDD;padding:2px 0;">' +
       '<span>' + p.name + ' (' + p.pct + '%):</span>' +
-      '<strong>' + formatMoney(share) + '</strong>' +
+      '<strong>' + formatMoney(net * p.pct / 100) + '</strong>' +
     '</div>';
   }).join('');
   document.getElementById('mRepPartners').innerHTML = pHtml;
   document.getElementById('monthlyReportArea').style.display = 'block';
 }
 
-function shareMonthlyReportWhatsApp(){
-  if(!activeMonthlyData) return;
-  var d = activeMonthlyData;
-  var lines = [];
-  lines.push('*7TH HEAVEN NASHIK — MONTHLY LEDGER*');
-  lines.push('Period: ' + d.monthStr + ' (' + d.daysLogged + ' Days Logged)');
-  lines.push('----------------------------------');
-  lines.push('*Total Sales:* ' + formatMoney(d.sales));
-  lines.push('• Cash: ' + formatMoney(d.cash));
-  lines.push('• Swiggy: ' + formatMoney(d.swiggy));
-  lines.push('• Zomato: ' + formatMoney(d.zomato));
-  lines.push('• Other: ' + formatMoney(d.other));
-  lines.push('----------------------------------');
-  lines.push('*Total Expenses:* ' + formatMoney(d.expenses));
-  lines.push('*Net Profit:* ' + formatMoney(d.net));
-  lines.push('----------------------------------');
-  lines.push('*Partner Shares:*');
-  PROFIT_PARTNERS.forEach(function(p){
-    lines.push('• ' + p.name + ' (' + p.pct + '%): ' + formatMoney(d.net * p.pct / 100));
-  });
-  lines.push('----------------------------------');
-  lines.push('Automated Store Sync');
-
-  var url = 'https://web.whatsapp.com/send?text=' + encodeURIComponent(lines.join('\n'));
-  window.open(url, '_blank');
-}
-
-function printMonthlyReport(){
-  var content = document.getElementById('monthlyPrintContainer').innerHTML;
-  var pWin = window.open('', 'MonthlyReport', 'width=650,height=750');
-  pWin.document.write('<html><head><title>Monthly Report</title><style>body{font-family:sans-serif;padding:20px;color:#111;}</style></head><body>' + content + '</body></html>');
-  pWin.document.close();
-  pWin.focus();
-  setTimeout(function(){ pWin.print(); }, 250);
-}
-
-// Role Authentication
+// Authentication
 var targetRolePending = null;
 function promptRolePass(role){
   targetRolePending = role;
@@ -885,6 +894,7 @@ function enterAppWithRole(){
   document.getElementById('mainAppContent').style.display = 'block';
   applyRoleUI();
   renderAll();
+  renderInvoiceRows();
   syncWithCloud();
 }
 
@@ -944,7 +954,7 @@ document.querySelectorAll('.nav-bar button').forEach(function(b){
   };
 });
 
-// Admin Passwords
+// Passwords Save
 document.getElementById('savePasswordsBtn').onclick = function(){
   if(state.currentRole !== 'admin') return;
   ROLE_PASSWORDS.admin = document.getElementById('pwFieldAdmin').value.trim();
@@ -954,7 +964,7 @@ document.getElementById('savePasswordsBtn').onclick = function(){
   toast('Passwords saved and synced across devices!');
 };
 
-// Start
+// Initialize
 document.getElementById('todayClock').textContent = getTodayStr();
 var now = new Date();
 document.getElementById('historyDateInput').value = now.toISOString().slice(0,10);
