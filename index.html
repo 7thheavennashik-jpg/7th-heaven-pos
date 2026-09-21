@@ -110,7 +110,6 @@
   .mobile-add-strip { display: flex; gap: 6px; padding: 6px 8px; background: #FAF8F8; border-top: 1px solid var(--rule); }
   .mobile-next-btn { flex: 1; padding: 6px; background: #FFF; border: 1px dashed var(--maroon-hdr); color: var(--maroon-hdr); font-weight: 600; border-radius: 3px; font-size: 11.5px; cursor: pointer; }
 
-  /* WASTAGE SECTION */
   .waste-box { border: 1px solid var(--rule-strong); background: #FFFDF9; margin-top: 14px; border-radius: 4px; overflow: hidden; }
   .waste-hdr { background: #632B1E; color: #FFF; padding: 6px 12px; font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
 
@@ -300,7 +299,7 @@
         </div>
       </div>
 
-      <!-- AUTO-CALCULATED FINISHED GOODS SPOILAGE LOG (40%) -->
+      <!-- FINISHED GOODS SPOILAGE LOG (Auto 40% Calculation) -->
       <div class="waste-box">
         <div class="waste-hdr">
           <span>🍰 END-OF-DAY FINISHED GOODS SPOILAGE (Enter Selling Price Only)</span>
@@ -358,7 +357,7 @@
       </div>
     </section>
 
-    <!-- PANEL 4: POS & INVOICES -->
+    <!-- PANEL 4: POS & INVOICES (ISOLATED FROM DAILY SALES) -->
     <section class="panel" id="panel-invoice">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Customer Sale &amp; Bill Generator</h2>
       <p style="font-size:11.5px;color:var(--ink-soft);margin-bottom:12px;">Generate customer bills upon request. <strong>Does not add entries to the Daily Sales table.</strong></p>
@@ -446,9 +445,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v19";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v20";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v19";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v20";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -595,7 +594,8 @@ function addNewWasteLine(focusNew){
   if(!sheet.wastage) sheet.wastage = [];
   sheet.wastage.push({ item:'', qty: 1, sp: '', reason: 'Expired Shelf Life' });
   saveState();
-  renderDailyGrids();
+  renderWasteGrid();
+  updateTotals();
   if(focusNew){
     var inputs = document.querySelectorAll('#wasteTbody input[data-f="item"]');
     if(inputs.length > 0) inputs[inputs.length - 1].focus();
@@ -606,13 +606,12 @@ function renderDailyGrids(){
   var sheet = state.daily[state.activeDate];
   var sEditable = canEditSales();
   var eEditable = canEditExpenses();
-  var wEditable = canEditWaste();
 
   if(!sheet.sales || sheet.sales.length === 0){ sheet.sales = [{ cash:'', swiggy:'', zomato:'', other:'' }]; }
   if(!sheet.expenses || sheet.expenses.length === 0){ sheet.expenses = [{ category:'', amount:'', method:'UPI Direct' }]; }
   if(!sheet.wastage) sheet.wastage = [];
 
-  // 1. Sales Table
+  // Sales Table
   var sTbody = document.getElementById('salesTbody');
   sTbody.innerHTML = '';
   var sl = 1;
@@ -663,7 +662,7 @@ function renderDailyGrids(){
 
   document.getElementById('salesMobileStrip').style.display = sEditable ? 'flex' : 'none';
 
-  // 2. Expense Table
+  // Expense Table
   var eTbody = document.getElementById('expTbody');
   eTbody.innerHTML = '';
   var mets = ['UPI Direct', 'Cash', 'NetBanking', 'Credit Card', 'Vendor Credit'];
@@ -723,7 +722,15 @@ function renderDailyGrids(){
 
   document.getElementById('expMobileStrip').style.display = eEditable ? 'flex' : 'none';
 
-  // 3. Spoilage Table (Auto Cost at 40%)
+  renderWasteGrid();
+  updateTotals();
+}
+
+// Dedicated Spoilage Renderer (Preserves Focus while typing)
+function renderWasteGrid(){
+  var sheet = state.daily[state.activeDate];
+  if(!sheet.wastage) sheet.wastage = [];
+  var wEditable = canEditWaste();
   var wTbody = document.getElementById('wasteTbody');
   wTbody.innerHTML = '';
   var reasons = ['Expired Shelf Life', 'Display Dry-out', 'Physical Drop/Damage', 'Quality Reject'];
@@ -761,7 +768,8 @@ function renderDailyGrids(){
         delBtn.onclick = function(){
           sheet.wastage.splice(idx, 1);
           saveState();
-          renderDailyGrids();
+          renderWasteGrid();
+          updateTotals();
         };
       }
     }
@@ -769,7 +777,6 @@ function renderDailyGrids(){
   });
 
   document.getElementById('wasteMobileStrip').style.display = wEditable ? 'flex' : 'none';
-  updateTotals();
 }
 
 function handleSaleAutoJump(idx, currentField){
@@ -805,11 +812,12 @@ function updateTotals(){
     ex += Number(r.amount) || 0;
   });
 
+  // Calculate Spoilage Totals with matched element IDs
   (sheet.wastage || []).forEach(function(w, i){
     var spVal = Number(w.sp) || 0;
     var qVal = Number(w.qty) || 0;
     var lineRetail = qVal * spVal;
-    var lineCost = lineRetail * 0.40; // 40% cost computation
+    var lineCost = lineRetail * 0.40;
     wasteCostLoss += lineCost;
 
     var costEl = document.getElementById('wCostAuto_' + i);
@@ -882,7 +890,7 @@ function calculateLedgerCarryAndMTD(todayNet){
   document.getElementById('mtdExpTotal').textContent = formatMoney(mtdE);
 }
 
-// EXPORT TO EXCEL (WITH 40% SPOILAGE CALCULATION)
+// EXPORT TO EXCEL
 function exportActiveDayToExcel(){
   if(typeof XLSX === 'undefined'){ alert('Excel library is loading, please try again.'); return; }
   var dKey = state.activeDate;
@@ -953,7 +961,7 @@ function exportActiveDayToExcel(){
     ]);
   }
 
-  // Spoilage Table (40%)
+  // Spoilage Table in Excel (40%)
   aoa.push([]);
   aoa.push(["FINISHED GOODS SPOILAGE & WASTAGE", "", "", "", "", ""]);
   aoa.push(["Discarded Item", "Qty", "Selling Price (₹)", "Auto Cost Loss (40%)", "Retail Loss (₹)", "Reason"]);
