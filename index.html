@@ -110,7 +110,7 @@
   .mobile-add-strip { display: flex; gap: 6px; padding: 6px 8px; background: #FAF8F8; border-top: 1px solid var(--rule); }
   .mobile-next-btn { flex: 1; padding: 6px; background: #FFF; border: 1px dashed var(--maroon-hdr); color: var(--maroon-hdr); font-weight: 600; border-radius: 3px; font-size: 11.5px; cursor: pointer; }
 
-  /* WASTAGE SECTION STYLES */
+  /* WASTAGE SECTION */
   .waste-box { border: 1px solid var(--rule-strong); background: #FFFDF9; margin-top: 14px; border-radius: 4px; overflow: hidden; }
   .waste-hdr { background: #632B1E; color: #FFF; padding: 6px 12px; font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
 
@@ -237,7 +237,7 @@
           <span class="amt" id="kpiExp">₹0.00</span>
         </div>
         <div class="kpi-card kpi-waste">
-          <span class="lbl">Spoilage Loss (CP)</span>
+          <span class="lbl">Spoilage Cost (40%)</span>
           <span class="amt" id="kpiWaste">₹0.00</span>
         </div>
         <div class="kpi-card kpi-net">
@@ -300,19 +300,20 @@
         </div>
       </div>
 
-      <!-- FINISHED GOODS SPOILAGE & WASTAGE TRACKER -->
+      <!-- AUTO-CALCULATED FINISHED GOODS SPOILAGE LOG (40%) -->
       <div class="waste-box">
         <div class="waste-hdr">
-          <span>🍰 END-OF-DAY FINISHED GOODS SPOILAGE LOG (Unsold Expired Items Only)</span>
-          <span style="font-size:11px;font-weight:normal;">Total Spoilage Cost: <strong id="wasteTotalHdr">₹0.00</strong></span>
+          <span>🍰 END-OF-DAY FINISHED GOODS SPOILAGE (Enter Selling Price Only)</span>
+          <span style="font-size:11px;font-weight:normal;">Actual Cost Loss (40%): <strong id="wasteTotalHdr" style="color:#FFF;">₹0.00</strong></span>
         </div>
         <table class="tracker" id="wasteTable">
           <thead>
             <tr style="background:#803525;">
               <th style="text-align:left;padding-left:8px;">Discarded Finished Item</th>
               <th style="width:65px;">Qty</th>
-              <th style="width:90px;">Cost Price (₹)</th>
-              <th style="width:95px;text-align:right;">Cost Loss (₹)</th>
+              <th style="width:105px;">Selling Price (₹)</th>
+              <th style="width:100px;text-align:right;">Auto Cost (40%)</th>
+              <th style="width:105px;text-align:right;">Lost Retail (₹)</th>
               <th style="width:130px;">Reason</th>
               <th style="width:24px;"></th>
             </tr>
@@ -348,7 +349,7 @@
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0;">
             <div style="background:#FFF;padding:8px;border:1px solid var(--rule);"><span style="font-size:10px;">TOTAL SALES</span><div id="mRepSales" style="font-weight:700;">₹0.00</div></div>
             <div style="background:#FFF;padding:8px;border:1px solid var(--rule);"><span style="font-size:10px;">TOTAL EXPENSES</span><div id="mRepExp" style="font-weight:700;color:var(--brick);">₹0.00</div></div>
-            <div style="background:#FFF8EB;padding:8px;border:1px solid var(--rule);"><span style="font-size:10px;color:var(--gold);">TOTAL SPOILAGE LOSS</span><div id="mRepWaste" style="font-weight:700;color:var(--gold);">₹0.00</div></div>
+            <div style="background:#FFF8EB;padding:8px;border:1px solid var(--rule);"><span style="font-size:10px;color:var(--gold);">SPOILAGE COST (40%)</span><div id="mRepWaste" style="font-weight:700;color:var(--gold);">₹0.00</div></div>
             <div style="background:var(--net-green);color:#FFF;padding:8px;"><span style="font-size:10px;color:#D8EAC8;">NET IN-HAND PROFIT</span><div id="mRepNet" style="font-weight:700;">₹0.00</div></div>
           </div>
           <h4 style="margin:10px 0 4px;font-size:12px;">Partner Profit Sharing:</h4>
@@ -445,9 +446,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v17";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v19";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v17";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v19";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -592,7 +593,7 @@ function addNewExpLine(focusNew){
 function addNewWasteLine(focusNew){
   var sheet = state.daily[state.activeDate];
   if(!sheet.wastage) sheet.wastage = [];
-  sheet.wastage.push({ item:'', qty: 1, cp: '', reason: 'Expired Shelf Life' });
+  sheet.wastage.push({ item:'', qty: 1, sp: '', reason: 'Expired Shelf Life' });
   saveState();
   renderDailyGrids();
   if(focusNew){
@@ -722,31 +723,36 @@ function renderDailyGrids(){
 
   document.getElementById('expMobileStrip').style.display = eEditable ? 'flex' : 'none';
 
-  // 3. Spoilage Table
+  // 3. Spoilage Table (Auto Cost at 40%)
   var wTbody = document.getElementById('wasteTbody');
   wTbody.innerHTML = '';
   var reasons = ['Expired Shelf Life', 'Display Dry-out', 'Physical Drop/Damage', 'Quality Reject'];
 
   sheet.wastage.forEach(function(row, idx){
     var tr = document.createElement('tr');
-    var costAmt = (Number(row.qty)||0) * (Number(row.cp)||0);
+    var spVal = Number(row.sp) || 0;
+    var qtyVal = Number(row.qty) || 0;
+    var totalRetail = qtyVal * spVal;
+    var totalCost40 = totalRetail * 0.40;
+
     var rOpts = reasons.map(function(rs){ return '<option value="'+rs+'" '+(row.reason===rs?'selected':'')+'>'+rs+'</option>'; }).join('');
 
     tr.innerHTML =
-      '<td><input type="text" enterkeyhint="next" class="cell-input text-left" data-w-idx="' + idx + '" data-f="item" value="' + (row.item||'') + '" placeholder="e.g. Dutch Truffle Pastry" ' + (!wEditable?'disabled':'') + '></td>' +
+      '<td><input type="text" enterkeyhint="next" class="cell-input text-left" data-w-idx="' + idx + '" data-f="item" value="' + (row.item||'') + '" placeholder="e.g. Black Forest 500g" ' + (!wEditable?'disabled':'') + '></td>' +
       '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-w-idx="' + idx + '" data-f="qty" value="' + (row.qty||1) + '" ' + (!wEditable?'disabled':'') + '></td>' +
-      '<td><input type="number" inputmode="decimal" step="0.01" enterkeyhint="next" class="cell-input" data-w-idx="' + idx + '" data-f="cp" value="' + (row.cp||'') + '" placeholder="0.00" ' + (!wEditable?'disabled':'') + '></td>' +
-      '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:8px;" id="wCostTotal_' + idx + '">' + formatMoney(costAmt) + '</td>' +
+      '<td><input type="number" inputmode="decimal" step="0.01" enterkeyhint="next" class="cell-input" data-w-idx="' + idx + '" data-f="sp" value="' + (row.sp||'') + '" placeholder="400.00" ' + (!wEditable?'disabled':'') + '></td>' +
+      '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:8px;font-weight:700;color:var(--gold);" id="wCostAuto_' + idx + '">' + formatMoney(totalCost40) + '</td>' +
+      '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:8px;color:var(--ink-soft);" id="wRetailAuto_' + idx + '">' + formatMoney(totalRetail) + '</td>' +
       '<td><select class="cell-select" data-f="reason" ' + (!wEditable?'disabled':'') + '>' + rOpts + '</select></td>' +
       '<td style="text-align:center;">' + (wEditable ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
 
     var itInp = tr.querySelector('[data-f="item"]');
     var qInp = tr.querySelector('[data-f="qty"]');
-    var cpInp = tr.querySelector('[data-f="cp"]');
+    var spInp = tr.querySelector('[data-f="sp"]');
 
     itInp.oninput = function(e){ row.item = e.target.value; saveState(); };
     qInp.oninput = function(e){ row.qty = e.target.value; saveState(); updateTotals(); };
-    cpInp.oninput = function(e){ row.cp = e.target.value; saveState(); updateTotals(); };
+    spInp.oninput = function(e){ row.sp = e.target.value; saveState(); updateTotals(); };
     tr.querySelector('[data-f="reason"]').onchange = function(e){ row.reason = e.target.value; saveState(); };
 
     if(wEditable){
@@ -786,7 +792,7 @@ function handleExpAutoJump(idx){
 
 function updateTotals(){
   var sheet = state.daily[state.activeDate];
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wasteLoss = 0;
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wasteCostLoss = 0;
 
   sheet.sales.forEach(function(r){
     c += Number(r.cash) || 0;
@@ -800,10 +806,16 @@ function updateTotals(){
   });
 
   (sheet.wastage || []).forEach(function(w, i){
-    var lineCost = (Number(w.qty)||0) * (Number(w.cp)||0);
-    wasteLoss += lineCost;
-    var lineEl = document.getElementById('wCostTotal_' + i);
-    if(lineEl) lineEl.textContent = formatMoney(lineCost);
+    var spVal = Number(w.sp) || 0;
+    var qVal = Number(w.qty) || 0;
+    var lineRetail = qVal * spVal;
+    var lineCost = lineRetail * 0.40; // 40% cost computation
+    wasteCostLoss += lineCost;
+
+    var costEl = document.getElementById('wCostAuto_' + i);
+    var retEl = document.getElementById('wRetailAuto_' + i);
+    if(costEl) costEl.textContent = formatMoney(lineCost);
+    if(retEl) retEl.textContent = formatMoney(lineRetail);
   });
 
   var totalSales = c + sw + z + ot;
@@ -818,9 +830,9 @@ function updateTotals(){
   document.getElementById('kpiDate').textContent = state.activeDate;
   document.getElementById('kpiSales').textContent = formatMoney(totalSales);
   document.getElementById('kpiExp').textContent = formatMoney(ex);
-  document.getElementById('kpiWaste').textContent = formatMoney(wasteLoss);
+  document.getElementById('kpiWaste').textContent = formatMoney(wasteCostLoss);
   document.getElementById('kpiNet').textContent = formatMoney(net);
-  document.getElementById('wasteTotalHdr').textContent = formatMoney(wasteLoss);
+  document.getElementById('wasteTotalHdr').textContent = formatMoney(wasteCostLoss);
 
   var sl = 1;
   document.querySelectorAll('#salesTbody tr').forEach(function(tr, i){
@@ -870,7 +882,7 @@ function calculateLedgerCarryAndMTD(todayNet){
   document.getElementById('mtdExpTotal').textContent = formatMoney(mtdE);
 }
 
-// EXPORT TO EXCEL MATCHING APP FORMAT INCLUDING WASTAGE
+// EXPORT TO EXCEL (WITH 40% SPOILAGE CALCULATION)
 function exportActiveDayToExcel(){
   if(typeof XLSX === 'undefined'){ alert('Excel library is loading, please try again.'); return; }
   var dKey = state.activeDate;
@@ -881,7 +893,7 @@ function exportActiveDayToExcel(){
     c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0;
   });
   sheetData.expenses.forEach(function(e){ ex += Number(e.amount)||0; });
-  (sheetData.wastage||[]).forEach(function(w){ wTot += (Number(w.qty)||0) * (Number(w.cp)||0); });
+  (sheetData.wastage||[]).forEach(function(w){ wTot += ((Number(w.qty)||0) * (Number(w.sp)||0)) * 0.40; });
 
   var todayTotSales = c + sw + z + ot;
   var todayNet = todayTotSales - ex;
@@ -914,7 +926,7 @@ function exportActiveDayToExcel(){
   aoa.push([carryPrev, "", (carryPrev + todayNet), "", mtdS, "", mtdE, ""]);
   aoa.push([]);
 
-  aoa.push(["ACTIVE DATE", "", "TODAY SALES", "", "TODAY EXPENSES", "", "SPOILAGE LOSS (CP)", "TODAY NET IN-HAND"]);
+  aoa.push(["ACTIVE DATE", "", "TODAY SALES", "", "TODAY EXPENSES", "", "SPOILAGE COST (40%)", "TODAY NET IN-HAND"]);
   aoa.push([dKey, "", todayTotSales, "", ex, "", wTot, todayNet]);
   aoa.push([]);
 
@@ -941,16 +953,19 @@ function exportActiveDayToExcel(){
     ]);
   }
 
-  // Add Spoilage Table to Excel
+  // Spoilage Table (40%)
   aoa.push([]);
-  aoa.push(["FINISHED GOODS SPOILAGE & WASTAGE (UNSOLD EXPIRED)", "", "", "", ""]);
-  aoa.push(["Discarded Finished Item", "Qty", "Cost Price (₹)", "Total Cost Loss (₹)", "Reason"]);
+  aoa.push(["FINISHED GOODS SPOILAGE & WASTAGE", "", "", "", "", ""]);
+  aoa.push(["Discarded Item", "Qty", "Selling Price (₹)", "Auto Cost Loss (40%)", "Retail Loss (₹)", "Reason"]);
   if(sheetData.wastage && sheetData.wastage.length > 0){
     sheetData.wastage.forEach(function(w){
-      aoa.push([w.item, Number(w.qty)||0, Number(w.cp)||0, (Number(w.qty)||0)*(Number(w.cp)||0), w.reason]);
+      var spVal = Number(w.sp) || 0;
+      var qVal = Number(w.qty) || 0;
+      var ret = qVal * spVal;
+      aoa.push([w.item, qVal, spVal, ret * 0.40, ret, w.reason]);
     });
   } else {
-    aoa.push(["None", 0, 0, 0, "-"]);
+    aoa.push(["None", 0, 0, 0, 0, "-"]);
   }
 
   var ws = XLSX.utils.aoa_to_sheet(aoa);
@@ -1168,8 +1183,8 @@ function loadHistoryDateReport(){
 
   var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wL = 0;
   (dData.sales||[]).forEach(function(r){ c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0; });
-  (dData.expenses||[]).forEach(function(r){ ex += Number(r.amount)||0; });
-  (dData.wastage||[]).forEach(function(w){ wL += (Number(w.qty)||0) * (Number(w.cp)||0); });
+  (dData.expenses||[]).forEach(function(e){ ex += Number(e.amount)||0; });
+  (dData.wastage||[]).forEach(function(w){ wL += ((Number(w.qty)||0) * (Number(w.sp)||0)) * 0.40; });
   var totSales = c + sw + z + ot;
   var net = totSales - ex;
 
@@ -1181,7 +1196,7 @@ function loadHistoryDateReport(){
       '</div>' +
       '<div><strong>Total Daily Sales:</strong> ' + formatMoney(totSales) + '</div>' +
       '<div><strong>Total Expenses:</strong> ' + formatMoney(ex) + '</div>' +
-      '<div><strong>Spoilage Loss (Cost):</strong> ' + formatMoney(wL) + '</div>' +
+      '<div><strong>Spoilage Cost Loss (40%):</strong> ' + formatMoney(wL) + '</div>' +
       '<div style="font-size:14px;font-weight:700;color:' + (net>=0?'var(--net-green)':'var(--brick)') + ';margin-top:6px;">Net In-Hand: ' + formatMoney(net) + '</div>' +
     '</div>';
 }
@@ -1199,7 +1214,7 @@ function generateMonthlyReport(){
       var d = state.daily[dKey];
       (d.sales||[]).forEach(function(r){ totS += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0); });
       (d.expenses||[]).forEach(function(e){ totE += Number(e.amount)||0; });
-      (d.wastage||[]).forEach(function(w){ totW += (Number(w.qty)||0) * (Number(w.cp)||0); });
+      (d.wastage||[]).forEach(function(w){ totW += ((Number(w.qty)||0) * (Number(w.sp)||0)) * 0.40; });
     }
   });
 
