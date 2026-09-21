@@ -322,9 +322,11 @@
       </div>
     </section>
 
-    <!-- PANEL 4: POS & INVOICES -->
+    <!-- PANEL 4: POS & INVOICES (ISOLATED FROM SALES SHEET) -->
     <section class="panel" id="panel-invoice">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Customer Sale &amp; Bill Generator</h2>
+      <p style="font-size:11.5px;color:var(--ink-soft);margin-bottom:12px;">Generates standalone customer invoices upon request. <strong>Does not affect the Daily Sales tracker.</strong></p>
+
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
         <div class="form-group"><label>Customer Name</label><input type="text" id="invCustName" placeholder="Walk-in Customer"></div>
         <div class="form-group"><label>WhatsApp Phone</label><input type="text" id="invCustPhone" placeholder="10-digit number"></div>
@@ -355,9 +357,29 @@
         <div style="font-size:16px;font-weight:700;">Bill Total: <span id="invTotalBadge" style="color:var(--maroon-banner);">₹0.00</span></div>
       </div>
 
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
         <button class="btn-p" onclick="saveAndPrintInvoice()">Save Bill &amp; Print Receipt</button>
         <button class="btn-s" onclick="resetInvoiceForm()">Clear Bill</button>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--rule-strong);margin:20px 0 16px;">
+
+      <!-- INVOICE LIST / HISTORY -->
+      <h3 style="font-family:'Fraunces',serif;font-size:15px;margin-bottom:8px;">Past Invoices &amp; Bill Records</h3>
+      <div style="overflow-x:auto;">
+        <table class="tracker" style="width:100%;background:#FFF;">
+          <thead>
+            <tr>
+              <th style="width:90px;">Date</th>
+              <th style="text-align:left;padding-left:6px;">Customer</th>
+              <th>Phone</th>
+              <th>Mode</th>
+              <th>Total (₹)</th>
+              <th style="width:130px;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="invHistoryBody"></tbody>
+        </table>
       </div>
     </section>
 
@@ -389,9 +411,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v14";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v15";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v14";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v15";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -498,6 +520,7 @@ function syncWithCloud(){
         if(cloudObj.passwords) Object.assign(ROLE_PASSWORDS, cloudObj.passwords);
         document.getElementById('syncText').textContent = 'Live Cloud Synced';
         renderAll();
+        renderInvoiceHistory();
       }
     }).catch(function(){
       document.getElementById('syncText').textContent = 'Using Local Cache';
@@ -773,6 +796,9 @@ function exportActiveDayToExcel(){
   XLSX.writeFile(wb, "7th_Heaven_" + dKey + ".xlsx");
 }
 
+/* =========================================================
+   POS & INVOICE MANAGEMENT (SEPARATE FROM DAILY SALES)
+========================================================= */
 function addInvoiceItemRow(){
   currentInvoiceItems.push({ desc: '', qty: 1, rate: '' });
   renderInvoiceRows();
@@ -785,29 +811,44 @@ function renderInvoiceRows(){
     currentInvoiceItems.push({ desc: '', qty: 1, rate: '' });
   }
 
-  var grandTot = 0;
   currentInvoiceItems.forEach(function(item, idx){
-    var amt = (Number(item.qty)||0) * (Number(item.rate)||0);
-    grandTot += amt;
     var tr = document.createElement('tr');
     tr.innerHTML =
-      '<td><input type="text" class="cell-input text-left" data-idx="' + idx + '" data-f="desc" value="' + (item.desc||'') + '" placeholder="Item name"></td>' +
-      '<td><input type="number" inputmode="decimal" class="cell-input" data-idx="' + idx + '" data-f="qty" value="' + (item.qty||1) + '"></td>' +
-      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="rate" value="' + (item.rate||'') + '" placeholder="0.00"></td>' +
-      '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:8px;">' + formatMoney(amt) + '</td>' +
+      '<td><input type="text" class="cell-input text-left inv-desc" data-idx="' + idx + '" value="' + (item.desc||'') + '" placeholder="Item name"></td>' +
+      '<td><input type="number" inputmode="decimal" class="cell-input inv-qty" data-idx="' + idx + '" value="' + (item.qty||1) + '"></td>' +
+      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input inv-rate" data-idx="' + idx + '" value="' + (item.rate||'') + '" placeholder="0.00"></td>' +
+      '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:8px;" class="inv-row-total" id="invTotalRow_' + idx + '">' + formatMoney((Number(item.qty)||0) * (Number(item.rate)||0)) + '</td>' +
       '<td><button class="row-del-btn" onclick="removeInvoiceItem(' + idx + ')">&times;</button></td>';
 
-    tr.querySelectorAll('input').forEach(function(inp){
-      inp.oninput = function(e){
-        var f = e.target.getAttribute('data-f');
-        item[f] = e.target.value;
-        renderInvoiceRows();
-      };
-    });
+    var descInp = tr.querySelector('.inv-desc');
+    var qtyInp = tr.querySelector('.inv-qty');
+    var rateInp = tr.querySelector('.inv-rate');
+
+    descInp.oninput = function(e){ item.desc = e.target.value; };
+    qtyInp.oninput = function(e){
+      item.qty = e.target.value;
+      recalculateInvoiceTotal();
+    };
+    rateInp.oninput = function(e){
+      item.rate = e.target.value;
+      recalculateInvoiceTotal();
+    };
+
     tbody.appendChild(tr);
   });
 
-  document.getElementById('invTotalBadge').textContent = formatMoney(grandTot);
+  recalculateInvoiceTotal();
+}
+
+function recalculateInvoiceTotal(){
+  var total = 0;
+  currentInvoiceItems.forEach(function(item, idx){
+    var amt = (Number(item.qty)||0) * (Number(item.rate)||0);
+    total += amt;
+    var el = document.getElementById('invTotalRow_' + idx);
+    if(el) el.textContent = formatMoney(amt);
+  });
+  document.getElementById('invTotalBadge').textContent = formatMoney(total);
 }
 
 function removeInvoiceItem(idx){
@@ -823,32 +864,126 @@ function resetInvoiceForm(){
 }
 
 function saveAndPrintInvoice(){
-  var custName = document.getElementById('invCustName').value || 'Customer';
-  var custPhone = document.getElementById('invCustPhone').value || '';
+  var custName = document.getElementById('invCustName').value.trim() || 'Walk-in Customer';
+  var custPhone = document.getElementById('invCustPhone').value.trim() || '-';
   var payMode = document.getElementById('invPayMode').value;
-  var items = currentInvoiceItems.filter(function(i){ return (Number(i.qty)||0) > 0 && (Number(i.rate)||0) > 0; });
+  var validItems = currentInvoiceItems.filter(function(i){ return (Number(i.qty)||0) > 0 && (Number(i.rate)||0) > 0; });
   
-  if(items.length === 0){ alert('Please enter at least one item.'); return; }
+  if(validItems.length === 0){ alert('Please enter at least one item with valid quantity and rate.'); return; }
 
-  var total = items.reduce(function(acc, i){ return acc + (Number(i.qty)*Number(i.rate)); }, 0);
-  var inv = { id: 'INV-' + Date.now(), date: getTodayStr(), customer: custName, phone: custPhone, mode: payMode, items: items, total: total };
-  state.invoices.push(inv);
+  var total = validItems.reduce(function(acc, i){ return acc + (Number(i.qty)*Number(i.rate)); }, 0);
+  var invRecord = {
+    id: 'INV-' + Date.now().toString().slice(-6),
+    date: getTodayStr(),
+    customer: custName,
+    phone: custPhone,
+    mode: payMode,
+    items: validItems,
+    total: total
+  };
+
+  if(!state.invoices) state.invoices = [];
+  state.invoices.unshift(invRecord);
   saveState();
+  renderInvoiceHistory();
 
-  var printContent = '<h3>7TH HEAVEN NASHIK</h3><p>Date: ' + inv.date + '<br>Bill To: ' + inv.customer + ' (' + inv.phone + ')<br>Mode: ' + inv.mode + '</p><hr>';
-  printContent += '<table style="width:100%;text-align:left;"><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Total</th></tr>';
-  items.forEach(function(it){
-    printContent += '<tr><td>' + it.desc + '</td><td>' + it.qty + '</td><td>' + it.rate + '</td><td>' + (it.qty*it.rate).toFixed(2) + '</td></tr>';
+  // Print Receipt Window
+  var printContent = '<div style="text-align:center;font-family:sans-serif;padding:10px;">';
+  printContent += '<h2 style="margin:0;color:#4A1525;">7TH HEAVEN NASHIK</h2>';
+  printContent += '<p style="margin:4px 0 10px;font-size:12px;">Tax Invoice / Bill of Sale</p>';
+  printContent += '<div style="text-align:left;font-size:11.5px;border-top:1px dashed #444;border-bottom:1px dashed #444;padding:6px 0;margin-bottom:10px;">';
+  printContent += 'Bill ID: <strong>' + invRecord.id + '</strong><br>';
+  printContent += 'Date: ' + invRecord.date + '<br>';
+  printContent += 'Customer: ' + invRecord.customer + '<br>';
+  printContent += 'Phone: ' + invRecord.phone + '<br>';
+  printContent += 'Payment Mode: ' + invRecord.mode + '</div>';
+  printContent += '<table style="width:100%;font-size:11.5px;border-collapse:collapse;text-align:left;">';
+  printContent += '<tr style="border-bottom:1px solid #444;"><th>Item</th><th style="width:35px;">Qty</th><th style="width:60px;">Rate</th><th style="text-align:right;">Amt</th></tr>';
+  validItems.forEach(function(it){
+    printContent += '<tr><td style="padding:4px 0;">' + it.desc + '</td><td>' + it.qty + '</td><td>' + Number(it.rate).toFixed(2) + '</td><td style="text-align:right;">' + (it.qty*it.rate).toFixed(2) + '</td></tr>';
   });
-  printContent += '</table><hr><h4>Grand Total: ₹' + total.toFixed(2) + '</h4>';
-  
-  var pWin = window.open('', 'Receipt', 'width=350,height=500');
-  pWin.document.write('<html><head><title>Receipt</title><style>body{font-family:monospace;font-size:12px;padding:10px;}</style></head><body>' + printContent + '</body></html>');
+  printContent += '</table>';
+  printContent += '<div style="border-top:1px dashed #444;margin-top:8px;padding-top:6px;text-align:right;font-size:13px;"><strong>Grand Total: ₹' + total.toFixed(2) + '</strong></div>';
+  printContent += '<p style="margin-top:16px;font-size:10.5px;">Thank you for visiting 7th Heaven Nashik!</p></div>';
+
+  var pWin = window.open('', 'Receipt', 'width=380,height=520');
+  pWin.document.write('<html><head><title>Receipt</title></head><body>' + printContent + '</body></html>');
   pWin.document.close();
   pWin.focus();
   setTimeout(function(){ pWin.print(); }, 250);
 
   resetInvoiceForm();
+  toast('Invoice ' + invRecord.id + ' generated successfully!');
+}
+
+function renderInvoiceHistory(){
+  var tbody = document.getElementById('invHistoryBody');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+
+  if(!state.invoices || state.invoices.length === 0){
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:10px;">No invoices generated yet.</td></tr>';
+    return;
+  }
+
+  state.invoices.forEach(function(inv, idx){
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td style="text-align:center;">' + inv.date + '</td>' +
+      '<td style="padding-left:6px;"><strong>' + inv.customer + '</strong><br><span style="font-size:10px;color:var(--ink-soft);">' + inv.id + '</span></td>' +
+      '<td style="text-align:center;">' + inv.phone + '</td>' +
+      '<td style="text-align:center;">' + inv.mode + '</td>' +
+      '<td style="text-align:right;font-weight:700;padding-right:6px;color:var(--maroon-banner);">' + formatMoney(inv.total) + '</td>' +
+      '<td style="text-align:center;">' +
+        '<button class="btn-s" style="padding:3px 6px;font-size:11px;" onclick="reprintInvoice(' + idx + ')">🖨️</button> ' +
+        '<button class="btn-s" style="padding:3px 6px;font-size:11px;background:#25D366;color:#FFF;border-color:#25D366;" onclick="shareInvoiceWhatsApp(' + idx + ')">📲</button>' +
+      '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function reprintInvoice(idx){
+  var inv = state.invoices[idx];
+  if(!inv) return;
+  var printContent = '<div style="text-align:center;font-family:sans-serif;padding:10px;">';
+  printContent += '<h2 style="margin:0;color:#4A1525;">7TH HEAVEN NASHIK</h2>';
+  printContent += '<div style="text-align:left;font-size:11.5px;border-top:1px dashed #444;border-bottom:1px dashed #444;padding:6px 0;margin:10px 0;">';
+  printContent += 'Bill ID: <strong>' + inv.id + '</strong><br>Date: ' + inv.date + '<br>Customer: ' + inv.customer + '<br>Phone: ' + inv.phone + '<br>Mode: ' + inv.mode + '</div>';
+  printContent += '<table style="width:100%;font-size:11.5px;border-collapse:collapse;text-align:left;">';
+  printContent += '<tr style="border-bottom:1px solid #444;"><th>Item</th><th>Qty</th><th>Rate</th><th style="text-align:right;">Amt</th></tr>';
+  inv.items.forEach(function(it){
+    printContent += '<tr><td>' + it.desc + '</td><td>' + it.qty + '</td><td>' + Number(it.rate).toFixed(2) + '</td><td style="text-align:right;">' + (it.qty*it.rate).toFixed(2) + '</td></tr>';
+  });
+  printContent += '</table><div style="border-top:1px dashed #444;margin-top:8px;padding-top:6px;text-align:right;"><strong>Total: ' + formatMoney(inv.total) + '</strong></div></div>';
+
+  var pWin = window.open('', 'Receipt', 'width=380,height=520');
+  pWin.document.write('<html><head><title>Receipt</title></head><body>' + printContent + '</body></html>');
+  pWin.document.close();
+  pWin.focus();
+  setTimeout(function(){ pWin.print(); }, 250);
+}
+
+function shareInvoiceWhatsApp(idx){
+  var inv = state.invoices[idx];
+  if(!inv) return;
+  var lines = [];
+  lines.push('*7TH HEAVEN NASHIK — BILL RECEIPT*');
+  lines.push('Bill ID: ' + inv.id);
+  lines.push('Date: ' + inv.date);
+  lines.push('Customer: ' + inv.customer);
+  lines.push('----------------------------------');
+  inv.items.forEach(function(it){
+    lines.push('• ' + it.desc + ' (Qty: ' + it.qty + ' @ ₹' + it.rate + ') = ₹' + (it.qty*it.rate).toFixed(2));
+  });
+  lines.push('----------------------------------');
+  lines.push('*Grand Total: ' + formatMoney(inv.total) + '*');
+  lines.push('Payment Mode: ' + inv.mode);
+  lines.push('Thank you for your visit!');
+
+  var text = encodeURIComponent(lines.join('\n'));
+  var phone = (inv.phone && inv.phone.replace(/[^0-9]/g, '').length === 10) ? ('91' + inv.phone.replace(/[^0-9]/g, '')) : '';
+  var url = phone ? ('https://api.whatsapp.com/send?phone=' + phone + '&text=' + text) : ('https://api.whatsapp.com/send?text=' + text);
+  window.open(url, '_blank');
 }
 
 function loadHistoryDateReport(){
@@ -947,6 +1082,7 @@ function enterAppWithRole(){
   applyRoleUI();
   renderAll();
   renderInvoiceRows();
+  renderInvoiceHistory();
   syncWithCloud();
 }
 
