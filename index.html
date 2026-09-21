@@ -96,7 +96,6 @@
   .cell-select { width: 100%; border: none; background: transparent; font-size: 11px; outline: none; }
   .row-del-btn { background: none; border: none; color: #999; cursor: pointer; font-size: 14px; }
 
-  /* REMOVE ARROW SPINNERS FROM NUMBER INPUTS */
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -199,7 +198,6 @@
         </div>
       </div>
 
-      <!-- MONTH-BASED PREVIOUS IN-HAND CARRY-OVER & MTD -->
       <div class="ledger-carryover-bar">
         <div class="carry-card">
           <div class="clbl">Month Prev In-Hand Carry</div>
@@ -391,9 +389,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v12";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v14";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v12";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v14";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -420,11 +418,6 @@ function getTodayStr(){
   var mm = String(d.getMonth()+1).padStart(2,'0');
   var yyyy = d.getFullYear();
   return dd + "-" + mm + "-" + yyyy;
-}
-
-function parseDateStr(s){
-  var parts = s.split('-');
-  return new Date(parts[2], parts[1]-1, parts[0]);
 }
 
 function formatMoney(n){
@@ -459,7 +452,7 @@ function loadStateLocally(){
   if(!state.daily[today]){
     state.daily[today] = {
       sales: [{ cash:'', swiggy:'', zomato:'', other:'' }],
-      expenses: [{ category:'Ingredients', amount:'', method:'UPI Direct' }]
+      expenses: [{ category:'', amount:'', method:'UPI Direct' }]
     };
     saveState();
   }
@@ -511,6 +504,275 @@ function syncWithCloud(){
     });
 }
 
+function hasAnySaleVal(r){
+  return (Number(r.cash)||0) > 0 || (Number(r.swiggy)||0) > 0 || (Number(r.zomato)||0) > 0 || (Number(r.other)||0) > 0;
+}
+
+function addNewSaleLine(focusNew){
+  var sheet = state.daily[state.activeDate];
+  sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
+  saveState();
+  renderDailyGrids();
+  if(focusNew){
+    var inputs = document.querySelectorAll('#salesTbody input[data-f="cash"]');
+    if(inputs.length > 0) inputs[inputs.length - 1].focus();
+  }
+}
+
+function addNewExpLine(focusNew){
+  var sheet = state.daily[state.activeDate];
+  sheet.expenses.push({ category:'', amount:'', method:'UPI Direct' });
+  saveState();
+  renderDailyGrids();
+  if(focusNew){
+    var inputs = document.querySelectorAll('#expTbody input[data-f="category"]');
+    if(inputs.length > 0) inputs[inputs.length - 1].focus();
+  }
+}
+
+function renderDailyGrids(){
+  var sheet = state.daily[state.activeDate];
+  var sEditable = canEditSales();
+  var eEditable = canEditExpenses();
+
+  if(!sheet.sales || sheet.sales.length === 0){ sheet.sales = [{ cash:'', swiggy:'', zomato:'', other:'' }]; }
+  if(!sheet.expenses || sheet.expenses.length === 0){ sheet.expenses = [{ category:'', amount:'', method:'UPI Direct' }]; }
+
+  // Sales Table
+  var sTbody = document.getElementById('salesTbody');
+  sTbody.innerHTML = '';
+  var sl = 1;
+
+  sheet.sales.forEach(function(row, idx){
+    var tr = document.createElement('tr');
+    var curSl = hasAnySaleVal(row) ? sl++ : '';
+
+    tr.innerHTML =
+      '<td class="sl-box">' + curSl + '</td>' +
+      '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="cash" value="' + (row.cash||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="swiggy" value="' + (row.swiggy||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="zomato" value="' + (row.zomato||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="other" value="' + (row.other||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td style="text-align:center;">' + (sEditable && sheet.sales.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
+
+    tr.querySelectorAll('input').forEach(function(inp){
+      inp.oninput = function(e){
+        row[e.target.getAttribute('data-f')] = e.target.value;
+        saveState();
+        updateTotals();
+      };
+
+      inp.onkeydown = function(e){
+        if(e.key === 'Enter'){
+          e.preventDefault();
+          handleSaleAutoJump(idx, inp.getAttribute('data-f'));
+        }
+      };
+
+      inp.onblur = function(){
+        if(idx === sheet.sales.length - 1 && hasAnySaleVal(row)){
+          addNewSaleLine(false);
+        }
+      };
+    });
+
+    if(sEditable){
+      var delBtn = tr.querySelector('.row-del-btn');
+      if(delBtn){
+        delBtn.onclick = function(){
+          sheet.sales.splice(idx, 1);
+          saveState();
+          renderDailyGrids();
+        };
+      }
+    }
+    sTbody.appendChild(tr);
+  });
+
+  document.getElementById('salesMobileStrip').style.display = sEditable ? 'flex' : 'none';
+
+  // Expense Table
+  var eTbody = document.getElementById('expTbody');
+  eTbody.innerHTML = '';
+  var mets = ['UPI Direct', 'Cash', 'NetBanking', 'Credit Card', 'Vendor Credit'];
+
+  sheet.expenses.forEach(function(row, idx){
+    var tr = document.createElement('tr');
+    var metOpts = mets.map(function(m){ return '<option value="'+m+'" '+(row.method===m?'selected':'')+'>'+m+'</option>'; }).join('');
+
+    tr.innerHTML =
+      '<td><input type="text" enterkeyhint="next" class="cell-input text-left" data-exp-idx="' + idx + '" data-f="category" value="' + (row.category||'') + '" placeholder="e.g. Shop Rent, Gas, Sugar" ' + (!eEditable?'disabled':'') + '></td>' +
+      '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-exp-idx="' + idx + '" data-f="amount" value="' + (row.amount||'') + '" ' + (!eEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><select class="cell-select" data-f="method" ' + (!eEditable?'disabled':'') + '>' + metOpts + '</select></td>' +
+      '<td style="text-align:center;">' + (eEditable && sheet.expenses.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
+
+    var catInp = tr.querySelector('[data-f="category"]');
+    var amtInp = tr.querySelector('[data-f="amount"]');
+
+    catInp.oninput = function(e){ row.category = e.target.value; saveState(); };
+    catInp.onkeydown = function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        amtInp.focus();
+      }
+    };
+
+    tr.querySelector('[data-f="method"]').onchange = function(e){ row.method = e.target.value; saveState(); };
+
+    amtInp.oninput = function(e){
+      row.amount = e.target.value;
+      saveState();
+      updateTotals();
+    };
+
+    amtInp.onkeydown = function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        handleExpAutoJump(idx);
+      }
+    };
+
+    amtInp.onblur = function(){
+      if(idx === sheet.expenses.length - 1 && (Number(row.amount)||0) > 0){
+        addNewExpLine(false);
+      }
+    };
+
+    if(eEditable){
+      var delBtn = tr.querySelector('.row-del-btn');
+      if(delBtn){
+        delBtn.onclick = function(){
+          sheet.expenses.splice(idx, 1);
+          saveState();
+          renderDailyGrids();
+        };
+      }
+    }
+    eTbody.appendChild(tr);
+  });
+
+  document.getElementById('expMobileStrip').style.display = eEditable ? 'flex' : 'none';
+  updateTotals();
+}
+
+function handleSaleAutoJump(idx, currentField){
+  var sheet = state.daily[state.activeDate];
+  if(idx === sheet.sales.length - 1){
+    addNewSaleLine(false);
+  }
+  var nextInp = document.querySelector('#salesTbody input[data-idx="' + (idx + 1) + '"][data-f="' + currentField + '"]');
+  if(nextInp) nextInp.focus();
+}
+
+function handleExpAutoJump(idx){
+  var sheet = state.daily[state.activeDate];
+  if(idx === sheet.expenses.length - 1){
+    addNewExpLine(false);
+  }
+  var nextInp = document.querySelector('#expTbody input[data-exp-idx="' + (idx + 1) + '"][data-f="category"]');
+  if(nextInp) nextInp.focus();
+}
+
+function updateTotals(){
+  var sheet = state.daily[state.activeDate];
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
+
+  sheet.sales.forEach(function(r){
+    c += Number(r.cash) || 0;
+    sw += Number(r.swiggy) || 0;
+    z += Number(r.zomato) || 0;
+    ot += Number(r.other) || 0;
+  });
+
+  sheet.expenses.forEach(function(r){
+    ex += Number(r.amount) || 0;
+  });
+
+  var totalSales = c + sw + z + ot;
+  var net = totalSales - ex;
+
+  document.getElementById('subCash').textContent = formatMoney(c);
+  document.getElementById('subSwiggy').textContent = formatMoney(sw);
+  document.getElementById('subZomato').textContent = formatMoney(z);
+  document.getElementById('subOther').textContent = formatMoney(ot);
+  document.getElementById('subExp').textContent = formatMoney(ex);
+
+  document.getElementById('kpiDate').textContent = state.activeDate;
+  document.getElementById('kpiSales').textContent = formatMoney(totalSales);
+  document.getElementById('kpiExp').textContent = formatMoney(ex);
+  document.getElementById('kpiNet').textContent = formatMoney(net);
+
+  var sl = 1;
+  document.querySelectorAll('#salesTbody tr').forEach(function(tr, i){
+    var r = sheet.sales[i];
+    tr.querySelector('.sl-box').textContent = hasAnySaleVal(r) ? sl++ : '';
+  });
+
+  calculateLedgerCarryAndMTD(net);
+}
+
+function calculateLedgerCarryAndMTD(todayNet){
+  var activeDateParts = state.activeDate.split('-');
+  var activeDay = parseInt(activeDateParts[0], 10);
+  var curMonthSuffix = activeDateParts[1] + '-' + activeDateParts[2];
+
+  var prevMonthInHand = 0;
+  var mtdS = 0;
+  var mtdE = 0;
+
+  Object.keys(state.daily).forEach(function(k){
+    if(k.endsWith(curMonthSuffix)){
+      var dayNum = parseInt(k.split('-')[0], 10);
+      var daySales = 0;
+      var dayExp = 0;
+
+      state.daily[k].sales.forEach(function(r){
+        daySales += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0);
+      });
+      state.daily[k].expenses.forEach(function(e){
+        dayExp += Number(e.amount)||0;
+      });
+
+      if(dayNum <= activeDay){
+        mtdS += daySales;
+        mtdE += dayExp;
+      }
+
+      if(dayNum < activeDay){
+        prevMonthInHand += (daySales - dayExp);
+      }
+    }
+  });
+
+  document.getElementById('carryPrevInHand').textContent = formatMoney(prevMonthInHand);
+  document.getElementById('carryCumulativeTotal').textContent = formatMoney(prevMonthInHand + todayNet);
+  document.getElementById('mtdSalesTotal').textContent = formatMoney(mtdS);
+  document.getElementById('mtdExpTotal').textContent = formatMoney(mtdE);
+}
+
+function exportActiveDayToExcel(){
+  if(typeof XLSX === 'undefined'){ alert('Excel library not loaded.'); return; }
+  var dKey = state.activeDate;
+  var sheetData = state.daily[dKey] || { sales:[], expenses:[] };
+  var wb = XLSX.utils.book_new();
+
+  var salesRows = [["Sl No", "Cash", "Swiggy", "Zomato", "Other"]];
+  sheetData.sales.forEach(function(r, i){
+    salesRows.push([i+1, Number(r.cash)||0, Number(r.swiggy)||0, Number(r.zomato)||0, Number(r.other)||0]);
+  });
+  var wsSales = XLSX.utils.aoa_to_sheet(salesRows);
+  XLSX.utils.book_append_sheet(wb, wsSales, "Sales");
+
+  var expRows = [["Expense Category", "Amount", "Payment Method"]];
+  sheetData.expenses.forEach(function(e){
+    expRows.push([e.category, Number(e.amount)||0, e.method]);
+  });
+  var wsExp = XLSX.utils.aoa_to_sheet(expRows);
+  XLSX.utils.book_append_sheet(wb, wsExp, "Expenses");
+
+  XLSX.writeFile(wb, "7th_Heaven_" + dKey + ".xlsx");
+}
+
 function addInvoiceItemRow(){
   currentInvoiceItems.push({ desc: '', qty: 1, rate: '' });
   renderInvoiceRows();
@@ -530,8 +792,8 @@ function renderInvoiceRows(){
     var tr = document.createElement('tr');
     tr.innerHTML =
       '<td><input type="text" class="cell-input text-left" data-idx="' + idx + '" data-f="desc" value="' + (item.desc||'') + '" placeholder="Item name"></td>' +
-      '<td><input type="number" class="cell-input" data-idx="' + idx + '" data-f="qty" value="' + (item.qty||1) + '"></td>' +
-      '<td><input type="number" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="rate" value="' + (item.rate||'') + '" placeholder="0.00"></td>' +
+      '<td><input type="number" inputmode="decimal" class="cell-input" data-idx="' + idx + '" data-f="qty" value="' + (item.qty||1) + '"></td>' +
+      '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input" data-idx="' + idx + '" data-f="rate" value="' + (item.rate||'') + '" placeholder="0.00"></td>' +
       '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:8px;">' + formatMoney(amt) + '</td>' +
       '<td><button class="row-del-btn" onclick="removeInvoiceItem(' + idx + ')">&times;</button></td>';
 
@@ -589,216 +851,6 @@ function saveAndPrintInvoice(){
   resetInvoiceForm();
 }
 
-function exportActiveDayToExcel(){
-  if(typeof XLSX === 'undefined'){ alert('Excel library not loaded.'); return; }
-  var dKey = state.activeDate;
-  var sheetData = state.daily[dKey] || { sales:[], expenses:[] };
-
-  var wb = XLSX.utils.book_new();
-
-  var salesRows = [["Sl No", "Cash", "Swiggy", "Zomato", "Other"]];
-  sheetData.sales.forEach(function(r, i){
-    salesRows.push([i+1, Number(r.cash)||0, Number(r.swiggy)||0, Number(r.zomato)||0, Number(r.other)||0]);
-  });
-  var wsSales = XLSX.utils.aoa_to_sheet(salesRows);
-  XLSX.utils.book_append_sheet(wb, wsSales, "Sales");
-
-  var expRows = [["Expense Category", "Amount", "Payment Method"]];
-  sheetData.expenses.forEach(function(e){
-    expRows.push([e.category, Number(e.amount)||0, e.method]);
-  });
-  var wsExp = XLSX.utils.aoa_to_sheet(expRows);
-  XLSX.utils.book_append_sheet(wb, wsExp, "Expenses");
-
-  XLSX.writeFile(wb, "7th_Heaven_" + dKey + ".xlsx");
-}
-
-function addNewSaleLine(focusNew){
-  var sheet = state.daily[state.activeDate];
-  sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
-  saveState();
-  renderDailyGrids();
-  if(focusNew){
-    var inputs = document.querySelectorAll('#salesTbody input[data-f="cash"]');
-    if(inputs.length > 0) inputs[inputs.length - 1].focus();
-  }
-}
-
-function addNewExpLine(focusNew){
-  var sheet = state.daily[state.activeDate];
-  sheet.expenses.push({ category:'', amount:'', method:'UPI Direct' });
-  saveState();
-  renderDailyGrids();
-  if(focusNew){
-    var inputs = document.querySelectorAll('#expTbody input[data-f="category"]');
-    if(inputs.length > 0) inputs[inputs.length - 1].focus();
-  }
-}
-
-function renderDailyGrids(){
-  var sheet = state.daily[state.activeDate];
-  var sEditable = canEditSales();
-  var eEditable = canEditExpenses();
-
-  if(sheet.sales.length === 0){ sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' }); }
-
-  var sTbody = document.getElementById('salesTbody');
-  sTbody.innerHTML = '';
-  var sl = 1;
-
-  sheet.sales.forEach(function(row, idx){
-    var tr = document.createElement('tr');
-    var hasVal = (Number(row.cash)||0) > 0 || (Number(row.swiggy)||0) > 0 || (Number(row.zomato)||0) > 0 || (Number(row.other)||0) > 0;
-    var curSl = hasVal ? sl++ : '';
-
-    tr.innerHTML =
-      '<td class="sl-box">' + curSl + '</td>' +
-      '<td><input type="number" class="cell-input" data-idx="' + idx + '" data-f="cash" value="' + (row.cash||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><input type="number" class="cell-input" data-idx="' + idx + '" data-f="swiggy" value="' + (row.swiggy||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><input type="number" class="cell-input" data-idx="' + idx + '" data-f="zomato" value="' + (row.zomato||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><input type="number" class="cell-input" data-idx="' + idx + '" data-f="other" value="' + (row.other||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td style="text-align:center;">' + (sEditable && sheet.sales.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
-
-    tr.querySelectorAll('input').forEach(function(inp){
-      inp.oninput = function(e){
-        row[e.target.getAttribute('data-f')] = e.target.value;
-        saveState();
-        updateTotals();
-      };
-    });
-
-    if(sEditable){
-      var delBtn = tr.querySelector('.row-del-btn');
-      if(delBtn){
-        delBtn.onclick = function(){
-          sheet.sales.splice(idx, 1);
-          saveState();
-          renderDailyGrids();
-        };
-      }
-    }
-    sTbody.appendChild(tr);
-  });
-
-  document.getElementById('salesMobileStrip').style.display = sEditable ? 'flex' : 'none';
-
-  // Manual Text Input for Expenses
-  if(sheet.expenses.length === 0){ sheet.expenses.push({ category:'', amount:'', method:'UPI Direct' }); }
-  var eTbody = document.getElementById('expTbody');
-  eTbody.innerHTML = '';
-  var mets = ['UPI Direct', 'Cash', 'NetBanking', 'Credit Card', 'Vendor Credit'];
-
-  sheet.expenses.forEach(function(row, idx){
-    var tr = document.createElement('tr');
-    var metOpts = mets.map(function(m){ return '<option value="'+m+'" '+(row.method===m?'selected':'')+'>'+m+'</option>'; }).join('');
-
-    tr.innerHTML =
-      '<td><input type="text" class="cell-input text-left" data-f="category" value="' + (row.category||'') + '" placeholder="e.g. Shop Rent, Gas, Sugar" ' + (!eEditable?'disabled':'') + '></td>' +
-      '<td><input type="number" class="cell-input" data-exp-idx="' + idx + '" data-f="amount" value="' + (row.amount||'') + '" ' + (!eEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><select class="cell-select" data-f="method" ' + (!eEditable?'disabled':'') + '>' + metOpts + '</select></td>' +
-      '<td style="text-align:center;">' + (eEditable && sheet.expenses.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
-
-    tr.querySelector('[data-f="category"]').oninput = function(e){ row.category = e.target.value; saveState(); };
-    tr.querySelector('[data-f="method"]').onchange = function(e){ row.method = e.target.value; saveState(); };
-    
-    var expAmtInp = tr.querySelector('[data-f="amount"]');
-    expAmtInp.oninput = function(e){
-      row.amount = e.target.value;
-      saveState();
-      updateTotals();
-    };
-
-    if(eEditable){
-      var delBtn = tr.querySelector('.row-del-btn');
-      if(delBtn){
-        delBtn.onclick = function(){
-          sheet.expenses.splice(idx, 1);
-          saveState();
-          renderDailyGrids();
-        };
-      }
-    }
-    eTbody.appendChild(tr);
-  });
-
-  document.getElementById('expMobileStrip').style.display = eEditable ? 'flex' : 'none';
-  updateTotals();
-}
-
-function updateTotals(){
-  var sheet = state.daily[state.activeDate];
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
-
-  sheet.sales.forEach(function(r){
-    c += Number(r.cash) || 0;
-    sw += Number(r.swiggy) || 0;
-    z += Number(r.zomato) || 0;
-    ot += Number(r.other) || 0;
-  });
-
-  sheet.expenses.forEach(function(r){
-    ex += Number(r.amount) || 0;
-  });
-
-  var totalSales = c + sw + z + ot;
-  var net = totalSales - ex;
-
-  document.getElementById('subCash').textContent = formatMoney(c);
-  document.getElementById('subSwiggy').textContent = formatMoney(sw);
-  document.getElementById('subZomato').textContent = formatMoney(z);
-  document.getElementById('subOther').textContent = formatMoney(ot);
-  document.getElementById('subExp').textContent = formatMoney(ex);
-
-  document.getElementById('kpiDate').textContent = state.activeDate;
-  document.getElementById('kpiSales').textContent = formatMoney(totalSales);
-  document.getElementById('kpiExp').textContent = formatMoney(ex);
-  document.getElementById('kpiNet').textContent = formatMoney(net);
-
-  calculateLedgerCarryAndMTD(net);
-}
-
-// Monthly calculation for Previous Days In-Hand Carry-Over
-function calculateLedgerCarryAndMTD(todayNet){
-  var activeDateParts = state.activeDate.split('-');
-  var activeDay = parseInt(activeDateParts[0], 10);
-  var curMonthSuffix = activeDateParts[1] + '-' + activeDateParts[2]; // "MM-YYYY"
-
-  var prevMonthInHand = 0;
-  var mtdS = 0;
-  var mtdE = 0;
-
-  Object.keys(state.daily).forEach(function(k){
-    if(k.endsWith(curMonthSuffix)){
-      var dayNum = parseInt(k.split('-')[0], 10);
-      var daySales = 0;
-      var dayExp = 0;
-
-      state.daily[k].sales.forEach(function(r){
-        daySales += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0);
-      });
-      state.daily[k].expenses.forEach(function(e){
-        dayExp += Number(e.amount)||0;
-      });
-
-      // Accumulate MTD totals up to the active date
-      if(dayNum <= activeDay){
-        mtdS += daySales;
-        mtdE += dayExp;
-      }
-
-      // Previous days' net carry-over (from day 1 to day prior)
-      if(dayNum < activeDay){
-        prevMonthInHand += (daySales - dayExp);
-      }
-    }
-  });
-
-  document.getElementById('carryPrevInHand').textContent = formatMoney(prevMonthInHand);
-  document.getElementById('carryCumulativeTotal').textContent = formatMoney(prevMonthInHand + todayNet);
-  document.getElementById('mtdSalesTotal').textContent = formatMoney(mtdS);
-  document.getElementById('mtdExpTotal').textContent = formatMoney(mtdE);
-}
-
 function loadHistoryDateReport(){
   var rawDate = document.getElementById('historyDateInput').value;
   if(!rawDate){ alert('Please select a date.'); return; }
@@ -813,8 +865,8 @@ function loadHistoryDateReport(){
   }
 
   var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
-  dData.sales.forEach(function(r){ c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0; });
-  dData.expenses.forEach(function(r){ ex += Number(r.amount)||0; });
+  (dData.sales||[]).forEach(function(r){ c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0; });
+  (dData.expenses||[]).forEach(function(r){ ex += Number(r.amount)||0; });
   var totSales = c + sw + z + ot;
   var net = totSales - ex;
 
@@ -841,8 +893,8 @@ function generateMonthlyReport(){
     if(dKey.endsWith(mFilter)){
       days++;
       var d = state.daily[dKey];
-      d.sales.forEach(function(r){ totS += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0); });
-      d.expenses.forEach(function(r){ totE += Number(r.amount)||0; });
+      (d.sales||[]).forEach(function(r){ totS += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0); });
+      (d.expenses||[]).forEach(function(r){ totE += Number(r.amount)||0; });
     }
   });
 
