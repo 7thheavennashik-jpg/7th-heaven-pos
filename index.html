@@ -26,7 +26,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--paper); color: var(--ink); font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; min-height: 100vh; padding: 10px 10px 60px; }
-  .wrap { max-width: 1100px; margin: 0 auto; }
+  .wrap { max-width: 1200px; margin: 0 auto; }
   header.top { display: flex; align-items: center; justify-content: space-between; background: var(--maroon-banner); color: #FFF; padding: 10px 14px; border-radius: 4px 4px 0 0; gap: 12px; }
   .hdr-brand { display: flex; align-items: center; gap: 10px; }
   .hdr-logo { height: 46px; width: 46px; object-fit: contain; background: #FFF; border-radius: 4px; padding: 2px; }
@@ -63,14 +63,6 @@
   .carry-card .clbl { font-size: 10px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; }
   .carry-card .camt { font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; font-weight: 700; margin-top: 2px; }
 
-  /* CASH FLOW RECONCILIATION CARD (MATCHING USER WORKBOOK) */
-  .cash-ledger-box { background: #FFF; border: 2px solid var(--rule-strong); border-radius: 4px; padding: 12px; margin-bottom: 14px; max-width: 480px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
-  .cash-ledger-title { font-size: 12px; font-weight: 700; color: var(--maroon-banner); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; border-bottom: 1px solid var(--rule); padding-bottom: 4px; }
-  .cash-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; font-size: 12.5px; border-bottom: 1px solid #F0EEE6; }
-  .cash-row.highlight-yellow { background: #FFF9C4; font-weight: 700; }
-  .cash-row.highlight-cyan { background: #B2EBF2; font-weight: 700; font-size: 13.5px; border-top: 2px solid #00ACC1; }
-  .cash-val { font-family: 'IBM Plex Mono', monospace; }
-
   .kpi-grid { display: grid; grid-template-columns: 110px 1.2fr 1fr 1fr 1.1fr; border: 1px solid var(--rule-strong); border-bottom: 2px solid var(--maroon-hdr); margin-bottom: 14px; }
   .kpi-card { padding: 8px 10px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: center; }
   .kpi-card:last-child { border-right: none; }
@@ -86,7 +78,8 @@
   .kpi-net .lbl { color: #D8EAC8; }
   .kpi-net .amt { color: #FFF; }
 
-  .split-tables { display: grid; grid-template-columns: 58% 42%; border: 1px solid var(--rule-strong); margin-bottom: 14px; }
+  /* SPLIT TABLES LAYOUT (LEFT: SALES, RIGHT: EXPENSES + CASH WIDGET) */
+  .split-tables { display: grid; grid-template-columns: 50% 50%; border: 1px solid var(--rule-strong); margin-bottom: 14px; }
   .table-pane { border-right: 2px solid var(--rule-strong); }
   .table-pane:last-child { border-right: none; }
   .pane-hdr { background: var(--maroon-hdr); color: #FFF; padding: 6px 10px; font-size: 11.5px; font-weight: 700; text-align: center; }
@@ -99,7 +92,7 @@
   .subtotal-line .val { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; text-align: right; color: var(--maroon-hdr); }
   .subtotal-line .val.exp { color: var(--brick); }
 
-  .sl-box { text-align: center; font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--maroon-hdr); width: 38px; background: #FAF7F7; }
+  .sl-box { text-align: center; font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--maroon-hdr); width: 34px; background: #FAF7F7; }
   .cell-input { width: 100%; border: none; background: transparent; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; text-align: right; padding: 4px 2px; outline: none; }
   .cell-input.text-left { text-align: left; font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; }
   .cell-input:focus:not([disabled]) { background: #FFFDF0; }
@@ -118,6 +111,17 @@
   .mobile-add-strip { display: flex; gap: 6px; padding: 6px 8px; background: #FAF8F8; border-top: 1px solid var(--rule); }
   .mobile-next-btn { flex: 1; padding: 6px; background: #FFF; border: 1px dashed var(--maroon-hdr); color: var(--maroon-hdr); font-weight: 600; border-radius: 3px; font-size: 11.5px; cursor: pointer; }
 
+  /* RIGHT SIDE COMPACT SPLIT FOR EXPENSE TABLE & CASH FLOW BOX */
+  .right-side-container { display: grid; grid-template-columns: 58% 42%; }
+  .cash-reconcile-panel { border-left: 2px solid var(--rule-strong); background: #FFF; display: flex; flex-direction: column; }
+  .cash-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .cash-tbl td { padding: 5px 6px; border-bottom: 1px solid #EAE6DB; }
+  .cash-tbl .c-label { font-size: 11px; color: var(--ink); text-align: left; }
+  .cash-tbl .c-val { font-family: 'IBM Plex Mono', monospace; font-weight: 700; text-align: right; font-size: 12.5px; }
+  .bg-yellow { background-color: #FFFF70 !important; }
+  .bg-cyan { background-color: #00E5FF !important; }
+
+  /* WASTAGE SECTION */
   .waste-box { border: 1px solid var(--rule-strong); background: #FFFDF9; margin-top: 14px; border-radius: 4px; overflow: hidden; }
   .waste-hdr { background: #632B1E; color: #FFF; padding: 6px 12px; font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
 
@@ -132,10 +136,12 @@
   .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--maroon-banner); color: #FFF; padding: 8px 16px; border-radius: 4px; font-size: 12px; opacity: 0; pointer-events: none; transition: all 0.2s; z-index: 100; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  @media(max-width: 820px) {
+  @media(max-width: 900px) {
     .role-cards { grid-template-columns: 1fr; }
     .split-tables { grid-template-columns: 1fr; }
     .table-pane { border-right: none; border-bottom: 2px solid var(--rule-strong); }
+    .right-side-container { grid-template-columns: 1fr; }
+    .cash-reconcile-panel { border-left: none; border-top: 2px solid var(--rule-strong); }
     .kpi-grid { grid-template-columns: 1fr 1fr; }
     .ledger-carryover-bar { grid-template-columns: 1fr 1fr; }
   }
@@ -170,7 +176,7 @@
         </div>
         <div class="role-box" onclick="promptRolePass('remote')">
           <h3>👁️ Remote Partner</h3>
-          <p>Live monitor: View today and yesterday's operations and cash drawer status without historical turnover.</p>
+          <p>Live monitor: View today and yesterday's operations, daily sales totals, and cash drawer status.</p>
         </div>
       </div>
     </div>
@@ -211,7 +217,7 @@
         </div>
       </div>
 
-      <!-- ADMIN EXCLUSIVE: OVERALL BUSINESS TURNOVER CARRYOVER -->
+      <!-- ADMIN EXCLUSIVE: OVERALL MULTI-DAY TURNOVER STRIP -->
       <div class="ledger-carryover-bar" id="adminTurnoverStrip">
         <div class="carry-card">
           <div class="clbl">Month Prev In-Hand Carry</div>
@@ -231,32 +237,7 @@
         </div>
       </div>
 
-      <!-- PHYSICAL CASH IN-HAND RECONCILIATION CARD (VISIBLE TO STORE & ADMIN) -->
-      <div class="cash-ledger-box">
-        <div class="cash-ledger-title">💵 Counter Drawer Cash Reconciliation</div>
-        <div class="cash-row highlight-yellow">
-          <span>Op. Cash (Previous In-Hand)</span>
-          <span class="cash-val" id="reconcileOpCash">₹0.00</span>
-        </div>
-        <div class="cash-row">
-          <span>Today Cash Collected</span>
-          <span class="cash-val" id="reconcileTodayCash">₹0.00</span>
-        </div>
-        <div class="cash-row" style="font-weight:700;">
-          <span>Total Cash Inflow</span>
-          <span class="cash-val" id="reconcileTotalInflow">₹0.00</span>
-        </div>
-        <div class="cash-row highlight-yellow">
-          <span>Cash Expenses Paid (Less)</span>
-          <span class="cash-val" id="reconcileCashExp" style="color:var(--brick);">₹0.00</span>
-        </div>
-        <div class="cash-row highlight-cyan">
-          <span>Actual Cash In-Hand (Closing)</span>
-          <span class="cash-val" id="reconcileActualCash">₹0.00</span>
-        </div>
-      </div>
-
-      <!-- KPI METRICS (FILTERED ACCORDING TO ACCESS ROLE) -->
+      <!-- KPI METRICS (RESTORED TOTAL DAILY SALES FOR STORE & REMOTE) -->
       <div class="kpi-grid">
         <div class="kpi-card" style="background:#F2E6EA;">
           <span class="lbl">Active Date</span>
@@ -280,18 +261,20 @@
         </div>
       </div>
 
+      <!-- MAIN SPLIT: LEFT (SALES CHANNELS), RIGHT (EXPENSES + PHYSICAL CASH DRAWER) -->
       <div class="split-tables">
+        <!-- LEFT: SALES CHANNELS (NO X BUTTON) -->
         <div class="table-pane">
           <div class="pane-hdr">SALES CHANNELS</div>
           <table class="tracker" id="salesTable">
             <thead>
               <tr>
-                <th style="width:38px;">Sl No</th>
-                <th>Cash (₹)</th>
-                <th>Swiggy (₹)</th>
-                <th>Zomato (₹)</th>
-                <th>Other (₹)</th>
-                <th style="width:22px;"></th>
+                <th style="width:34px;">Sl</th>
+                <th>CASH</th>
+                <th>SWIGGY</th>
+                <th>ZOMATO</th>
+                <th>OTHER</th>
+                <th style="background:#2E7D32;color:#FFF;width:75px;">Sales</th>
               </tr>
               <tr class="subtotal-line">
                 <td style="text-align:center;">TOTAL</td>
@@ -299,7 +282,7 @@
                 <td class="val" id="subSwiggy">₹0.00</td>
                 <td class="val" id="subZomato">₹0.00</td>
                 <td class="val" id="subOther">₹0.00</td>
-                <td></td>
+                <td class="val" id="subSalesRowTotal" style="color:#2E7D32;">₹0.00</td>
               </tr>
             </thead>
             <tbody id="salesTbody"></tbody>
@@ -309,27 +292,66 @@
           </div>
         </div>
 
-        <div class="table-pane">
-          <div class="pane-hdr">EXPENDITURE</div>
-          <table class="tracker" id="expTable">
-            <thead>
-              <tr>
-                <th>Expense Category (Manual)</th>
-                <th style="width:85px;">Amount (₹)</th>
-                <th>Payment Method</th>
-                <th style="width:22px;"></th>
-              </tr>
-              <tr class="subtotal-line">
-                <td style="text-align:center;">Total Expenses</td>
-                <td class="val exp" id="subExp">₹0.00</td>
-                <td></td>
-                <td></td>
-              </tr>
-            </thead>
-            <tbody id="expTbody"></tbody>
-          </table>
-          <div class="mobile-add-strip" id="expMobileStrip">
-            <button class="mobile-next-btn" onclick="addNewExpLine(true)">+ Next Line (Tap to Add Expense)</button>
+        <!-- RIGHT: EXPENSES ON LEFT, VERTICAL CASH RECONCILIATION ON RIGHT -->
+        <div class="table-pane right-side-container">
+          <!-- EXPENSES SUB-PANE -->
+          <div style="border-right: 1px solid var(--rule-strong);">
+            <div class="pane-hdr" style="background:#A94442;">EXPENSES</div>
+            <table class="tracker" id="expTable">
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding-left:6px;">Category</th>
+                  <th style="width:75px;background:#FFFF70;color:#111;">Amount</th>
+                  <th style="width:20px;"></th>
+                </tr>
+                <tr class="subtotal-line">
+                  <td style="text-align:center;">Total</td>
+                  <td class="val exp" id="subExp" style="background:#FFFF70;color:#111;">₹0.00</td>
+                  <td></td>
+                </tr>
+              </thead>
+              <tbody id="expTbody"></tbody>
+            </table>
+            <div class="mobile-add-strip" id="expMobileStrip">
+              <button class="mobile-next-btn" onclick="addNewExpLine(true)">+ Add Expense</button>
+            </div>
+          </div>
+
+          <!-- VERTICAL CASH RECONCILIATION CARD (MATCHING USER FORMAT EXACTLY) -->
+          <div class="cash-reconcile-panel">
+            <div class="pane-hdr" style="background:#4A1525;">CASH DETAILS</div>
+            <table class="cash-tbl">
+              <tbody>
+                <tr>
+                  <td class="c-label">OPENING CASH</td>
+                  <td class="c-val bg-yellow" id="reconcileOpCash">0</td>
+                </tr>
+                <tr>
+                  <td class="c-label">Today cash</td>
+                  <td class="c-val" id="reconcileTodayCash">0</td>
+                </tr>
+                <tr style="border-top:1px solid #333;border-bottom:1px solid #333;">
+                  <td class="c-label" style="font-weight:700;">Total</td>
+                  <td class="c-val" style="font-weight:700;" id="reconcileTotalInflow">0</td>
+                </tr>
+                <tr>
+                  <td class="c-label">Expenses</td>
+                  <td class="c-val bg-yellow" id="reconcileCashExp">0</td>
+                </tr>
+                <tr>
+                  <td class="c-label" style="color:#777;font-style:italic;">less</td>
+                  <td class="c-val"></td>
+                </tr>
+                <tr>
+                  <td class="c-label" style="color:#777;font-style:italic;">Add</td>
+                  <td class="c-val"></td>
+                </tr>
+                <tr style="border-top:2px solid #00ACC1;">
+                  <td class="c-label" style="font-weight:700;">Actual cash</td>
+                  <td class="c-val bg-cyan" id="reconcileActualCash">0</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -482,9 +504,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v21";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v22";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v21";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v22";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -555,7 +577,7 @@ function loadStateLocally(){
   if(!state.daily[today]){
     state.daily[today] = {
       sales: [{ cash:'', swiggy:'', zomato:'', other:'' }],
-      expenses: [{ category:'', amount:'', method:'UPI Direct' }],
+      expenses: [{ category:'', amount:'', method:'Cash' }],
       wastage: []
     };
     saveState();
@@ -626,7 +648,7 @@ function addNewSaleLine(focusNew){
 
 function addNewExpLine(focusNew){
   var sheet = state.daily[state.activeDate];
-  sheet.expenses.push({ category:'', amount:'', method:'UPI Direct' });
+  sheet.expenses.push({ category:'', amount:'', method:'Cash' });
   saveState();
   renderDailyGrids();
   if(focusNew){
@@ -654,10 +676,10 @@ function renderDailyGrids(){
   var eEditable = canEditExpenses();
 
   if(!sheet.sales || sheet.sales.length === 0){ sheet.sales = [{ cash:'', swiggy:'', zomato:'', other:'' }]; }
-  if(!sheet.expenses || sheet.expenses.length === 0){ sheet.expenses = [{ category:'', amount:'', method:'UPI Direct' }]; }
+  if(!sheet.expenses || sheet.expenses.length === 0){ sheet.expenses = [{ category:'', amount:'', method:'Cash' }]; }
   if(!sheet.wastage) sheet.wastage = [];
 
-  // Sales Table
+  // 1. Sales Table (Clean layout - no X marks)
   var sTbody = document.getElementById('salesTbody');
   sTbody.innerHTML = '';
   var sl = 1;
@@ -665,6 +687,7 @@ function renderDailyGrids(){
   sheet.sales.forEach(function(row, idx){
     var tr = document.createElement('tr');
     var curSl = hasAnySaleVal(row) ? sl++ : '';
+    var lineTot = (Number(row.cash)||0) + (Number(row.swiggy)||0) + (Number(row.zomato)||0) + (Number(row.other)||0);
 
     tr.innerHTML =
       '<td class="sl-box">' + curSl + '</td>' +
@@ -672,7 +695,7 @@ function renderDailyGrids(){
       '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="swiggy" value="' + (row.swiggy||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
       '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="zomato" value="' + (row.zomato||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
       '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="other" value="' + (row.other||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td style="text-align:center;">' + (sEditable && sheet.sales.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
+      '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:6px;font-weight:600;" id="saleLineTot_' + idx + '">' + lineTot + '</td>';
 
     tr.querySelectorAll('input').forEach(function(inp){
       inp.oninput = function(e){
@@ -693,34 +716,20 @@ function renderDailyGrids(){
       };
     });
 
-    if(sEditable){
-      var delBtn = tr.querySelector('.row-del-btn');
-      if(delBtn){
-        delBtn.onclick = function(){
-          sheet.sales.splice(idx, 1);
-          saveState();
-          renderDailyGrids();
-        };
-      }
-    }
     sTbody.appendChild(tr);
   });
 
   document.getElementById('salesMobileStrip').style.display = sEditable ? 'flex' : 'none';
 
-  // Expense Table
+  // 2. Expense Table (Yellow amount column, no clutter)
   var eTbody = document.getElementById('expTbody');
   eTbody.innerHTML = '';
-  var mets = ['UPI Direct', 'Cash', 'NetBanking', 'Credit Card', 'Vendor Credit'];
 
   sheet.expenses.forEach(function(row, idx){
     var tr = document.createElement('tr');
-    var metOpts = mets.map(function(m){ return '<option value="'+m+'" '+(row.method===m?'selected':'')+'>'+m+'</option>'; }).join('');
-
     tr.innerHTML =
-      '<td><input type="text" enterkeyhint="next" class="cell-input text-left" data-exp-idx="' + idx + '" data-f="category" value="' + (row.category||'') + '" placeholder="e.g. Shop Rent, Gas, Sugar" ' + (!eEditable?'disabled':'') + '></td>' +
-      '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-exp-idx="' + idx + '" data-f="amount" value="' + (row.amount||'') + '" ' + (!eEditable?'disabled':'') + ' placeholder="0.00"></td>' +
-      '<td><select class="cell-select" data-f="method" ' + (!eEditable?'disabled':'') + '>' + metOpts + '</select></td>' +
+      '<td><input type="text" enterkeyhint="next" class="cell-input text-left" data-exp-idx="' + idx + '" data-f="category" value="' + (row.category||'') + '" placeholder="e.g. Sugar, Gas, Milk" ' + (!eEditable?'disabled':'') + '></td>' +
+      '<td style="background:#FFFF70;"><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" style="font-weight:700;" data-exp-idx="' + idx + '" data-f="amount" value="' + (row.amount||'') + '" ' + (!eEditable?'disabled':'') + ' placeholder="0"></td>' +
       '<td style="text-align:center;">' + (eEditable && sheet.expenses.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
 
     var catInp = tr.querySelector('[data-f="category"]');
@@ -732,12 +741,6 @@ function renderDailyGrids(){
         e.preventDefault();
         amtInp.focus();
       }
-    };
-
-    tr.querySelector('[data-f="method"]').onchange = function(e){ 
-      row.method = e.target.value; 
-      saveState(); 
-      updateTotals(); 
     };
 
     amtInp.oninput = function(e){
@@ -848,21 +851,24 @@ function handleExpAutoJump(idx){
 
 function updateTotals(){
   var sheet = state.daily[state.activeDate];
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, cashExp = 0, wasteCostLoss = 0;
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wasteCostLoss = 0;
 
-  sheet.sales.forEach(function(r){
-    c += Number(r.cash) || 0;
-    sw += Number(r.swiggy) || 0;
-    z += Number(r.zomato) || 0;
-    ot += Number(r.other) || 0;
+  sheet.sales.forEach(function(r, i){
+    var rc = Number(r.cash) || 0;
+    var rsw = Number(r.swiggy) || 0;
+    var rz = Number(r.zomato) || 0;
+    var rot = Number(r.other) || 0;
+    c += rc;
+    sw += rsw;
+    z += rz;
+    ot += rot;
+
+    var lineTotEl = document.getElementById('saleLineTot_' + i);
+    if(lineTotEl) lineTotEl.textContent = (rc + rsw + rz + rot);
   });
 
   sheet.expenses.forEach(function(e){
-    var amt = Number(e.amount) || 0;
-    ex += amt;
-    if(e.method === 'Cash'){
-      cashExp += amt; // Deducted exclusively from drawer cash
-    }
+    ex += Number(e.amount) || 0;
   });
 
   (sheet.wastage || []).forEach(function(w, i){
@@ -885,6 +891,7 @@ function updateTotals(){
   document.getElementById('subSwiggy').textContent = formatMoney(sw);
   document.getElementById('subZomato').textContent = formatMoney(z);
   document.getElementById('subOther').textContent = formatMoney(ot);
+  document.getElementById('subSalesRowTotal').textContent = formatMoney(totalSales);
   document.getElementById('subExp').textContent = formatMoney(ex);
 
   document.getElementById('kpiDate').textContent = state.activeDate;
@@ -900,10 +907,10 @@ function updateTotals(){
     tr.querySelector('.sl-box').textContent = hasAnySaleVal(r) ? sl++ : '';
   });
 
-  calculateLedgerCarryAndCashReconcile(c, cashExp, net);
+  calculateLedgerCarryAndCashReconcile(c, ex, net);
 }
 
-function calculateLedgerCarryAndCashReconcile(todayCash, todayCashExp, todayNet){
+function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNet){
   var activeDateParts = state.activeDate.split('-');
   var activeDay = parseInt(activeDateParts[0], 10);
   var curMonthSuffix = activeDateParts[1] + '-' + activeDateParts[2];
@@ -919,7 +926,6 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayCashExp, todayNet)
       var daySales = 0;
       var dayExp = 0;
       var dayCashSales = 0;
-      var dayCashExp = 0;
 
       state.daily[k].sales.forEach(function(r){
         var c = Number(r.cash)||0;
@@ -927,11 +933,7 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayCashExp, todayNet)
         daySales += (c + (Number(r.swiggy)||0) + (Number(r.zomato)||0) + (Number(r.other)||0));
       });
       state.daily[k].expenses.forEach(function(e){
-        var a = Number(e.amount)||0;
-        dayExp += a;
-        if(e.method === 'Cash'){
-          dayCashExp += a;
-        }
+        dayExp += Number(e.amount)||0;
       });
 
       if(dayNum <= activeDay){
@@ -941,7 +943,7 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayCashExp, todayNet)
 
       if(dayNum < activeDay){
         prevMonthInHand += (daySales - dayExp);
-        prevMonthCashCarry += (dayCashSales - dayCashExp);
+        prevMonthCashCarry += (dayCashSales - dayExp);
       }
     }
   });
@@ -951,15 +953,15 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayCashExp, todayNet)
   document.getElementById('mtdSalesTotal').textContent = formatMoney(mtdS);
   document.getElementById('mtdExpTotal').textContent = formatMoney(mtdE);
 
-  // Counter Drawer Cash Reconciliation Calculations (Matching User Image)
-  var totalInflow = prevMonthCashCarry + todayCash;
-  var actualCashInHand = totalInflow - todayCashExp;
+  // Exact vertical calculation matching user workbook format:
+  var totalCash = prevMonthCashCarry + todayCash;
+  var actualCash = totalCash - todayExp;
 
-  document.getElementById('reconcileOpCash').textContent = formatMoney(prevMonthCashCarry);
-  document.getElementById('reconcileTodayCash').textContent = formatMoney(todayCash);
-  document.getElementById('reconcileTotalInflow').textContent = formatMoney(totalInflow);
-  document.getElementById('reconcileCashExp').textContent = formatMoney(todayCashExp);
-  document.getElementById('reconcileActualCash').textContent = formatMoney(actualCashInHand);
+  document.getElementById('reconcileOpCash').textContent = Math.round(prevMonthCashCarry);
+  document.getElementById('reconcileTodayCash').textContent = Math.round(todayCash);
+  document.getElementById('reconcileTotalInflow').textContent = Math.round(totalCash);
+  document.getElementById('reconcileCashExp').textContent = Math.round(todayExp);
+  document.getElementById('reconcileActualCash').textContent = Math.round(actualCash);
 }
 
 // EXPORT TO EXCEL
@@ -968,14 +970,12 @@ function exportActiveDayToExcel(){
   var dKey = state.activeDate;
   var sheetData = state.daily[dKey] || { sales:[], expenses:[], wastage:[] };
 
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, cashEx = 0, wTot = 0;
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wTot = 0;
   sheetData.sales.forEach(function(r){
     c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0;
   });
   sheetData.expenses.forEach(function(e){ 
-    var a = Number(e.amount)||0;
-    ex += a; 
-    if(e.method === 'Cash') cashEx += a;
+    ex += Number(e.amount)||0;
   });
   (sheetData.wastage||[]).forEach(function(w){ wTot += ((Number(w.qty)||0) * (Number(w.sp)||0)) * 0.40; });
 
@@ -990,21 +990,19 @@ function exportActiveDayToExcel(){
   Object.keys(state.daily).forEach(function(k){
     if(k.endsWith(curMonthSuffix)){
       var dayNum = parseInt(k.split('-')[0], 10);
-      var dayS = 0, dayE = 0, dayC = 0, dayCE = 0;
+      var dayS = 0, dayE = 0, dayC = 0;
       (state.daily[k].sales||[]).forEach(function(r){
         var sc = Number(r.cash)||0;
         dayC += sc;
         dayS += (sc + (Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0));
       });
       (state.daily[k].expenses||[]).forEach(function(e){ 
-        var ea = Number(e.amount)||0;
-        dayE += ea;
-        if(e.method === 'Cash') dayCE += ea;
+        dayE += Number(e.amount)||0;
       });
       if(dayNum <= activeDay){ mtdS += dayS; mtdE += dayE; }
       if(dayNum < activeDay){ 
         carryPrev += (dayS - dayE); 
-        prevCashCarry += (dayC - dayCE);
+        prevCashCarry += (dayC - dayE);
       }
     }
   });
@@ -1015,22 +1013,22 @@ function exportActiveDayToExcel(){
   aoa.push(["7TH HEAVEN NASHIK — SALES & EXPENDITURE TRACKER", "", "", "", "", "", "", "", ""]);
   aoa.push([]);
 
-  // Physical Cash Reconciliation Table in Excel
-  aoa.push(["COUNTER DRAWER CASH RECONCILIATION", "AMOUNT (₹)", "", "MONTH RECONCILIATION", "AMOUNT (₹)"]);
-  aoa.push(["Op. Cash (Previous In-Hand)", prevCashCarry, "", "Month Prev In-Hand Carry", carryPrev]);
-  aoa.push(["Today Cash Collected", c, "", "Today Cumulative In-Hand", carryPrev + todayNet]);
-  aoa.push(["Total Cash Inflow", prevCashCarry + c, "", "MTD Total Sales", mtdS]);
-  aoa.push(["Cash Expenses Paid (Less)", cashEx, "", "MTD Total Expenses", mtdE]);
-  aoa.push(["Actual Cash In-Hand (Closing)", (prevCashCarry + c - cashEx), "", "Today Net In-Hand", todayNet]);
+  // Counter Cash Flow Layout in Excel (Matching Image Format)
+  aoa.push(["EXPENSES SUMMARY", "AMOUNT (₹)", "", "CASH DETAILS", "AMOUNT (₹)"]);
+  aoa.push(["Total Daily Expenses", ex, "", "OPENING CASH", prevCashCarry]);
+  aoa.push(["", "", "", "Today cash", c]);
+  aoa.push(["", "", "", "Total", prevCashCarry + c]);
+  aoa.push(["", "", "", "Expenses", ex]);
+  aoa.push(["", "", "", "Actual cash", (prevCashCarry + c - ex)]);
   aoa.push([]);
 
   aoa.push(["ACTIVE DATE", "", "TODAY SALES", "", "TODAY EXPENSES", "", "SPOILAGE COST (40%)", "TODAY NET IN-HAND"]);
   aoa.push([dKey, "", todayTotSales, "", ex, "", wTot, todayNet]);
   aoa.push([]);
 
-  aoa.push(["SALES CHANNELS", "", "", "", "", "EXPENDITURE", "", ""]);
-  aoa.push(["Sl No", "Cash (₹)", "Swiggy (₹)", "Zomato (₹)", "Other (₹)", "Expense Category (Manual)", "Amount (₹)", "Payment Method"]);
-  aoa.push(["TOTAL", c, sw, z, ot, "Total Expenses", ex, ""]);
+  aoa.push(["SALES CHANNELS", "", "", "", "", "EXPENSES", "", ""]);
+  aoa.push(["Sl No", "CASH (₹)", "SWIGGY (₹)", "ZOMATO (₹)", "OTHER (₹)", "Sales Total (₹)", "Category", "Amount (₹)"]);
+  aoa.push(["TOTAL", c, sw, z, ot, todayTotSales, "Total", ex]);
 
   var sLines = sheetData.sales.filter(hasAnySaleVal);
   var eLines = sheetData.expenses.filter(function(e){ return (Number(e.amount)||0) > 0; });
@@ -1039,15 +1037,16 @@ function exportActiveDayToExcel(){
   for (var i = 0; i < maxLen; i++) {
     var sl = sLines[i] || {};
     var el = eLines[i] || {};
+    var lineTot = (Number(sl.cash)||0) + (Number(sl.swiggy)||0) + (Number(sl.zomato)||0) + (Number(sl.other)||0);
     aoa.push([
       sLines[i] ? (i + 1) : "",
       sl.cash !== undefined && sl.cash !== "" ? Number(sl.cash) : "",
       sl.swiggy !== undefined && sl.swiggy !== "" ? Number(sl.swiggy) : "",
       sl.zomato !== undefined && sl.zomato !== "" ? Number(sl.zomato) : "",
       sl.other !== undefined && sl.other !== "" ? Number(sl.other) : "",
+      sLines[i] ? lineTot : "",
       el.category || "",
-      el.amount !== undefined && el.amount !== "" ? Number(el.amount) : "",
-      el.method || ""
+      el.amount !== undefined && el.amount !== "" ? Number(el.amount) : ""
     ]);
   }
 
@@ -1288,7 +1287,7 @@ function loadHistoryDateReport(){
     return;
   }
 
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, cashEx = 0, wL = 0;
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wL = 0;
   (dData.sales||[]).forEach(function(r){ 
     c += Number(r.cash)||0; 
     sw += Number(r.swiggy)||0; 
@@ -1296,9 +1295,7 @@ function loadHistoryDateReport(){
     ot += Number(r.other)||0; 
   });
   (dData.expenses||[]).forEach(function(e){ 
-    var amt = Number(e.amount)||0;
-    ex += amt; 
-    if(e.method === 'Cash') cashEx += amt;
+    ex += Number(e.amount)||0;
   });
   (dData.wastage||[]).forEach(function(w){ wL += ((Number(w.qty)||0) * (Number(w.sp)||0)) * 0.40; });
   var totSales = c + sw + z + ot;
@@ -1308,19 +1305,12 @@ function loadHistoryDateReport(){
     '<div style="display:flex;justify-content:space-between;margin-bottom:8px;border-bottom:1px solid var(--rule);padding-bottom:4px;">' +
       '<strong>Date: ' + dKey + '</strong>' +
       '<button class="btn-s" style="padding:2px 8px;font-size:11px;" onclick="state.activeDate=\''+dKey+'\';renderAll();document.querySelector(\'[data-panel=daily]\').click();">Open in Daily Tracker</button>' +
-    '</div>';
-
-  if(state.currentRole === 'admin'){
-    html += '<div><strong>Total Daily Sales:</strong> ' + formatMoney(totSales) + '</div>' +
-            '<div><strong>Total Daily Expenses:</strong> ' + formatMoney(ex) + '</div>' +
-            '<div style="font-size:13.5px;font-weight:700;color:' + (net>=0?'var(--net-green)':'var(--brick)') + ';margin:4px 0;">Net In-Hand: ' + formatMoney(net) + '</div>';
-  } else {
-    html += '<div><strong>Cash Billed:</strong> ' + formatMoney(c) + '</div>' +
-            '<div><strong>Cash Expenses Paid:</strong> ' + formatMoney(cashEx) + '</div>' +
-            '<div style="font-weight:700;color:var(--net-green);margin:4px 0;">Cash Retained: ' + formatMoney(c - cashEx) + '</div>';
-  }
-
-  html += '<div><strong>Spoilage Loss (40%):</strong> ' + formatMoney(wL) + '</div></div>';
+    '</div>' +
+    '<div><strong>Total Daily Sales:</strong> ' + formatMoney(totSales) + '</div>' +
+    '<div><strong>Total Daily Expenses:</strong> ' + formatMoney(ex) + '</div>' +
+    '<div><strong>Cash Collected:</strong> ' + formatMoney(c) + '</div>' +
+    '<div style="font-size:13.5px;font-weight:700;color:' + (net>=0?'var(--net-green)':'var(--brick)') + ';margin:4px 0;">Net In-Hand: ' + formatMoney(net) + '</div>' +
+    '<div><strong>Spoilage Loss (40%):</strong> ' + formatMoney(wL) + '</div></div>';
   out.innerHTML = html;
 }
 
@@ -1415,14 +1405,11 @@ function applyRoleUI(){
   document.getElementById('tabProfitBtn').style.display = (r === 'admin') ? 'block' : 'none';
   document.getElementById('tabPasswordsBtn').style.display = (r === 'admin') ? 'block' : 'none';
 
-  // Turnover Privacy: Hide Total Sales and MTD Bars from Store & Remote
+  // Multi-day turnover strip is Admin-only; Today's sales KPI is visible to ALL roles
   var isPrivileged = (r === 'admin');
   document.getElementById('adminTurnoverStrip').style.display = isPrivileged ? 'grid' : 'none';
-  document.getElementById('kpiSalesContainer').style.display = isPrivileged ? 'flex' : 'none';
-  document.getElementById('kpiExpContainer').style.display = isPrivileged ? 'flex' : 'none';
-  document.getElementById('kpiNetContainer').style.display = isPrivileged ? 'flex' : 'none';
 
-  // Date picker limit for previous day report
+  // Date picker limit for previous day report (Store & Remote can view yesterday only)
   var dPicker = document.getElementById('historyDateInput');
   var yesterday = getYesterdayStr().split('-').reverse().join('-');
   if(!isPrivileged){
@@ -1455,7 +1442,6 @@ function renderDailyTabs(){
   var todayStr = getTodayStr();
   var yestStr = getYesterdayStr();
 
-  // Non-admin users are restricted from viewing tabs prior to yesterday
   if(state.currentRole !== 'admin'){
     dates = dates.filter(function(d){ return d === todayStr || d === yestStr; });
     if(state.activeDate !== todayStr && state.activeDate !== yestStr){
