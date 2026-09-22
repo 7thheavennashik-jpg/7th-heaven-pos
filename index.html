@@ -7,7 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- DUAL CDN FOR 100% EXCEL RELIABILITY -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+  if (typeof XLSX === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
+  }
+</script>
+
 <style>
   :root {
     --maroon-banner: #4A1525;
@@ -144,7 +152,6 @@
   .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--maroon-banner); color: #FFF; padding: 8px 16px; border-radius: 4px; font-size: 12px; opacity: 0; pointer-events: none; transition: all 0.2s; z-index: 100; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* PROFIT SHARING TABLE */
   .profit-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; }
   .profit-table th { background: var(--maroon-hdr); color: #FFF; padding: 8px; text-align: right; border: 1px solid #CCC; }
   .profit-table th:first-child { text-align: left; }
@@ -487,7 +494,7 @@
       </div>
     </section>
 
-    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY - FULLY GENERATED TABLE) -->
+    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY) -->
     <section class="panel" id="panel-profit">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Profit Summary &amp; Distribution</h2>
       <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Partner payout calculation: Prakash (43%), Preveen (28%), Preetham (14.5%), Umesh (14.5%).</p>
@@ -578,9 +585,13 @@ function toast(msg){
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 
-// 100% Reliable Native Blob Downloader (Solves Excel not downloading on GitHub Pages / Mobile)
+// 100% Guaranteed Native Browser Download Trigger
 function triggerExcelDownload(wb, filename) {
   try {
+    if (typeof XLSX === 'undefined') {
+      alert('Excel library is still loading or blocked. Please check your internet connection and refresh.');
+      return;
+    }
     var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     var blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     var url = URL.createObjectURL(blob);
@@ -592,10 +603,10 @@ function triggerExcelDownload(wb, filename) {
     setTimeout(function() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    }, 400);
+    }, 500);
     toast('Downloaded ' + filename);
   } catch(err) {
-    alert('Download error: ' + err.message);
+    alert('Excel Export Error: ' + err.message);
   }
 }
 
@@ -1008,242 +1019,254 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
 
 // 1. EXPORT ACTIVE DAY EXCEL (3 Sheets: Daily_Sales, EXPENSES, AVG_SALES)
 function exportActiveDayToExcel(){
-  var dKey = state.activeDate;
-  var sheetData = state.daily[dKey] || { sales:[], expenses:[], wastage:[] };
+  try {
+    var dKey = state.activeDate;
+    var sheetData = state.daily[dKey] || { sales:[], expenses:[], wastage:[] };
 
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
-  sheetData.sales.forEach(function(r){
-    c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0;
-  });
-  sheetData.expenses.forEach(function(e){ ex += Number(e.amount)||0; });
+    var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
+    (sheetData.sales || []).forEach(function(r){
+      c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0;
+    });
+    (sheetData.expenses || []).forEach(function(e){ ex += Number(e.amount)||0; });
 
-  var todayTotSales = c + sw + z + ot;
-  var parts = dKey.split('-');
-  var curMonthSuffix = parts[1] + '-' + parts[2];
-  var activeDay = parseInt(parts[0], 10);
-  var mtdS = 0, mtdE = 0, daysCounted = 0, prevCashCarry = 0;
+    var todayTotSales = c + sw + z + ot;
+    var parts = dKey.split('-');
+    var curMonthSuffix = parts[1] + '-' + parts[2];
+    var activeDay = parseInt(parts[0], 10);
+    var mtdS = 0, mtdE = 0, daysCounted = 0, prevCashCarry = 0;
 
-  Object.keys(state.daily).forEach(function(k){
-    if(k.endsWith(curMonthSuffix)){
-      var dayNum = parseInt(k.split('-')[0], 10);
-      var dayS = 0, dayE = 0, dayC = 0;
-      (state.daily[k].sales||[]).forEach(function(r){
-        var sc = Number(r.cash)||0;
-        dayC += sc;
-        dayS += (sc + (Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0));
-      });
-      (state.daily[k].expenses||[]).forEach(function(e){ dayE += Number(e.amount)||0; });
-      if(dayNum <= activeDay){ 
-        mtdS += dayS; 
-        mtdE += dayE; 
-        if(dayS > 0 || dayE > 0) daysCounted++;
+    Object.keys(state.daily).forEach(function(k){
+      if(k.endsWith(curMonthSuffix)){
+        var dayNum = parseInt(k.split('-')[0], 10);
+        var dayS = 0, dayE = 0, dayC = 0;
+        (state.daily[k].sales||[]).forEach(function(r){
+          var sc = Number(r.cash)||0;
+          dayC += sc;
+          dayS += (sc + (Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0));
+        });
+        (state.daily[k].expenses||[]).forEach(function(e){ dayE += Number(e.amount)||0; });
+        if(dayNum <= activeDay){ 
+          mtdS += dayS; 
+          mtdE += dayE; 
+          if(dayS > 0 || dayE > 0) daysCounted++;
+        }
+        if(dayNum < activeDay){ 
+          prevCashCarry += (dayC - dayE); 
+        }
       }
-      if(dayNum < activeDay){ 
-        prevCashCarry += (dayC - dayE); 
-      }
+    });
+
+    var wb = XLSX.utils.book_new();
+
+    // Sheet 1: Daily_Sales
+    var p1 = [
+      ["Nashik"],
+      ["7th Heaven Nashik,Indiranagar"],
+      [dKey],
+      ["CASH", "SWIGGY", "ZOMATO", "UPI", "Other", "Sales", "", "EXPENSES", "", "", "CASH DETAILS", ""]
+    ];
+
+    var sLines = sheetData.sales || [];
+    var eLines = sheetData.expenses || [];
+    var maxLen = Math.max(sLines.length, eLines.length, 12);
+
+    var cashLines = [
+      ["OPENING CASH", prevCashCarry],
+      ["Today cash", c],
+      ["", ""],
+      ["Total", prevCashCarry + c],
+      ["", ""],
+      ["Expenses", ex],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["Actual cash", (prevCashCarry + c - ex)]
+    ];
+
+    for (var i = 0; i < maxLen; i++) {
+      var sl = sLines[i] || {};
+      var el = eLines[i] || {};
+      var cl = cashLines[i] || ["", ""];
+      var lineTot = (Number(sl.cash)||0) + (Number(sl.swiggy)||0) + (Number(sl.zomato)||0) + (Number(sl.other)||0);
+
+      p1.push([
+        sl.cash !== undefined && sl.cash !== "" ? Number(sl.cash) : "",
+        sl.swiggy !== undefined && sl.swiggy !== "" ? Number(sl.swiggy) : "",
+        sl.zomato !== undefined && sl.zomato !== "" ? Number(sl.zomato) : "",
+        "",
+        sl.other !== undefined && sl.other !== "" ? Number(sl.other) : "",
+        lineTot > 0 ? lineTot : "",
+        "",
+        el.category || "",
+        "",
+        el.amount !== undefined && el.amount !== "" ? Number(el.amount) : "",
+        cl[0],
+        cl[1]
+      ]);
     }
-  });
 
-  var wb = XLSX.utils.book_new();
+    p1.push([c, sw, z, 0, ot, todayTotSales, "", "Total Expenses", "", ex, "", ""]);
+    var ws1 = XLSX.utils.aoa_to_sheet(p1);
+    XLSX.utils.book_append_sheet(wb, ws1, "Daily_Sales");
 
-  // Sheet 1: Daily_Sales
-  var p1 = [
-    ["Nashik"],
-    ["7th Heaven Nashik,Indiranagar"],
-    [dKey],
-    ["CASH", "SWIGGY", "ZOMATO", "UPI", "Other", "Sales", "", "EXPENSES", "", "", "CASH DETAILS", ""]
-  ];
+    // Sheet 2: EXPENSES
+    var expHeaders = ['DATE:', 'General Expenses', 'Raw material', 'Daily Expenses', 'Staff Food', 'Salary', 'Royalty', 'Electricity Bill', 'Shop & Room Rent', 'GST', 'Online Comm', 'Packaging Material', 'Other', 'Total'];
+    var p2 = [expHeaders];
+    var expRowData = [dKey, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ex];
+    eLines.forEach(function(e){
+      var cat = (e.category || "").toLowerCase();
+      var amt = Number(e.amount) || 0;
+      if (cat.indexOf("raw") !== -1) expRowData[2] += amt;
+      else if (cat.indexOf("daily") !== -1) expRowData[3] += amt;
+      else if (cat.indexOf("food") !== -1) expRowData[4] += amt;
+      else if (cat.indexOf("salary") !== -1) expRowData[5] += amt;
+      else if (cat.indexOf("royalty") !== -1) expRowData[6] += amt;
+      else if (cat.indexOf("electric") !== -1) expRowData[7] += amt;
+      else if (cat.indexOf("rent") !== -1) expRowData[8] += amt;
+      else if (cat.indexOf("gst") !== -1) expRowData[9] += amt;
+      else if (cat.indexOf("online") !== -1 || cat.indexOf("comm") !== -1) expRowData[10] += amt;
+      else if (cat.indexOf("pack") !== -1) expRowData[11] += amt;
+      else expRowData[1] += amt;
+    });
+    p2.push(expRowData);
+    var ws2 = XLSX.utils.aoa_to_sheet(p2);
+    XLSX.utils.book_append_sheet(wb, ws2, "EXPENSES");
 
-  var sLines = sheetData.sales || [];
-  var eLines = sheetData.expenses || [];
-  var maxLen = Math.max(sLines.length, eLines.length, 12);
+    // Sheet 3: AVG_SALES
+    var p3 = [
+      ["", "", "", "Total Sales", mtdS],
+      [],
+      ["", "", "Expenses", "Date", dKey],
+      ["Total Operating Expenses", "", "", mtdExp],
+      ["Operating Days Recorded", "", "", daysCounted],
+      ["Avg Sales", (daysCounted > 0 ? mtdS / daysCounted : todayTotSales)]
+    ];
+    var ws3 = XLSX.utils.aoa_to_sheet(p3);
+    XLSX.utils.book_append_sheet(wb, ws3, "AVG_SALES");
 
-  var cashLines = [
-    ["OPENING CASH", prevCashCarry],
-    ["Today cash", c],
-    ["", ""],
-    ["Total", prevCashCarry + c],
-    ["", ""],
-    ["Expenses", ex],
-    ["", ""],
-    ["", ""],
-    ["", ""],
-    ["Actual cash", (prevCashCarry + c - ex)]
-  ];
-
-  for (var i = 0; i < maxLen; i++) {
-    var sl = sLines[i] || {};
-    var el = eLines[i] || {};
-    var cl = cashLines[i] || ["", ""];
-    var lineTot = (Number(sl.cash)||0) + (Number(sl.swiggy)||0) + (Number(sl.zomato)||0) + (Number(sl.other)||0);
-
-    p1.push([
-      sl.cash !== undefined && sl.cash !== "" ? Number(sl.cash) : "",
-      sl.swiggy !== undefined && sl.swiggy !== "" ? Number(sl.swiggy) : "",
-      sl.zomato !== undefined && sl.zomato !== "" ? Number(sl.zomato) : "",
-      "",
-      sl.other !== undefined && sl.other !== "" ? Number(sl.other) : "",
-      lineTot > 0 ? lineTot : "",
-      "",
-      el.category || "",
-      "",
-      el.amount !== undefined && el.amount !== "" ? Number(el.amount) : "",
-      cl[0],
-      cl[1]
-    ]);
+    triggerExcelDownload(wb, "7th_Heaven_" + dKey + ".xlsx");
+  } catch(err) {
+    alert("Export failed: " + err.message);
   }
-
-  p1.push([c, sw, z, 0, ot, todayTotSales, "", "Total Expenses", "", ex, "", ""]);
-  var ws1 = XLSX.utils.aoa_to_sheet(p1);
-  XLSX.utils.book_append_sheet(wb, ws1, "Daily_Sales");
-
-  // Sheet 2: EXPENSES
-  var expHeaders = ['DATE:', 'General Expenses', 'Raw material', 'Daily Expenses', 'Staff Food', 'Salary', 'Royalty', 'Electricity Bill', 'Shop & Room Rent', 'GST', 'Online Comm', 'Packaging Material', 'Other', 'Total'];
-  var p2 = [expHeaders];
-  var expRowData = [dKey, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ex];
-  eLines.forEach(function(e){
-    var cat = (e.category || "").toLowerCase();
-    var amt = Number(e.amount) || 0;
-    if (cat.indexOf("raw") !== -1) expRowData[2] += amt;
-    else if (cat.indexOf("daily") !== -1) expRowData[3] += amt;
-    else if (cat.indexOf("food") !== -1) expRowData[4] += amt;
-    else if (cat.indexOf("salary") !== -1) expRowData[5] += amt;
-    else if (cat.indexOf("royalty") !== -1) expRowData[6] += amt;
-    else if (cat.indexOf("electric") !== -1) expRowData[7] += amt;
-    else if (cat.indexOf("rent") !== -1) expRowData[8] += amt;
-    else if (cat.indexOf("gst") !== -1) expRowData[9] += amt;
-    else if (cat.indexOf("online") !== -1 || cat.indexOf("comm") !== -1) expRowData[10] += amt;
-    else if (cat.indexOf("pack") !== -1) expRowData[11] += amt;
-    else expRowData[1] += amt;
-  });
-  p2.push(expRowData);
-  var ws2 = XLSX.utils.aoa_to_sheet(p2);
-  XLSX.utils.book_append_sheet(wb, ws2, "EXPENSES");
-
-  // Sheet 3: AVG_SALES
-  var p3 = [
-    ["", "", "", "Total Sales", mtdS],
-    [],
-    ["", "", "Expenses", "Date", dKey],
-    ["Total Operating Expenses", "", "", mtdExp],
-    ["Operating Days Recorded", "", "", daysCounted],
-    ["Avg Sales", (daysCounted > 0 ? mtdS / daysCounted : todayTotSales)]
-  ];
-  var ws3 = XLSX.utils.aoa_to_sheet(p3);
-  XLSX.utils.book_append_sheet(wb, ws3, "AVG_SALES");
-
-  triggerExcelDownload(wb, "7th_Heaven_" + dKey + ".xlsx");
 }
 
-// 2. EXPORT MONTHLY REPORT EXCEL (4 Sheets: Monthly sales, EXPENSES, AVG_SALES, Profit share)
+// 2. EXPORT MONTHLY REPORT EXCEL (4 Sheets)
 function exportMonthlyReportToExcel(){
-  var ym = document.getElementById('monthlyReportMonth').value || now.toISOString().slice(0,7);
-  var parts = ym.split('-');
-  var mFilter = parts[1] + '-' + parts[0];
-  
-  var wb = XLSX.utils.book_new();
+  try {
+    var ym = document.getElementById('monthlyReportMonth').value;
+    if(!ym){
+      var dNow = new Date();
+      ym = dNow.toISOString().slice(0,7);
+    }
+    var parts = ym.split('-');
+    var mFilter = parts[1] + '-' + parts[0];
+    
+    var wb = XLSX.utils.book_new();
 
-  // Sheet 1: Monthly sales
-  var p1 = [
-    ["", "Nashik"],
-    ["", "7th Heaven Nashik,Indiranagar"],
-    ["", "Month : " + ym],
-    ["Date", "CASH", "SWIGGY", "ZOMATO", "UPI", "Other", "Sales"]
-  ];
+    // Sheet 1: Monthly sales
+    var p1 = [
+      ["", "Nashik"],
+      ["", "7th Heaven Nashik,Indiranagar"],
+      ["", "Month : " + ym],
+      ["Date", "CASH", "SWIGGY", "ZOMATO", "UPI", "Other", "Sales"]
+    ];
 
-  // Sheet 2: EXPENSES
-  var expHeaders = ['DATE:', 'General Expenses', 'Raw material', 'Daily Expenses', 'Staff Food', 'Salary', 'Royalty', 'Electricity Bill', 'Shop & Room Rent', 'GST', 'Online Comm', 'Packaging Material', 'Other', 'Total'];
-  var p2 = [expHeaders];
+    // Sheet 2: EXPENSES
+    var expHeaders = ['DATE:', 'General Expenses', 'Raw material', 'Daily Expenses', 'Staff Food', 'Salary', 'Royalty', 'Electricity Bill', 'Shop & Room Rent', 'GST', 'Online Comm', 'Packaging Material', 'Other', 'Total'];
+    var p2 = [expHeaders];
 
-  var grandSales = 0, grandExp = 0;
-  var grandCash = 0, grandSwiggy = 0, grandZomato = 0, grandOther = 0;
-  var operatingDays = 0;
+    var grandSales = 0, grandExp = 0;
+    var grandCash = 0, grandSwiggy = 0, grandZomato = 0, grandOther = 0;
+    var operatingDays = 0;
 
-  var sortedDates = Object.keys(state.daily).filter(function(k){
-    return k.endsWith(mFilter);
-  }).sort(function(a, b){
-    return parseInt(a.split('-')[0], 10) - parseInt(b.split('-')[0], 10);
-  });
-
-  sortedDates.forEach(function(dateKey){
-    var d = state.daily[dateKey];
-    var c = 0, sw = 0, z = 0, ot = 0, dayExp = 0;
-
-    (d.sales || []).forEach(function(r){
-      c += Number(r.cash) || 0;
-      sw += Number(r.swiggy) || 0;
-      z += Number(r.zomato) || 0;
-      ot += Number(r.other) || 0;
+    var sortedDates = Object.keys(state.daily).filter(function(k){
+      return k.endsWith(mFilter);
+    }).sort(function(a, b){
+      return parseInt(a.split('-')[0], 10) - parseInt(b.split('-')[0], 10);
     });
 
-    var dayExpRow = [dateKey, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    (d.expenses || []).forEach(function(e){
-      var amt = Number(e.amount) || 0;
-      dayExp += amt;
-      var cat = (e.category || "").toLowerCase();
-      if (cat.indexOf("raw") !== -1) dayExpRow[2] += amt;
-      else if (cat.indexOf("daily") !== -1) dayExpRow[3] += amt;
-      else if (cat.indexOf("food") !== -1) dayExpRow[4] += amt;
-      else if (cat.indexOf("salary") !== -1) dayExpRow[5] += amt;
-      else if (cat.indexOf("royalty") !== -1) dayExpRow[6] += amt;
-      else if (cat.indexOf("electric") !== -1) dayExpRow[7] += amt;
-      else if (cat.indexOf("rent") !== -1) dayExpRow[8] += amt;
-      else if (cat.indexOf("gst") !== -1) dayExpRow[9] += amt;
-      else if (cat.indexOf("online") !== -1 || cat.indexOf("comm") !== -1) dayExpRow[10] += amt;
-      else if (cat.indexOf("pack") !== -1) dayExpRow[11] += amt;
-      else dayExpRow[1] += amt;
+    sortedDates.forEach(function(dateKey){
+      var d = state.daily[dateKey];
+      var c = 0, sw = 0, z = 0, ot = 0, dayExp = 0;
+
+      (d.sales || []).forEach(function(r){
+        c += Number(r.cash) || 0;
+        sw += Number(r.swiggy) || 0;
+        z += Number(r.zomato) || 0;
+        ot += Number(r.other) || 0;
+      });
+
+      var dayExpRow = [dateKey, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      (d.expenses || []).forEach(function(e){
+        var amt = Number(e.amount) || 0;
+        dayExp += amt;
+        var cat = (e.category || "").toLowerCase();
+        if (cat.indexOf("raw") !== -1) dayExpRow[2] += amt;
+        else if (cat.indexOf("daily") !== -1) dayExpRow[3] += amt;
+        else if (cat.indexOf("food") !== -1) dayExpRow[4] += amt;
+        else if (cat.indexOf("salary") !== -1) dayExpRow[5] += amt;
+        else if (cat.indexOf("royalty") !== -1) dayExpRow[6] += amt;
+        else if (cat.indexOf("electric") !== -1) dayExpRow[7] += amt;
+        else if (cat.indexOf("rent") !== -1) dayExpRow[8] += amt;
+        else if (cat.indexOf("gst") !== -1) dayExpRow[9] += amt;
+        else if (cat.indexOf("online") !== -1 || cat.indexOf("comm") !== -1) dayExpRow[10] += amt;
+        else if (cat.indexOf("pack") !== -1) dayExpRow[11] += amt;
+        else dayExpRow[1] += amt;
+      });
+      dayExpRow[13] = dayExp;
+
+      var dayTot = c + sw + z + ot;
+      grandSales += dayTot;
+      grandExp += dayExp;
+      grandCash += c;
+      grandSwiggy += sw;
+      grandZomato += z;
+      grandOther += ot;
+
+      if (dayTot > 0 || dayExp > 0) operatingDays++;
+
+      p1.push([dateKey, c, sw, z, 0, ot, dayTot]);
+      p2.push(dayExpRow);
     });
-    dayExpRow[13] = dayExp;
 
-    var dayTot = c + sw + z + ot;
-    grandSales += dayTot;
-    grandExp += dayExp;
-    grandCash += c;
-    grandSwiggy += sw;
-    grandZomato += z;
-    grandOther += ot;
+    p1.push(["TOTAL", grandCash, grandSwiggy, grandZomato, 0, grandOther, grandSales]);
+    p2.push(["TOTAL", "", "", "", "", "", "", "", "", "", "", "", "", grandExp]);
 
-    if (dayTot > 0 || dayExp > 0) operatingDays++;
+    var ws1 = XLSX.utils.aoa_to_sheet(p1);
+    var ws2 = XLSX.utils.aoa_to_sheet(p2);
+    XLSX.utils.book_append_sheet(wb, ws1, "Monthly sales");
+    XLSX.utils.book_append_sheet(wb, ws2, "EXPENSES");
 
-    p1.push([dateKey, c, sw, z, 0, ot, dayTot]);
-    p2.push(dayExpRow);
-  });
+    // Sheet 3: AVG_SALES
+    var p3 = [
+      ["", "", "", "Total Sales", grandSales],
+      [],
+      ["", "", "Expenses", "Month", ym],
+      ["Total Operating Expenses", "", "", grandExp],
+      ["Net Sales (Profit)", "", "", (grandSales - grandExp)],
+      ["Operating Days Recorded", "", "", operatingDays],
+      ["Avg Sales", (operatingDays > 0 ? grandSales / operatingDays : 0)]
+    ];
+    var ws3 = XLSX.utils.aoa_to_sheet(p3);
+    XLSX.utils.book_append_sheet(wb, ws3, "AVG_SALES");
 
-  p1.push(["TOTAL", grandCash, grandSwiggy, grandZomato, 0, grandOther, grandSales]);
-  p2.push(["TOTAL", "", "", "", "", "", "", "", "", "", "", "", "", grandExp]);
+    // Sheet 4: Profit share
+    var netProfit = grandSales - grandExp;
+    var p4 = [
+      ["Partner Name", "Agreed %", "Net Profit Share (INR)"],
+      ["Prakash Shetty", "43.0%", netProfit * 0.43],
+      ["Preveen Shetty", "28.0%", netProfit * 0.28],
+      ["Preetham Shetty", "14.5%", netProfit * 0.145],
+      ["Umesh Shetty", "14.5%", netProfit * 0.145],
+      ["TOTAL DISTRIBUTED", "100.0%", netProfit]
+    ];
+    var ws4 = XLSX.utils.aoa_to_sheet(p4);
+    XLSX.utils.book_append_sheet(wb, ws4, "Profit share");
 
-  var ws1 = XLSX.utils.aoa_to_sheet(p1);
-  var ws2 = XLSX.utils.aoa_to_sheet(p2);
-  XLSX.utils.book_append_sheet(wb, ws1, "Monthly sales");
-  XLSX.utils.book_append_sheet(wb, ws2, "EXPENSES");
-
-  // Sheet 3: AVG_SALES
-  var p3 = [
-    ["", "", "", "Total Sales", grandSales],
-    [],
-    ["", "", "Expenses", "Month", ym],
-    ["Total Operating Expenses", "", "", grandExp],
-    ["Net Sales (Profit)", "", "", (grandSales - grandExp)],
-    ["Operating Days Recorded", "", "", operatingDays],
-    ["Avg Sales", (operatingDays > 0 ? grandSales / operatingDays : 0)]
-  ];
-  var ws3 = XLSX.utils.aoa_to_sheet(p3);
-  XLSX.utils.book_append_sheet(wb, ws3, "AVG_SALES");
-
-  // Sheet 4: Profit share
-  var netProfit = grandSales - grandExp;
-  var p4 = [
-    ["Partner Name", "Agreed %", "Net Profit Share (INR)"],
-    ["Prakash Shetty", "43.0%", netProfit * 0.43],
-    ["Preveen Shetty", "28.0%", netProfit * 0.28],
-    ["Preetham Shetty", "14.5%", netProfit * 0.145],
-    ["Umesh Shetty", "14.5%", netProfit * 0.145],
-    ["TOTAL DISTRIBUTED", "100.0%", netProfit]
-  ];
-  var ws4 = XLSX.utils.aoa_to_sheet(p4);
-  XLSX.utils.book_append_sheet(wb, ws4, "Profit share");
-
-  triggerExcelDownload(wb, "7th_Heaven_MONTHLY_" + ym + ".xlsx");
+    triggerExcelDownload(wb, "7th_Heaven_MONTHLY_" + ym + ".xlsx");
+  } catch(err) {
+    alert("Monthly export failed: " + err.message);
+  }
 }
 
 // 3. GENERATE PROFIT SHARING TABLE IN ADMIN PANEL
@@ -1565,6 +1588,7 @@ function generateMonthlyReport(){
   }).join('');
   document.getElementById('mRepPartners').innerHTML = pHtml;
   document.getElementById('monthlyReportArea').style.display = 'block';
+  renderProfitSharingPanel();
 }
 
 var targetRolePending = null;
