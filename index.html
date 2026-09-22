@@ -494,7 +494,7 @@
       </div>
     </section>
 
-    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY) -->
+    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY - POPULATES AUTOMATICALLY) -->
     <section class="panel" id="panel-profit">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Profit Summary &amp; Distribution</h2>
       <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Partner payout calculation: Prakash (43%), Preveen (28%), Preetham (14.5%), Umesh (14.5%).</p>
@@ -534,9 +534,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v26";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v27";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v26";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v27";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -585,11 +585,11 @@ function toast(msg){
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 
-// 100% Guaranteed Native Browser Download Trigger
+// 100% Reliable Native Browser Download Trigger
 function triggerExcelDownload(wb, filename) {
   try {
     if (typeof XLSX === 'undefined') {
-      alert('Excel library is still loading or blocked. Please check your internet connection and refresh.');
+      alert('Excel library is still loading. Please ensure you are connected to internet and try again.');
       return;
     }
     var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -1132,12 +1132,12 @@ function exportActiveDayToExcel(){
     var ws2 = XLSX.utils.aoa_to_sheet(p2);
     XLSX.utils.book_append_sheet(wb, ws2, "EXPENSES");
 
-    // Sheet 3: AVG_SALES
+    // Sheet 3: AVG_SALES (Using correctly scoped mtdE)
     var p3 = [
       ["", "", "", "Total Sales", mtdS],
       [],
       ["", "", "Expenses", "Date", dKey],
-      ["Total Operating Expenses", "", "", mtdExp],
+      ["Total Operating Expenses", "", "", mtdE],
       ["Operating Days Recorded", "", "", daysCounted],
       ["Avg Sales", (daysCounted > 0 ? mtdS / daysCounted : todayTotSales)]
     ];
