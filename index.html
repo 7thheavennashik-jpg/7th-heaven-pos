@@ -63,6 +63,14 @@
   .carry-card .clbl { font-size: 10px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; }
   .carry-card .camt { font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; font-weight: 700; margin-top: 2px; }
 
+  /* CASH FLOW RECONCILIATION CARD (MATCHING USER WORKBOOK) */
+  .cash-ledger-box { background: #FFF; border: 2px solid var(--rule-strong); border-radius: 4px; padding: 12px; margin-bottom: 14px; max-width: 480px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+  .cash-ledger-title { font-size: 12px; font-weight: 700; color: var(--maroon-banner); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; border-bottom: 1px solid var(--rule); padding-bottom: 4px; }
+  .cash-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; font-size: 12.5px; border-bottom: 1px solid #F0EEE6; }
+  .cash-row.highlight-yellow { background: #FFF9C4; font-weight: 700; }
+  .cash-row.highlight-cyan { background: #B2EBF2; font-weight: 700; font-size: 13.5px; border-top: 2px solid #00ACC1; }
+  .cash-val { font-family: 'IBM Plex Mono', monospace; }
+
   .kpi-grid { display: grid; grid-template-columns: 110px 1.2fr 1fr 1fr 1.1fr; border: 1px solid var(--rule-strong); border-bottom: 2px solid var(--maroon-hdr); margin-bottom: 14px; }
   .kpi-card { padding: 8px 10px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: center; }
   .kpi-card:last-child { border-right: none; }
@@ -154,15 +162,15 @@
       <div class="role-cards">
         <div class="role-box" onclick="promptRolePass('admin')">
           <h3>👑 Admin</h3>
-          <p>Full control: Edit any date, monthly reports with WhatsApp share, manage targets, and profit shares.</p>
+          <p>Full control: All historical days, monthly reports with WhatsApp share, turnover audit, and profit splits.</p>
         </div>
         <div class="role-box" onclick="promptRolePass('store')">
           <h3>🏪 Store Partner</h3>
-          <p>Counter access: Record daily sales and shop expenses, log unsold finished goods spoilage, and print receipts.</p>
+          <p>Counter access: Record daily sales and expenses, manage counter cash float, log spoilage, view yesterday only.</p>
         </div>
         <div class="role-box" onclick="promptRolePass('remote')">
           <h3>👁️ Remote Partner</h3>
-          <p>Real-time monitor: View daily sales, all previous days' reports, expenditures, spoilage losses, and net balance.</p>
+          <p>Live monitor: View today and yesterday's operations and cash drawer status without historical turnover.</p>
         </div>
       </div>
     </div>
@@ -179,7 +187,7 @@
   <div id="mainAppContent" style="display:none;">
     <nav class="nav-bar">
       <button class="active" data-panel="daily">Daily Sales &amp; Tracker</button>
-      <button data-panel="reports">Previous Days Reports</button>
+      <button data-panel="reports" id="tabReportsBtn">Previous Day Report</button>
       <button data-panel="monthly" id="tabMonthlyBtn">Monthly Report &amp; Share</button>
       <button data-panel="invoice" id="tabInvoiceBtn">POS &amp; Invoices</button>
       <button data-panel="profit" id="tabProfitBtn">Profit Sharing</button>
@@ -203,7 +211,8 @@
         </div>
       </div>
 
-      <div class="ledger-carryover-bar">
+      <!-- ADMIN EXCLUSIVE: OVERALL BUSINESS TURNOVER CARRYOVER -->
+      <div class="ledger-carryover-bar" id="adminTurnoverStrip">
         <div class="carry-card">
           <div class="clbl">Month Prev In-Hand Carry</div>
           <div class="camt" id="carryPrevInHand" style="color:var(--gold);">₹0.00</div>
@@ -222,16 +231,42 @@
         </div>
       </div>
 
+      <!-- PHYSICAL CASH IN-HAND RECONCILIATION CARD (VISIBLE TO STORE & ADMIN) -->
+      <div class="cash-ledger-box">
+        <div class="cash-ledger-title">💵 Counter Drawer Cash Reconciliation</div>
+        <div class="cash-row highlight-yellow">
+          <span>Op. Cash (Previous In-Hand)</span>
+          <span class="cash-val" id="reconcileOpCash">₹0.00</span>
+        </div>
+        <div class="cash-row">
+          <span>Today Cash Collected</span>
+          <span class="cash-val" id="reconcileTodayCash">₹0.00</span>
+        </div>
+        <div class="cash-row" style="font-weight:700;">
+          <span>Total Cash Inflow</span>
+          <span class="cash-val" id="reconcileTotalInflow">₹0.00</span>
+        </div>
+        <div class="cash-row highlight-yellow">
+          <span>Cash Expenses Paid (Less)</span>
+          <span class="cash-val" id="reconcileCashExp" style="color:var(--brick);">₹0.00</span>
+        </div>
+        <div class="cash-row highlight-cyan">
+          <span>Actual Cash In-Hand (Closing)</span>
+          <span class="cash-val" id="reconcileActualCash">₹0.00</span>
+        </div>
+      </div>
+
+      <!-- KPI METRICS (FILTERED ACCORDING TO ACCESS ROLE) -->
       <div class="kpi-grid">
         <div class="kpi-card" style="background:#F2E6EA;">
           <span class="lbl">Active Date</span>
           <span class="amt" id="kpiDate" style="color:var(--maroon-hdr);font-size:13px;">--</span>
         </div>
-        <div class="kpi-card kpi-sales">
-          <span class="lbl">Today Sales</span>
+        <div class="kpi-card kpi-sales" id="kpiSalesContainer">
+          <span class="lbl">Today Total Sales</span>
           <span class="amt" id="kpiSales">₹0.00</span>
         </div>
-        <div class="kpi-card kpi-exp">
+        <div class="kpi-card kpi-exp" id="kpiExpContainer">
           <span class="lbl">Today Expenses</span>
           <span class="amt" id="kpiExp">₹0.00</span>
         </div>
@@ -239,7 +274,7 @@
           <span class="lbl">Spoilage Cost (40%)</span>
           <span class="amt" id="kpiWaste">₹0.00</span>
         </div>
-        <div class="kpi-card kpi-net">
+        <div class="kpi-card kpi-net" id="kpiNetContainer">
           <span class="lbl">Net Cash In-Hand</span>
           <span class="amt" id="kpiNet">₹0.00</span>
         </div>
@@ -325,17 +360,19 @@
       </div>
     </section>
 
-    <!-- PANEL 2: PREVIOUS DAYS REPORTS -->
+    <!-- PANEL 2: PREVIOUS DAY / HISTORICAL REPORT -->
     <section class="panel" id="panel-reports">
-      <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Previous Days Ledger &amp; Reports</h2>
+      <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;" id="reportsHeading">Previous Day Ledger</h2>
+      <p style="font-size:11.5px;color:var(--ink-soft);margin-bottom:12px;" id="reportsSubtext">Review the concluded day's counter records.</p>
+      
       <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
-        <div class="form-group" style="margin:0;"><label>Select Date</label><input type="date" id="historyDateInput"></div>
+        <div class="form-group" style="margin:0;"><label id="datePickerLabel">Select Date</label><input type="date" id="historyDateInput"></div>
         <button class="btn-p" onclick="loadHistoryDateReport()">View Report</button>
       </div>
       <div id="historyReportOutput"></div>
     </section>
 
-    <!-- PANEL 3: MONTHLY REPORT -->
+    <!-- PANEL 3: MONTHLY REPORT (ADMIN ONLY) -->
     <section class="panel" id="panel-monthly">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Sales &amp; Expenditure Report</h2>
       <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
@@ -357,7 +394,7 @@
       </div>
     </section>
 
-    <!-- PANEL 4: POS & INVOICES (ISOLATED FROM DAILY SALES) -->
+    <!-- PANEL 4: POS & INVOICES -->
     <section class="panel" id="panel-invoice">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Customer Sale &amp; Bill Generator</h2>
       <p style="font-size:11.5px;color:var(--ink-soft);margin-bottom:12px;">Generate customer bills upon request. <strong>Does not add entries to the Daily Sales table.</strong></p>
@@ -417,7 +454,7 @@
       </div>
     </section>
 
-    <!-- PANEL 5: PROFIT SHARING -->
+    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY) -->
     <section class="panel" id="panel-profit">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Profit Summary</h2>
       <div style="overflow-x:auto;">
@@ -428,7 +465,7 @@
       </div>
     </section>
 
-    <!-- PANEL 6: PASSWORDS -->
+    <!-- PANEL 6: PASSWORDS (ADMIN ONLY) -->
     <section class="panel" id="panel-passwords">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Security &amp; Passwords</h2>
       <div style="max-width:400px;">
@@ -445,9 +482,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v20";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v21";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v20";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v21";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -470,6 +507,15 @@ var currentInvoiceItems = [];
 
 function getTodayStr(){
   var d = new Date();
+  var dd = String(d.getDate()).padStart(2,'0');
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  var yyyy = d.getFullYear();
+  return dd + "-" + mm + "-" + yyyy;
+}
+
+function getYesterdayStr(){
+  var d = new Date();
+  d.setDate(d.getDate() - 1);
   var dd = String(d.getDate()).padStart(2,'0');
   var mm = String(d.getMonth()+1).padStart(2,'0');
   var yyyy = d.getFullYear();
@@ -688,7 +734,11 @@ function renderDailyGrids(){
       }
     };
 
-    tr.querySelector('[data-f="method"]').onchange = function(e){ row.method = e.target.value; saveState(); };
+    tr.querySelector('[data-f="method"]').onchange = function(e){ 
+      row.method = e.target.value; 
+      saveState(); 
+      updateTotals(); 
+    };
 
     amtInp.oninput = function(e){
       row.amount = e.target.value;
@@ -726,7 +776,6 @@ function renderDailyGrids(){
   updateTotals();
 }
 
-// Dedicated Spoilage Renderer (Preserves Focus while typing)
 function renderWasteGrid(){
   var sheet = state.daily[state.activeDate];
   if(!sheet.wastage) sheet.wastage = [];
@@ -799,7 +848,7 @@ function handleExpAutoJump(idx){
 
 function updateTotals(){
   var sheet = state.daily[state.activeDate];
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wasteCostLoss = 0;
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, cashExp = 0, wasteCostLoss = 0;
 
   sheet.sales.forEach(function(r){
     c += Number(r.cash) || 0;
@@ -808,11 +857,14 @@ function updateTotals(){
     ot += Number(r.other) || 0;
   });
 
-  sheet.expenses.forEach(function(r){
-    ex += Number(r.amount) || 0;
+  sheet.expenses.forEach(function(e){
+    var amt = Number(e.amount) || 0;
+    ex += amt;
+    if(e.method === 'Cash'){
+      cashExp += amt; // Deducted exclusively from drawer cash
+    }
   });
 
-  // Calculate Spoilage Totals with matched element IDs
   (sheet.wastage || []).forEach(function(w, i){
     var spVal = Number(w.sp) || 0;
     var qVal = Number(w.qty) || 0;
@@ -848,15 +900,16 @@ function updateTotals(){
     tr.querySelector('.sl-box').textContent = hasAnySaleVal(r) ? sl++ : '';
   });
 
-  calculateLedgerCarryAndMTD(net);
+  calculateLedgerCarryAndCashReconcile(c, cashExp, net);
 }
 
-function calculateLedgerCarryAndMTD(todayNet){
+function calculateLedgerCarryAndCashReconcile(todayCash, todayCashExp, todayNet){
   var activeDateParts = state.activeDate.split('-');
   var activeDay = parseInt(activeDateParts[0], 10);
   var curMonthSuffix = activeDateParts[1] + '-' + activeDateParts[2];
 
   var prevMonthInHand = 0;
+  var prevMonthCashCarry = 0;
   var mtdS = 0;
   var mtdE = 0;
 
@@ -865,12 +918,20 @@ function calculateLedgerCarryAndMTD(todayNet){
       var dayNum = parseInt(k.split('-')[0], 10);
       var daySales = 0;
       var dayExp = 0;
+      var dayCashSales = 0;
+      var dayCashExp = 0;
 
       state.daily[k].sales.forEach(function(r){
-        daySales += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0);
+        var c = Number(r.cash)||0;
+        dayCashSales += c;
+        daySales += (c + (Number(r.swiggy)||0) + (Number(r.zomato)||0) + (Number(r.other)||0));
       });
       state.daily[k].expenses.forEach(function(e){
-        dayExp += Number(e.amount)||0;
+        var a = Number(e.amount)||0;
+        dayExp += a;
+        if(e.method === 'Cash'){
+          dayCashExp += a;
+        }
       });
 
       if(dayNum <= activeDay){
@@ -880,6 +941,7 @@ function calculateLedgerCarryAndMTD(todayNet){
 
       if(dayNum < activeDay){
         prevMonthInHand += (daySales - dayExp);
+        prevMonthCashCarry += (dayCashSales - dayCashExp);
       }
     }
   });
@@ -888,6 +950,16 @@ function calculateLedgerCarryAndMTD(todayNet){
   document.getElementById('carryCumulativeTotal').textContent = formatMoney(prevMonthInHand + todayNet);
   document.getElementById('mtdSalesTotal').textContent = formatMoney(mtdS);
   document.getElementById('mtdExpTotal').textContent = formatMoney(mtdE);
+
+  // Counter Drawer Cash Reconciliation Calculations (Matching User Image)
+  var totalInflow = prevMonthCashCarry + todayCash;
+  var actualCashInHand = totalInflow - todayCashExp;
+
+  document.getElementById('reconcileOpCash').textContent = formatMoney(prevMonthCashCarry);
+  document.getElementById('reconcileTodayCash').textContent = formatMoney(todayCash);
+  document.getElementById('reconcileTotalInflow').textContent = formatMoney(totalInflow);
+  document.getElementById('reconcileCashExp').textContent = formatMoney(todayCashExp);
+  document.getElementById('reconcileActualCash').textContent = formatMoney(actualCashInHand);
 }
 
 // EXPORT TO EXCEL
@@ -896,11 +968,15 @@ function exportActiveDayToExcel(){
   var dKey = state.activeDate;
   var sheetData = state.daily[dKey] || { sales:[], expenses:[], wastage:[] };
 
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wTot = 0;
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, cashEx = 0, wTot = 0;
   sheetData.sales.forEach(function(r){
     c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0;
   });
-  sheetData.expenses.forEach(function(e){ ex += Number(e.amount)||0; });
+  sheetData.expenses.forEach(function(e){ 
+    var a = Number(e.amount)||0;
+    ex += a; 
+    if(e.method === 'Cash') cashEx += a;
+  });
   (sheetData.wastage||[]).forEach(function(w){ wTot += ((Number(w.qty)||0) * (Number(w.sp)||0)) * 0.40; });
 
   var todayTotSales = c + sw + z + ot;
@@ -909,18 +985,27 @@ function exportActiveDayToExcel(){
   var parts = dKey.split('-');
   var curMonthSuffix = parts[1] + '-' + parts[2];
   var activeDay = parseInt(parts[0], 10);
-  var mtdS = 0, mtdE = 0, carryPrev = 0;
+  var mtdS = 0, mtdE = 0, carryPrev = 0, prevCashCarry = 0;
 
   Object.keys(state.daily).forEach(function(k){
     if(k.endsWith(curMonthSuffix)){
       var dayNum = parseInt(k.split('-')[0], 10);
-      var dayS = 0, dayE = 0;
+      var dayS = 0, dayE = 0, dayC = 0, dayCE = 0;
       (state.daily[k].sales||[]).forEach(function(r){
-        dayS += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0);
+        var sc = Number(r.cash)||0;
+        dayC += sc;
+        dayS += (sc + (Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0));
       });
-      (state.daily[k].expenses||[]).forEach(function(e){ dayE += Number(e.amount)||0; });
+      (state.daily[k].expenses||[]).forEach(function(e){ 
+        var ea = Number(e.amount)||0;
+        dayE += ea;
+        if(e.method === 'Cash') dayCE += ea;
+      });
       if(dayNum <= activeDay){ mtdS += dayS; mtdE += dayE; }
-      if(dayNum < activeDay){ carryPrev += (dayS - dayE); }
+      if(dayNum < activeDay){ 
+        carryPrev += (dayS - dayE); 
+        prevCashCarry += (dayC - dayCE);
+      }
     }
   });
 
@@ -930,8 +1015,13 @@ function exportActiveDayToExcel(){
   aoa.push(["7TH HEAVEN NASHIK — SALES & EXPENDITURE TRACKER", "", "", "", "", "", "", "", ""]);
   aoa.push([]);
 
-  aoa.push(["MONTH PREV IN-HAND CARRY", "", "TODAY CUMULATIVE IN-HAND", "", "MTD TOTAL SALES (MONTH)", "", "MTD TOTAL EXPENSES", ""]);
-  aoa.push([carryPrev, "", (carryPrev + todayNet), "", mtdS, "", mtdE, ""]);
+  // Physical Cash Reconciliation Table in Excel
+  aoa.push(["COUNTER DRAWER CASH RECONCILIATION", "AMOUNT (₹)", "", "MONTH RECONCILIATION", "AMOUNT (₹)"]);
+  aoa.push(["Op. Cash (Previous In-Hand)", prevCashCarry, "", "Month Prev In-Hand Carry", carryPrev]);
+  aoa.push(["Today Cash Collected", c, "", "Today Cumulative In-Hand", carryPrev + todayNet]);
+  aoa.push(["Total Cash Inflow", prevCashCarry + c, "", "MTD Total Sales", mtdS]);
+  aoa.push(["Cash Expenses Paid (Less)", cashEx, "", "MTD Total Expenses", mtdE]);
+  aoa.push(["Actual Cash In-Hand (Closing)", (prevCashCarry + c - cashEx), "", "Today Net In-Hand", todayNet]);
   aoa.push([]);
 
   aoa.push(["ACTIVE DATE", "", "TODAY SALES", "", "TODAY EXPENSES", "", "SPOILAGE COST (40%)", "TODAY NET IN-HAND"]);
@@ -961,7 +1051,7 @@ function exportActiveDayToExcel(){
     ]);
   }
 
-  // Spoilage Table in Excel (40%)
+  // Spoilage Table
   aoa.push([]);
   aoa.push(["FINISHED GOODS SPOILAGE & WASTAGE", "", "", "", "", ""]);
   aoa.push(["Discarded Item", "Qty", "Selling Price (₹)", "Auto Cost Loss (40%)", "Retail Loss (₹)", "Reason"]);
@@ -1176,12 +1266,21 @@ function shareInvoiceWhatsApp(idx){
   window.open(url, '_blank');
 }
 
+// RESTRICTED HISTORICAL CHECK (1-DAY ONLY FOR STORE/REMOTE)
 function loadHistoryDateReport(){
   var rawDate = document.getElementById('historyDateInput').value;
   if(!rawDate){ alert('Please select a date.'); return; }
   var parts = rawDate.split('-');
   var dKey = parts[2] + '-' + parts[1] + '-' + parts[0];
   
+  if(state.currentRole !== 'admin'){
+    var allowedYesterday = getYesterdayStr();
+    if(dKey !== allowedYesterday && dKey !== getTodayStr()){
+      alert('Access Restricted: Store and Remote partners can only review the previous day (' + allowedYesterday + ').');
+      return;
+    }
+  }
+
   var dData = state.daily[dKey];
   var out = document.getElementById('historyReportOutput');
   if(!dData){
@@ -1189,27 +1288,44 @@ function loadHistoryDateReport(){
     return;
   }
 
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wL = 0;
-  (dData.sales||[]).forEach(function(r){ c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0; });
-  (dData.expenses||[]).forEach(function(e){ ex += Number(e.amount)||0; });
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, cashEx = 0, wL = 0;
+  (dData.sales||[]).forEach(function(r){ 
+    c += Number(r.cash)||0; 
+    sw += Number(r.swiggy)||0; 
+    z += Number(r.zomato)||0; 
+    ot += Number(r.other)||0; 
+  });
+  (dData.expenses||[]).forEach(function(e){ 
+    var amt = Number(e.amount)||0;
+    ex += amt; 
+    if(e.method === 'Cash') cashEx += amt;
+  });
   (dData.wastage||[]).forEach(function(w){ wL += ((Number(w.qty)||0) * (Number(w.sp)||0)) * 0.40; });
   var totSales = c + sw + z + ot;
   var net = totSales - ex;
 
-  out.innerHTML =
-    '<div class="report-box">' +
-      '<div style="display:flex;justify-content:space-between;margin-bottom:8px;border-bottom:1px solid var(--rule);padding-bottom:4px;">' +
-        '<strong>Date: ' + dKey + '</strong>' +
-        '<button class="btn-s" style="padding:2px 8px;font-size:11px;" onclick="state.activeDate=\''+dKey+'\';renderAll();document.querySelector(\'[data-panel=daily]\').click();">Open in Daily Tracker</button>' +
-      '</div>' +
-      '<div><strong>Total Daily Sales:</strong> ' + formatMoney(totSales) + '</div>' +
-      '<div><strong>Total Expenses:</strong> ' + formatMoney(ex) + '</div>' +
-      '<div><strong>Spoilage Cost Loss (40%):</strong> ' + formatMoney(wL) + '</div>' +
-      '<div style="font-size:14px;font-weight:700;color:' + (net>=0?'var(--net-green)':'var(--brick)') + ';margin-top:6px;">Net In-Hand: ' + formatMoney(net) + '</div>' +
+  var html = '<div class="report-box">' +
+    '<div style="display:flex;justify-content:space-between;margin-bottom:8px;border-bottom:1px solid var(--rule);padding-bottom:4px;">' +
+      '<strong>Date: ' + dKey + '</strong>' +
+      '<button class="btn-s" style="padding:2px 8px;font-size:11px;" onclick="state.activeDate=\''+dKey+'\';renderAll();document.querySelector(\'[data-panel=daily]\').click();">Open in Daily Tracker</button>' +
     '</div>';
+
+  if(state.currentRole === 'admin'){
+    html += '<div><strong>Total Daily Sales:</strong> ' + formatMoney(totSales) + '</div>' +
+            '<div><strong>Total Daily Expenses:</strong> ' + formatMoney(ex) + '</div>' +
+            '<div style="font-size:13.5px;font-weight:700;color:' + (net>=0?'var(--net-green)':'var(--brick)') + ';margin:4px 0;">Net In-Hand: ' + formatMoney(net) + '</div>';
+  } else {
+    html += '<div><strong>Cash Billed:</strong> ' + formatMoney(c) + '</div>' +
+            '<div><strong>Cash Expenses Paid:</strong> ' + formatMoney(cashEx) + '</div>' +
+            '<div style="font-weight:700;color:var(--net-green);margin:4px 0;">Cash Retained: ' + formatMoney(c - cashEx) + '</div>';
+  }
+
+  html += '<div><strong>Spoilage Loss (40%):</strong> ' + formatMoney(wL) + '</div></div>';
+  out.innerHTML = html;
 }
 
 function generateMonthlyReport(){
+  if(state.currentRole !== 'admin') return;
   var ym = document.getElementById('monthlyReportMonth').value;
   if(!ym){ alert('Please choose a month.'); return; }
   var parts = ym.split('-');
@@ -1293,18 +1409,42 @@ function applyRoleUI(){
   var roleTitles = { admin:'Admin (Full Master Access)', store:'Store Partner (Counter Access)', remote:'Remote Partner (View Only)' };
   document.getElementById('roleBadge').innerHTML = 'Signed in as: <strong>' + roleTitles[r] + '</strong>';
 
+  // Navigation Panel Restrictions
   document.getElementById('tabMonthlyBtn').style.display = (r === 'admin') ? 'block' : 'none';
   document.getElementById('tabInvoiceBtn').style.display = (r === 'admin' || r === 'store') ? 'block' : 'none';
   document.getElementById('tabProfitBtn').style.display = (r === 'admin') ? 'block' : 'none';
   document.getElementById('tabPasswordsBtn').style.display = (r === 'admin') ? 'block' : 'none';
 
-  if(r === 'admin'){
+  // Turnover Privacy: Hide Total Sales and MTD Bars from Store & Remote
+  var isPrivileged = (r === 'admin');
+  document.getElementById('adminTurnoverStrip').style.display = isPrivileged ? 'grid' : 'none';
+  document.getElementById('kpiSalesContainer').style.display = isPrivileged ? 'flex' : 'none';
+  document.getElementById('kpiExpContainer').style.display = isPrivileged ? 'flex' : 'none';
+  document.getElementById('kpiNetContainer').style.display = isPrivileged ? 'flex' : 'none';
+
+  // Date picker limit for previous day report
+  var dPicker = document.getElementById('historyDateInput');
+  var yesterday = getYesterdayStr().split('-').reverse().join('-');
+  if(!isPrivileged){
+    dPicker.value = yesterday;
+    dPicker.min = yesterday;
+    dPicker.max = yesterday;
+    document.getElementById('reportsHeading').textContent = "Yesterday's Ledger Report";
+    document.getElementById('reportsSubtext').textContent = "Counter audit restricted to the immediately preceding day (" + getYesterdayStr() + ").";
+    document.getElementById('datePickerLabel').textContent = "Preceding Day";
+  } else {
+    dPicker.removeAttribute('min');
+    dPicker.removeAttribute('max');
+    document.getElementById('reportsHeading').textContent = "Previous Days Ledger & Reports";
+    document.getElementById('reportsSubtext').textContent = "Audit any past day across the business archive.";
+    document.getElementById('datePickerLabel').textContent = "Select Date";
     document.getElementById('pwFieldAdmin').value = ROLE_PASSWORDS.admin;
     document.getElementById('pwFieldStore').value = ROLE_PASSWORDS.store;
     document.getElementById('pwFieldRemote').value = ROLE_PASSWORDS.remote;
   }
 }
 
+// RENDER TAB LIST (LOCKED TO TODAY & YESTERDAY FOR STORE/REMOTE)
 function renderDailyTabs(){
   var cont = document.getElementById('sheetTabsList');
   cont.innerHTML = '';
@@ -1312,10 +1452,21 @@ function renderDailyTabs(){
     return b.split('-').reverse().join('').localeCompare(a.split('-').reverse().join(''));
   });
 
+  var todayStr = getTodayStr();
+  var yestStr = getYesterdayStr();
+
+  // Non-admin users are restricted from viewing tabs prior to yesterday
+  if(state.currentRole !== 'admin'){
+    dates = dates.filter(function(d){ return d === todayStr || d === yestStr; });
+    if(state.activeDate !== todayStr && state.activeDate !== yestStr){
+      state.activeDate = todayStr;
+    }
+  }
+
   dates.forEach(function(dKey){
     var b = document.createElement('button');
     b.className = 'tab-item' + (dKey === state.activeDate ? ' active' : '');
-    b.textContent = dKey;
+    b.textContent = dKey === todayStr ? (dKey + ' (Today)') : (dKey === yestStr ? (dKey + ' (Yesterday)') : dKey);
     b.onclick = function(){ state.activeDate = dKey; renderAll(); };
     cont.appendChild(b);
   });
