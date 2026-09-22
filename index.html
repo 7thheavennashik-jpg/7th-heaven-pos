@@ -31,7 +31,6 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--paper); color: var(--ink); font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; min-height: 100vh; padding: 12px 14px 60px; }
   
-  /* EXPANDED DESKTOP PAGE CONTAINER */
   .wrap { width: 96%; max-width: 1440px; margin: 0 auto; }
   
   header.top { display: flex; align-items: center; justify-content: space-between; background: var(--maroon-banner); color: #FFF; padding: 10px 16px; border-radius: 6px 6px 0 0; gap: 12px; }
@@ -85,7 +84,6 @@
   .kpi-net .lbl { color: #D8EAC8; }
   .kpi-net .amt { color: #FFF; }
 
-  /* SPLIT TABLES WITH COMFORTABLE GAP */
   .split-tables { display: grid; grid-template-columns: 52% 48%; gap: 16px; margin-bottom: 16px; }
   .table-pane-card { border: 1px solid var(--rule-strong); border-radius: 5px; background: #FFF; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
   
@@ -99,12 +97,10 @@
   table.tracker td { padding: 3px 4px; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); height: 32px; }
   table.tracker td:last-child { border-right: none; }
   
-  /* SALES TABLE HEADERS & TOTALS */
   table.tracker.sales-tbl th { background: var(--maroon-banner); color: #FFF; }
   .subtotal-line.sales-sub td { background: var(--subtotal-bg); font-weight: 700; border-bottom: 2px solid var(--maroon-hdr); }
   .subtotal-line.sales-sub .val { font-family: 'IBM Plex Mono', monospace; font-size: 12px; text-align: right; color: var(--maroon-hdr); }
   
-  /* EXPENSES TABLE HEADERS & TOTALS (WARM TERRACOTTA IDENTITY) */
   table.tracker.exp-tbl th { background: var(--exp-subhdr); color: #FFF; }
   .subtotal-line.exp-sub td { background: var(--exp-bg); font-weight: 700; border-bottom: 2px solid var(--exp-hdr); }
   .subtotal-line.exp-sub .val.exp { color: var(--exp-hdr); font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; text-align: right; font-weight: 700; }
@@ -123,7 +119,6 @@
   .mobile-next-btn { flex: 1; padding: 6px; background: #FFF; border: 1px dashed var(--maroon-hdr); color: var(--maroon-hdr); font-weight: 600; border-radius: 4px; font-size: 11.5px; cursor: pointer; }
   .mobile-next-btn.exp-btn { border-color: var(--exp-hdr); color: var(--exp-hdr); }
 
-  /* RIGHT SIDE COMPACT SPLIT FOR EXPENSE TABLE & CASH FLOW BOX */
   .right-side-container { display: grid; grid-template-columns: 52% 48%; }
   .cash-reconcile-panel { border-left: 2px solid var(--rule-strong); background: #FFF; display: flex; flex-direction: column; }
   .cash-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -131,12 +126,10 @@
   .cash-tbl .c-label { font-size: 11.5px; color: var(--ink); text-align: left; font-weight: 500; }
   .cash-tbl .c-val { font-family: 'IBM Plex Mono', monospace; font-weight: 700; text-align: right; font-size: 13px; }
 
-  /* DISTINCT ACCENT HIGHLIGHTS ONLY */
   .highlight-opening { background-color: #FFF3CD !important; color: #9A6700; font-weight: 700; }
   .highlight-expenses { background-color: #FDEDEC !important; color: #B03A2E; font-weight: 700; }
   .highlight-actual { background-color: #B2EBF2 !important; color: #00796B; font-weight: 700; font-size: 13.5px; }
 
-  /* WASTAGE SECTION */
   .waste-box { border: 1px solid var(--rule-strong); background: #FFFDF9; margin-top: 14px; border-radius: 5px; overflow: hidden; }
   .waste-hdr { background: #632B1E; color: #FFF; padding: 7px 14px; font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
 
@@ -150,6 +143,14 @@
   .report-box { background: #FAF8F5; border: 1px solid var(--rule-strong); border-radius: 5px; padding: 16px; margin-top: 14px; font-size: 12.5px; }
   .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--maroon-banner); color: #FFF; padding: 8px 16px; border-radius: 4px; font-size: 12px; opacity: 0; pointer-events: none; transition: all 0.2s; z-index: 100; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* PROFIT SHARING TABLE */
+  .profit-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; }
+  .profit-table th { background: var(--maroon-hdr); color: #FFF; padding: 8px; text-align: right; border: 1px solid #CCC; }
+  .profit-table th:first-child { text-align: left; }
+  .profit-table td { padding: 8px; border: 1px solid var(--rule); text-align: right; font-family: 'IBM Plex Mono', monospace; }
+  .profit-table td:first-child { text-align: left; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
+  .profit-table tr:hover { background: #FFFDF0; }
 
   @media(max-width: 980px) {
     .wrap { width: 100%; }
@@ -183,7 +184,7 @@
       <div class="role-cards">
         <div class="role-box" onclick="promptRolePass('admin')">
           <h3>👑 Admin</h3>
-          <p>Full control: All historical days, monthly reports with WhatsApp share, turnover audit, and profit splits.</p>
+          <p>Full control: All historical days, monthly reports with Excel export &amp; WhatsApp share, turnover audit, and profit splits.</p>
         </div>
         <div class="role-box" onclick="promptRolePass('store')">
           <h3>🏪 Store Partner</h3>
@@ -252,7 +253,7 @@
         </div>
       </div>
 
-      <!-- KPI METRICS: NET SALES (RESTORED TO ALL ROLES) -->
+      <!-- KPI METRICS: NET SALES -->
       <div class="kpi-grid">
         <div class="kpi-card" style="background:#F2E6EA;">
           <span class="lbl">Active Date</span>
@@ -309,7 +310,6 @@
 
         <!-- RIGHT: EXPENSES (TERRACOTTA IDENTITY) + CASH DETAILS -->
         <div class="table-pane-card right-side-container">
-          <!-- COMPACT EXPENSES PANE -->
           <div>
             <div class="pane-hdr exp-hdr">EXPENSES</div>
             <table class="tracker exp-tbl" id="expTable">
@@ -332,7 +332,7 @@
             </div>
           </div>
 
-          <!-- CASH DETAILS PANEL (MATCHING PHYSICAL DRAWERS) -->
+          <!-- CASH DETAILS PANEL -->
           <div class="cash-reconcile-panel">
             <div class="pane-hdr cash-hdr">CASH DETAILS</div>
             <table class="cash-tbl">
@@ -404,13 +404,17 @@
     <!-- PANEL 3: MONTHLY REPORT (ADMIN ONLY) -->
     <section class="panel" id="panel-monthly">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Sales &amp; Expenditure Report</h2>
-      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap;">
         <div class="form-group" style="margin:0;"><label>Select Month</label><input type="month" id="monthlyReportMonth"></div>
         <button class="btn-p" onclick="generateMonthlyReport()">Generate Monthly Summary</button>
+        <button class="btn-p" style="background:#2E7D32;" onclick="exportMonthlyReportToExcel()">📥 Download Monthly Excel (.xlsx)</button>
       </div>
       <div id="monthlyReportArea" style="display:none;">
         <div class="report-box" id="monthlyPrintContainer">
-          <h3 style="color:var(--maroon-hdr);font-size:16px;" id="repMonthTitle">MONTHLY PERFORMANCE</h3>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <h3 style="color:var(--maroon-hdr);font-size:16px;" id="repMonthTitle">MONTHLY PERFORMANCE</h3>
+            <button class="btn-s" onclick="exportMonthlyReportToExcel()">📥 Download Complete Excel Workbook</button>
+          </div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin:12px 0;">
             <div style="background:#FFF;padding:10px;border:1px solid var(--rule);"><span style="font-size:10px;">TOTAL SALES</span><div id="mRepSales" style="font-weight:700;font-size:14px;">₹0.00</div></div>
             <div style="background:#FDEDEC;padding:10px;border:1px solid #F5B7B1;"><span style="font-size:10px;color:var(--exp-hdr);">TOTAL EXPENSES</span><div id="mRepExp" style="font-weight:700;color:var(--exp-hdr);font-size:14px;">₹0.00</div></div>
@@ -483,12 +487,24 @@
       </div>
     </section>
 
-    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY) -->
+    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY - FULLY GENERATED TABLE) -->
     <section class="panel" id="panel-profit">
-      <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Profit Summary</h2>
+      <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Profit Summary &amp; Distribution</h2>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Partner payout calculation: Prakash (43%), Preveen (28%), Preetham (14.5%), Umesh (14.5%).</p>
       <div style="overflow-x:auto;">
-        <table style="width:100%;border-collapse:collapse;margin-top:10px;" class="profit-table">
-          <thead><tr style="border-bottom:2px solid var(--ink);font-size:11.5px;"><th style="text-align:left;padding:8px;">Month</th><th>Sales</th><th>Expenses</th><th>Net Profit</th><th>Prakash (43%)</th><th>Preveen (28%)</th><th>Preetham (14.5%)</th><th>Umesh (14.5%)</th></tr></thead>
+        <table class="profit-table">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Total Sales</th>
+              <th>Total Expenses</th>
+              <th>Net Profit</th>
+              <th>Prakash (43%)</th>
+              <th>Preveen (28%)</th>
+              <th>Preetham (14.5%)</th>
+              <th>Umesh (14.5%)</th>
+            </tr>
+          </thead>
           <tbody id="profitTableBody"></tbody>
         </table>
       </div>
@@ -511,9 +527,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v25";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v26";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v25";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v26";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -560,6 +576,27 @@ function toast(msg){
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+// 100% Reliable Native Blob Downloader (Solves Excel not downloading on GitHub Pages / Mobile)
+function triggerExcelDownload(wb, filename) {
+  try {
+    var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    var blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 400);
+    toast('Downloaded ' + filename);
+  } catch(err) {
+    alert('Download error: ' + err.message);
+  }
 }
 
 function canEditSales(){ return state.currentRole !== 'remote'; }
@@ -632,6 +669,7 @@ function syncWithCloud(){
         document.getElementById('syncText').textContent = 'Live Cloud Synced';
         renderAll();
         renderInvoiceHistory();
+        renderProfitSharingPanel();
       }
     }).catch(function(){
       document.getElementById('syncText').textContent = 'Using Local Cache';
@@ -686,7 +724,6 @@ function renderDailyGrids(){
   if(!sheet.expenses || sheet.expenses.length === 0){ sheet.expenses = [{ category:'', amount:'', method:'Cash' }]; }
   if(!sheet.wastage) sheet.wastage = [];
 
-  // 1. Sales Table (No delete buttons)
   var sTbody = document.getElementById('salesTbody');
   sTbody.innerHTML = '';
   var sl = 1;
@@ -728,7 +765,6 @@ function renderDailyGrids(){
 
   document.getElementById('salesMobileStrip').style.display = sEditable ? 'flex' : 'none';
 
-  // 2. Expense Table (Terracotta Palette, Compact Category Area)
   var eTbody = document.getElementById('expTbody');
   eTbody.innerHTML = '';
 
@@ -970,9 +1006,8 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
   document.getElementById('reconcileActualCash').textContent = Math.round(actualCash);
 }
 
-// 3-PAGE EXCEL EXPORT (EXACT FORMAT MATCHING YOUR DAILY TEMPLATE)
+// 1. EXPORT ACTIVE DAY EXCEL (3 Sheets: Daily_Sales, EXPENSES, AVG_SALES)
 function exportActiveDayToExcel(){
-  if(typeof XLSX === 'undefined'){ alert('Excel library is loading, please try again.'); return; }
   var dKey = state.activeDate;
   var sheetData = state.daily[dKey] || { sales:[], expenses:[], wastage:[] };
 
@@ -1011,7 +1046,7 @@ function exportActiveDayToExcel(){
 
   var wb = XLSX.utils.book_new();
 
-  // Page 1: Daily_Sales
+  // Sheet 1: Daily_Sales
   var p1 = [
     ["Nashik"],
     ["7th Heaven Nashik,Indiranagar"],
@@ -1062,7 +1097,7 @@ function exportActiveDayToExcel(){
   var ws1 = XLSX.utils.aoa_to_sheet(p1);
   XLSX.utils.book_append_sheet(wb, ws1, "Daily_Sales");
 
-  // Page 2: EXPENSES (14 Columns Matrix)
+  // Sheet 2: EXPENSES
   var expHeaders = ['DATE:', 'General Expenses', 'Raw material', 'Daily Expenses', 'Staff Food', 'Salary', 'Royalty', 'Electricity Bill', 'Shop & Room Rent', 'GST', 'Online Comm', 'Packaging Material', 'Other', 'Total'];
   var p2 = [expHeaders];
   var expRowData = [dKey, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ex];
@@ -1085,7 +1120,7 @@ function exportActiveDayToExcel(){
   var ws2 = XLSX.utils.aoa_to_sheet(p2);
   XLSX.utils.book_append_sheet(wb, ws2, "EXPENSES");
 
-  // Page 3: AVG_SALES
+  // Sheet 3: AVG_SALES
   var p3 = [
     ["", "", "", "Total Sales", mtdS],
     [],
@@ -1097,7 +1132,167 @@ function exportActiveDayToExcel(){
   var ws3 = XLSX.utils.aoa_to_sheet(p3);
   XLSX.utils.book_append_sheet(wb, ws3, "AVG_SALES");
 
-  XLSX.writeFile(wb, "7th_Heaven_" + dKey + ".xlsx");
+  triggerExcelDownload(wb, "7th_Heaven_" + dKey + ".xlsx");
+}
+
+// 2. EXPORT MONTHLY REPORT EXCEL (4 Sheets: Monthly sales, EXPENSES, AVG_SALES, Profit share)
+function exportMonthlyReportToExcel(){
+  var ym = document.getElementById('monthlyReportMonth').value || now.toISOString().slice(0,7);
+  var parts = ym.split('-');
+  var mFilter = parts[1] + '-' + parts[0];
+  
+  var wb = XLSX.utils.book_new();
+
+  // Sheet 1: Monthly sales
+  var p1 = [
+    ["", "Nashik"],
+    ["", "7th Heaven Nashik,Indiranagar"],
+    ["", "Month : " + ym],
+    ["Date", "CASH", "SWIGGY", "ZOMATO", "UPI", "Other", "Sales"]
+  ];
+
+  // Sheet 2: EXPENSES
+  var expHeaders = ['DATE:', 'General Expenses', 'Raw material', 'Daily Expenses', 'Staff Food', 'Salary', 'Royalty', 'Electricity Bill', 'Shop & Room Rent', 'GST', 'Online Comm', 'Packaging Material', 'Other', 'Total'];
+  var p2 = [expHeaders];
+
+  var grandSales = 0, grandExp = 0;
+  var grandCash = 0, grandSwiggy = 0, grandZomato = 0, grandOther = 0;
+  var operatingDays = 0;
+
+  var sortedDates = Object.keys(state.daily).filter(function(k){
+    return k.endsWith(mFilter);
+  }).sort(function(a, b){
+    return parseInt(a.split('-')[0], 10) - parseInt(b.split('-')[0], 10);
+  });
+
+  sortedDates.forEach(function(dateKey){
+    var d = state.daily[dateKey];
+    var c = 0, sw = 0, z = 0, ot = 0, dayExp = 0;
+
+    (d.sales || []).forEach(function(r){
+      c += Number(r.cash) || 0;
+      sw += Number(r.swiggy) || 0;
+      z += Number(r.zomato) || 0;
+      ot += Number(r.other) || 0;
+    });
+
+    var dayExpRow = [dateKey, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    (d.expenses || []).forEach(function(e){
+      var amt = Number(e.amount) || 0;
+      dayExp += amt;
+      var cat = (e.category || "").toLowerCase();
+      if (cat.indexOf("raw") !== -1) dayExpRow[2] += amt;
+      else if (cat.indexOf("daily") !== -1) dayExpRow[3] += amt;
+      else if (cat.indexOf("food") !== -1) dayExpRow[4] += amt;
+      else if (cat.indexOf("salary") !== -1) dayExpRow[5] += amt;
+      else if (cat.indexOf("royalty") !== -1) dayExpRow[6] += amt;
+      else if (cat.indexOf("electric") !== -1) dayExpRow[7] += amt;
+      else if (cat.indexOf("rent") !== -1) dayExpRow[8] += amt;
+      else if (cat.indexOf("gst") !== -1) dayExpRow[9] += amt;
+      else if (cat.indexOf("online") !== -1 || cat.indexOf("comm") !== -1) dayExpRow[10] += amt;
+      else if (cat.indexOf("pack") !== -1) dayExpRow[11] += amt;
+      else dayExpRow[1] += amt;
+    });
+    dayExpRow[13] = dayExp;
+
+    var dayTot = c + sw + z + ot;
+    grandSales += dayTot;
+    grandExp += dayExp;
+    grandCash += c;
+    grandSwiggy += sw;
+    grandZomato += z;
+    grandOther += ot;
+
+    if (dayTot > 0 || dayExp > 0) operatingDays++;
+
+    p1.push([dateKey, c, sw, z, 0, ot, dayTot]);
+    p2.push(dayExpRow);
+  });
+
+  p1.push(["TOTAL", grandCash, grandSwiggy, grandZomato, 0, grandOther, grandSales]);
+  p2.push(["TOTAL", "", "", "", "", "", "", "", "", "", "", "", "", grandExp]);
+
+  var ws1 = XLSX.utils.aoa_to_sheet(p1);
+  var ws2 = XLSX.utils.aoa_to_sheet(p2);
+  XLSX.utils.book_append_sheet(wb, ws1, "Monthly sales");
+  XLSX.utils.book_append_sheet(wb, ws2, "EXPENSES");
+
+  // Sheet 3: AVG_SALES
+  var p3 = [
+    ["", "", "", "Total Sales", grandSales],
+    [],
+    ["", "", "Expenses", "Month", ym],
+    ["Total Operating Expenses", "", "", grandExp],
+    ["Net Sales (Profit)", "", "", (grandSales - grandExp)],
+    ["Operating Days Recorded", "", "", operatingDays],
+    ["Avg Sales", (operatingDays > 0 ? grandSales / operatingDays : 0)]
+  ];
+  var ws3 = XLSX.utils.aoa_to_sheet(p3);
+  XLSX.utils.book_append_sheet(wb, ws3, "AVG_SALES");
+
+  // Sheet 4: Profit share
+  var netProfit = grandSales - grandExp;
+  var p4 = [
+    ["Partner Name", "Agreed %", "Net Profit Share (INR)"],
+    ["Prakash Shetty", "43.0%", netProfit * 0.43],
+    ["Preveen Shetty", "28.0%", netProfit * 0.28],
+    ["Preetham Shetty", "14.5%", netProfit * 0.145],
+    ["Umesh Shetty", "14.5%", netProfit * 0.145],
+    ["TOTAL DISTRIBUTED", "100.0%", netProfit]
+  ];
+  var ws4 = XLSX.utils.aoa_to_sheet(p4);
+  XLSX.utils.book_append_sheet(wb, ws4, "Profit share");
+
+  triggerExcelDownload(wb, "7th_Heaven_MONTHLY_" + ym + ".xlsx");
+}
+
+// 3. GENERATE PROFIT SHARING TABLE IN ADMIN PANEL
+function renderProfitSharingPanel(){
+  var tbody = document.getElementById('profitTableBody');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+
+  var monthMap = {};
+  Object.keys(state.daily).forEach(function(dKey){
+    var parts = dKey.split('-');
+    if(parts.length === 3){
+      var mKey = parts[2] + '-' + parts[1];
+      if(!monthMap[mKey]){
+        monthMap[mKey] = { sales: 0, exp: 0 };
+      }
+      var d = state.daily[dKey];
+      (d.sales || []).forEach(function(r){
+        monthMap[mKey].sales += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0);
+      });
+      (d.expenses || []).forEach(function(e){
+        monthMap[mKey].exp += Number(e.amount)||0;
+      });
+    }
+  });
+
+  var sortedMonths = Object.keys(monthMap).sort().reverse();
+  if(sortedMonths.length === 0){
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:12px;color:var(--ink-soft);">No sales or expense data available to calculate profit share.</td></tr>';
+    return;
+  }
+
+  sortedMonths.forEach(function(mKey){
+    var s = monthMap[mKey].sales;
+    var e = monthMap[mKey].exp;
+    var net = s - e;
+
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><strong>' + mKey + '</strong></td>' +
+      '<td>' + formatMoney(s) + '</td>' +
+      '<td style="color:var(--brick);">' + formatMoney(e) + '</td>' +
+      '<td style="font-weight:700;color:' + (net >= 0 ? 'var(--net-green)' : 'var(--brick)') + ';">' + formatMoney(net) + '</td>' +
+      '<td>' + formatMoney(net * 0.43) + '</td>' +
+      '<td>' + formatMoney(net * 0.28) + '</td>' +
+      '<td>' + formatMoney(net * 0.145) + '</td>' +
+      '<td>' + formatMoney(net * 0.145) + '</td>';
+    tbody.appendChild(tr);
+  });
 }
 
 /* POS & INVOICES */
@@ -1289,7 +1484,6 @@ function shareInvoiceWhatsApp(idx){
   window.open(url, '_blank');
 }
 
-// RESTRICTED HISTORICAL CHECK (1-DAY ONLY FOR STORE/REMOTE)
 function loadHistoryDateReport(){
   var rawDate = document.getElementById('historyDateInput').value;
   if(!rawDate){ alert('Please select a date.'); return; }
@@ -1407,6 +1601,7 @@ function enterAppWithRole(){
   renderAll();
   renderInvoiceRows();
   renderInvoiceHistory();
+  renderProfitSharingPanel();
   syncWithCloud();
 }
 
@@ -1423,17 +1618,14 @@ function applyRoleUI(){
   var roleTitles = { admin:'Admin (Full Master Access)', store:'Store Partner (Counter Access)', remote:'Remote Partner (View Only)' };
   document.getElementById('roleBadge').innerHTML = 'Signed in as: <strong>' + roleTitles[r] + '</strong>';
 
-  // Navigation Panel Restrictions
   document.getElementById('tabMonthlyBtn').style.display = (r === 'admin') ? 'block' : 'none';
   document.getElementById('tabInvoiceBtn').style.display = (r === 'admin' || r === 'store') ? 'block' : 'none';
   document.getElementById('tabProfitBtn').style.display = (r === 'admin') ? 'block' : 'none';
   document.getElementById('tabPasswordsBtn').style.display = (r === 'admin') ? 'block' : 'none';
 
-  // Multi-day turnover strip is Admin-only; Today's sales KPI is visible to ALL roles
   var isPrivileged = (r === 'admin');
   document.getElementById('adminTurnoverStrip').style.display = isPrivileged ? 'grid' : 'none';
 
-  // Date picker limit for previous day report (Store & Remote can view yesterday only)
   var dPicker = document.getElementById('historyDateInput');
   var yesterday = getYesterdayStr().split('-').reverse().join('-');
   if(!isPrivileged){
@@ -1455,7 +1647,6 @@ function applyRoleUI(){
   }
 }
 
-// RENDER TAB LIST (LOCKED TO TODAY & YESTERDAY FOR STORE/REMOTE)
 function renderDailyTabs(){
   var cont = document.getElementById('sheetTabsList');
   cont.innerHTML = '';
@@ -1492,7 +1683,11 @@ document.querySelectorAll('.nav-bar button').forEach(function(b){
     document.querySelectorAll('.nav-bar button').forEach(function(x){ x.classList.remove('active'); });
     document.querySelectorAll('section.panel').forEach(function(x){ x.classList.remove('active'); });
     b.classList.add('active');
-    document.getElementById('panel-' + b.getAttribute('data-panel')).classList.add('active');
+    var pId = b.getAttribute('data-panel');
+    document.getElementById('panel-' + pId).classList.add('active');
+    if(pId === 'profit') {
+      renderProfitSharingPanel();
+    }
   };
 });
 
