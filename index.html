@@ -12,130 +12,149 @@
   :root {
     --maroon-banner: #4A1525;
     --maroon-hdr: #5C172B;
+    --exp-hdr: #B03A2E;
+    --exp-subhdr: #922B21;
+    --exp-bg: #FDEDEC;
     --subtotal-bg: #F4E8EC;
     --kpi-sales-bg: #F9F1F3;
-    --kpi-exp-bg: #FFF3F3;
+    --kpi-exp-bg: #FDEDEC;
     --net-green: #2D5016;
-    --paper: #F6F3EA;
-    --rule: #DAD4C1;
-    --rule-strong: #C7BFA6;
+    --paper: #F5F3ED;
+    --card-bg: #FFFFFF;
+    --rule: #E2DDD0;
+    --rule-strong: #CCC5B2;
     --ink: #22261E;
     --ink-soft: #605E4E;
-    --brick: #93412E;
+    --brick: #A93226;
     --gold: #B8862E;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; min-height: 100vh; padding: 10px 10px 60px; }
-  .wrap { max-width: 1200px; margin: 0 auto; }
-  header.top { display: flex; align-items: center; justify-content: space-between; background: var(--maroon-banner); color: #FFF; padding: 10px 14px; border-radius: 4px 4px 0 0; gap: 12px; }
-  .hdr-brand { display: flex; align-items: center; gap: 10px; }
-  .hdr-logo { height: 46px; width: 46px; object-fit: contain; background: #FFF; border-radius: 4px; padding: 2px; }
-  header.top h1 { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; margin: 0; }
-  header.top .today { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #F2E6EA; text-align: right; }
-  .sync-indicator { font-size: 11px; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,0.2); display: inline-flex; align-items: center; gap: 4px; margin-top: 3px; }
-  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; display: inline-block; }
+  body { background: var(--paper); color: var(--ink); font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; min-height: 100vh; padding: 12px 14px 60px; }
+  
+  /* EXPANDED DESKTOP PAGE CONTAINER */
+  .wrap { width: 96%; max-width: 1440px; margin: 0 auto; }
+  
+  header.top { display: flex; align-items: center; justify-content: space-between; background: var(--maroon-banner); color: #FFF; padding: 10px 16px; border-radius: 6px 6px 0 0; gap: 12px; }
+  .hdr-brand { display: flex; align-items: center; gap: 12px; }
+  .hdr-logo { height: 48px; width: 48px; object-fit: contain; background: #FFF; border-radius: 4px; padding: 2px; }
+  header.top h1 { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; margin: 0; }
+  header.top .today { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #F2E6EA; text-align: right; }
+  .sync-indicator { font-size: 11px; padding: 2px 8px; border-radius: 12px; background: rgba(255,255,255,0.2); display: inline-flex; align-items: center; gap: 5px; margin-top: 3px; }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; display: inline-block; }
 
-  #roleAuthSection { background: #FFF; border: 1px solid var(--rule-strong); border-top: none; padding: 20px; border-radius: 0 0 4px 4px; }
-  .role-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px; }
-  .role-box { background: #FAF8F6; border: 1px solid var(--rule-strong); border-radius: 4px; padding: 14px; cursor: pointer; }
-  .role-box:hover { border-color: var(--maroon-hdr); background: #FFF; }
-  .role-box h3 { font-size: 14px; font-weight: 700; color: var(--maroon-banner); margin-bottom: 4px; }
-  .role-box p { font-size: 11.5px; color: var(--ink-soft); line-height: 1.4; }
+  #roleAuthSection { background: #FFF; border: 1px solid var(--rule-strong); border-top: none; padding: 24px; border-radius: 0 0 6px 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+  .role-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .role-box { background: #FAF8F6; border: 1px solid var(--rule-strong); border-radius: 6px; padding: 16px; cursor: pointer; transition: all 0.2s ease; }
+  .role-box:hover { border-color: var(--maroon-hdr); background: #FFF; transform: translateY(-1px); }
+  .role-box h3 { font-size: 15px; font-weight: 700; color: var(--maroon-banner); margin-bottom: 6px; }
+  .role-box p { font-size: 12px; color: var(--ink-soft); line-height: 1.45; }
 
   .nav-bar { display: flex; background: #FFF; border: 1px solid var(--rule-strong); border-top: none; border-bottom: 2px solid var(--maroon-hdr); overflow-x: auto; }
-  .nav-bar button { background: transparent; border: none; border-bottom: 3px solid transparent; padding: 10px 14px; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); cursor: pointer; white-space: nowrap; }
+  .nav-bar button { background: transparent; border: none; border-bottom: 3px solid transparent; padding: 11px 16px; font-size: 13px; font-weight: 600; color: var(--ink-soft); cursor: pointer; white-space: nowrap; }
   .nav-bar button.active { color: var(--maroon-banner); border-bottom-color: var(--maroon-banner); }
 
-  .role-strip { display: flex; justify-content: space-between; align-items: center; background: #FDFBF8; border: 1px solid var(--rule); border-top: none; padding: 6px 12px; font-size: 11.5px; color: var(--ink-soft); flex-wrap: wrap; gap: 6px; }
+  .role-strip { display: flex; justify-content: space-between; align-items: center; background: #FDFBF8; border: 1px solid var(--rule); border-top: none; padding: 7px 14px; font-size: 12px; color: var(--ink-soft); flex-wrap: wrap; gap: 8px; }
   .role-strip button { background: none; border: none; color: var(--maroon-hdr); text-decoration: underline; cursor: pointer; font-weight: 600; }
 
-  section.panel { display: none; background: #FFF; border: 1px solid var(--rule-strong); border-top: none; padding: 14px; border-radius: 0 0 4px 4px; }
+  section.panel { display: none; background: #FFF; border: 1px solid var(--rule-strong); border-top: none; padding: 16px; border-radius: 0 0 6px 6px; }
   section.panel.active { display: block; }
 
-  .sheet-tabs-row { display: flex; justify-content: space-between; align-items: center; background: #F2E6EA; padding: 8px 10px; border-radius: 3px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .sheet-tabs-row { display: flex; justify-content: space-between; align-items: center; background: #F2E6EA; padding: 8px 12px; border-radius: 4px; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
   .tabs-list { display: flex; gap: 6px; overflow-x: auto; align-items: center; }
-  .tab-item { background: #FFF; border: 1px solid var(--rule-strong); padding: 4px 8px; border-radius: 3px; font-size: 11.5px; font-weight: 600; cursor: pointer; color: var(--maroon-hdr); }
+  .tab-item { background: #FFF; border: 1px solid var(--rule-strong); padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--maroon-hdr); }
   .tab-item.active { background: var(--maroon-hdr); color: #FFF; border-color: var(--maroon-hdr); }
 
-  .ledger-carryover-bar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; background: #FFFDF8; border: 1px solid var(--rule-strong); padding: 8px; border-radius: 4px; }
-  .carry-card { border-right: 1px dashed var(--rule-strong); padding: 0 8px; }
+  .ledger-carryover-bar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; background: #FFFDF8; border: 1px solid var(--rule-strong); padding: 10px; border-radius: 6px; }
+  .carry-card { border-right: 1px dashed var(--rule-strong); padding: 0 10px; }
   .carry-card:last-child { border-right: none; }
   .carry-card .clbl { font-size: 10px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; }
-  .carry-card .camt { font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; font-weight: 700; margin-top: 2px; }
+  .carry-card .camt { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 700; margin-top: 2px; }
 
-  .kpi-grid { display: grid; grid-template-columns: 110px 1.2fr 1fr 1fr 1.1fr; border: 1px solid var(--rule-strong); border-bottom: 2px solid var(--maroon-hdr); margin-bottom: 14px; }
-  .kpi-card { padding: 8px 10px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: center; }
+  .kpi-grid { display: grid; grid-template-columns: 130px 1.2fr 1fr 1fr 1.15fr; border: 1px solid var(--rule-strong); border-bottom: 2px solid var(--maroon-hdr); margin-bottom: 16px; border-radius: 6px; overflow: hidden; }
+  .kpi-card { padding: 9px 12px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: center; }
   .kpi-card:last-child { border-right: none; }
-  .kpi-card .lbl { font-size: 9.5px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; margin-bottom: 2px; }
-  .kpi-card .amt { font-family: 'IBM Plex Mono', monospace; font-size: 14.5px; font-weight: 600; }
+  .kpi-card .lbl { font-size: 10px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; margin-bottom: 3px; }
+  .kpi-card .amt { font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 600; }
   .kpi-sales { background: var(--kpi-sales-bg); }
   .kpi-sales .amt { color: var(--maroon-hdr); }
-  .kpi-exp { background: #FCE4E4; }
-  .kpi-exp .amt { color: #C62828; }
+  .kpi-exp { background: #FDEDEC; }
+  .kpi-exp .amt { color: var(--exp-hdr); }
   .kpi-waste { background: #FFF8EB; }
   .kpi-waste .amt { color: var(--gold); }
   .kpi-net { background: var(--net-green); color: #FFF; }
   .kpi-net .lbl { color: #D8EAC8; }
   .kpi-net .amt { color: #FFF; }
 
-  /* SPLIT TABLES */
-  .split-tables { display: grid; grid-template-columns: 52% 48%; border: 1px solid var(--rule-strong); margin-bottom: 14px; }
-  .table-pane { border-right: 2px solid var(--rule-strong); }
-  .table-pane:last-child { border-right: none; }
-  .pane-hdr { background: var(--maroon-hdr); color: #FFF; padding: 6px 10px; font-size: 11.5px; font-weight: 700; text-align: center; }
+  /* SPLIT TABLES WITH COMFORTABLE GAP */
+  .split-tables { display: grid; grid-template-columns: 52% 48%; gap: 16px; margin-bottom: 16px; }
+  .table-pane-card { border: 1px solid var(--rule-strong); border-radius: 5px; background: #FFF; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
+  
+  .pane-hdr { padding: 7px 12px; font-size: 12px; font-weight: 700; text-align: center; letter-spacing: 0.5px; }
+  .pane-hdr.sales-hdr { background: var(--maroon-hdr); color: #FFF; }
+  .pane-hdr.exp-hdr { background: var(--exp-hdr); color: #FFF; }
+  .pane-hdr.cash-hdr { background: #3A121D; color: #FFF; }
 
-  table.tracker { width: 100%; border-collapse: collapse; font-size: 12px; }
-  table.tracker th { background: var(--maroon-hdr); color: #FFF; font-size: 11px; font-weight: 600; padding: 6px 3px; text-align: center; border-right: 1px solid rgba(255,255,255,0.2); }
+  table.tracker { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.tracker th { font-size: 11px; font-weight: 600; padding: 6px 4px; text-align: center; border-right: 1px solid rgba(255,255,255,0.15); }
   table.tracker td { padding: 3px 4px; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); height: 32px; }
   table.tracker td:last-child { border-right: none; }
-  .subtotal-line td { background: var(--subtotal-bg); font-weight: 700; border-bottom: 2px solid var(--maroon-hdr); }
-  .subtotal-line .val { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; text-align: right; color: var(--maroon-hdr); }
-  .subtotal-line .val.exp { color: #C62828; background: #FCE4E4; font-weight: 700; }
+  
+  /* SALES TABLE HEADERS & TOTALS */
+  table.tracker.sales-tbl th { background: var(--maroon-banner); color: #FFF; }
+  .subtotal-line.sales-sub td { background: var(--subtotal-bg); font-weight: 700; border-bottom: 2px solid var(--maroon-hdr); }
+  .subtotal-line.sales-sub .val { font-family: 'IBM Plex Mono', monospace; font-size: 12px; text-align: right; color: var(--maroon-hdr); }
+  
+  /* EXPENSES TABLE HEADERS & TOTALS (WARM TERRACOTTA IDENTITY) */
+  table.tracker.exp-tbl th { background: var(--exp-subhdr); color: #FFF; }
+  .subtotal-line.exp-sub td { background: var(--exp-bg); font-weight: 700; border-bottom: 2px solid var(--exp-hdr); }
+  .subtotal-line.exp-sub .val.exp { color: var(--exp-hdr); font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; text-align: right; font-weight: 700; }
 
   .sl-box { text-align: center; font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--maroon-hdr); width: 34px; background: #FAF7F7; }
   .cell-input { width: 100%; border: none; background: transparent; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; text-align: right; padding: 4px 2px; outline: none; }
-  .cell-input.text-left { text-align: left; font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; }
+  .cell-input.text-left { text-align: left; font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; font-size: 12px; }
   .cell-input:focus:not([disabled]) { background: #FFFDF0; }
-  .row-del-btn { background: none; border: none; color: #999; cursor: pointer; font-size: 14px; }
+  .row-del-btn { background: none; border: none; color: #BBB; cursor: pointer; font-size: 14px; line-height: 1; }
+  .row-del-btn:hover { color: var(--brick); }
 
   input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   input[type=number] { -moz-appearance: textfield; }
 
   .mobile-add-strip { display: flex; gap: 6px; padding: 6px 8px; background: #FAF8F8; border-top: 1px solid var(--rule); }
-  .mobile-next-btn { flex: 1; padding: 6px; background: #FFF; border: 1px dashed var(--maroon-hdr); color: var(--maroon-hdr); font-weight: 600; border-radius: 3px; font-size: 11.5px; cursor: pointer; }
+  .mobile-next-btn { flex: 1; padding: 6px; background: #FFF; border: 1px dashed var(--maroon-hdr); color: var(--maroon-hdr); font-weight: 600; border-radius: 4px; font-size: 11.5px; cursor: pointer; }
+  .mobile-next-btn.exp-btn { border-color: var(--exp-hdr); color: var(--exp-hdr); }
 
   /* RIGHT SIDE COMPACT SPLIT FOR EXPENSE TABLE & CASH FLOW BOX */
-  .right-side-container { display: grid; grid-template-columns: 56% 44%; }
+  .right-side-container { display: grid; grid-template-columns: 52% 48%; }
   .cash-reconcile-panel { border-left: 2px solid var(--rule-strong); background: #FFF; display: flex; flex-direction: column; }
   .cash-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .cash-tbl td { padding: 6px 8px; border-bottom: 1px solid #EAE6DB; }
-  .cash-tbl .c-label { font-size: 11px; color: var(--ink); text-align: left; }
-  .cash-tbl .c-val { font-family: 'IBM Plex Mono', monospace; font-weight: 700; text-align: right; font-size: 12.5px; }
+  .cash-tbl td { padding: 6px 9px; border-bottom: 1px solid #EFECE6; }
+  .cash-tbl .c-label { font-size: 11.5px; color: var(--ink); text-align: left; font-weight: 500; }
+  .cash-tbl .c-val { font-family: 'IBM Plex Mono', monospace; font-weight: 700; text-align: right; font-size: 13px; }
 
-  /* DISTINCT HIGHLIGHTS (Amber, Coral, Cyan) */
-  .highlight-opening { background-color: #FFF3CD !important; color: #D48806; font-weight: 700; }
-  .highlight-expenses { background-color: #FCE4E4 !important; color: #C62828; font-weight: 700; }
-  .highlight-actual { background-color: #B2EBF2 !important; color: #00838F; font-weight: 700; font-size: 13.5px; }
+  /* DISTINCT ACCENT HIGHLIGHTS ONLY */
+  .highlight-opening { background-color: #FFF3CD !important; color: #9A6700; font-weight: 700; }
+  .highlight-expenses { background-color: #FDEDEC !important; color: #B03A2E; font-weight: 700; }
+  .highlight-actual { background-color: #B2EBF2 !important; color: #00796B; font-weight: 700; font-size: 13.5px; }
 
   /* WASTAGE SECTION */
-  .waste-box { border: 1px solid var(--rule-strong); background: #FFFDF9; margin-top: 14px; border-radius: 4px; overflow: hidden; }
-  .waste-hdr { background: #632B1E; color: #FFF; padding: 6px 12px; font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+  .waste-box { border: 1px solid var(--rule-strong); background: #FFFDF9; margin-top: 14px; border-radius: 5px; overflow: hidden; }
+  .waste-hdr { background: #632B1E; color: #FFF; padding: 7px 14px; font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
 
-  button.btn-p { background: var(--maroon-hdr); color: #FFF; border: none; padding: 7px 12px; font-size: 12px; font-weight: 600; border-radius: 3px; cursor: pointer; }
-  button.btn-s { background: #FFF; border: 1px solid var(--rule-strong); color: var(--ink); padding: 7px 12px; font-size: 12px; border-radius: 3px; cursor: pointer; }
+  button.btn-p { background: var(--maroon-hdr); color: #FFF; border: none; padding: 8px 14px; font-size: 12.5px; font-weight: 600; border-radius: 4px; cursor: pointer; }
+  button.btn-s { background: #FFF; border: 1px solid var(--rule-strong); color: var(--ink); padding: 8px 14px; font-size: 12.5px; border-radius: 4px; cursor: pointer; }
 
   .form-group { margin-bottom: 12px; }
-  .form-group label { display: block; font-size: 11.5px; font-weight: 600; color: var(--ink-soft); margin-bottom: 3px; }
-  .form-group input, .form-group select { width: 100%; padding: 7px 9px; border: 1px solid var(--rule-strong); border-radius: 3px; font-size: 12.5px; }
+  .form-group label { display: block; font-size: 11.5px; font-weight: 600; color: var(--ink-soft); margin-bottom: 4px; }
+  .form-group input, .form-group select { width: 100%; padding: 7px 10px; border: 1px solid var(--rule-strong); border-radius: 4px; font-size: 12.5px; }
 
-  .report-box { background: #FAF8F5; border: 1px solid var(--rule-strong); border-radius: 4px; padding: 14px; margin-top: 14px; font-size: 12px; }
+  .report-box { background: #FAF8F5; border: 1px solid var(--rule-strong); border-radius: 5px; padding: 16px; margin-top: 14px; font-size: 12.5px; }
   .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--maroon-banner); color: #FFF; padding: 8px 16px; border-radius: 4px; font-size: 12px; opacity: 0; pointer-events: none; transition: all 0.2s; z-index: 100; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  @media(max-width: 900px) {
+  @media(max-width: 980px) {
+    .wrap { width: 100%; }
     .role-cards { grid-template-columns: 1fr; }
-    .split-tables { grid-template-columns: 1fr; }
-    .table-pane { border-right: none; border-bottom: 2px solid var(--rule-strong); }
+    .split-tables { grid-template-columns: 1fr; gap: 12px; }
     .right-side-container { grid-template-columns: 1fr; }
     .cash-reconcile-panel { border-left: none; border-top: 2px solid var(--rule-strong); }
     .kpi-grid { grid-template-columns: 1fr 1fr; }
@@ -160,7 +179,7 @@
   <div id="roleAuthSection">
     <div id="roleSelectionStep">
       <h2 style="font-family:'Fraunces',serif;font-size:18px;">Select Access Role</h2>
-      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:10px;">Choose your role to open the daily tracker:</p>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Choose your role to open the daily ledger:</p>
       <div class="role-cards">
         <div class="role-box" onclick="promptRolePass('admin')">
           <h3>👑 Admin</h3>
@@ -233,7 +252,7 @@
         </div>
       </div>
 
-      <!-- KPI METRICS: NET SALES -->
+      <!-- KPI METRICS: NET SALES (RESTORED TO ALL ROLES) -->
       <div class="kpi-grid">
         <div class="kpi-card" style="background:#F2E6EA;">
           <span class="lbl">Active Date</span>
@@ -257,12 +276,12 @@
         </div>
       </div>
 
-      <!-- MAIN SPLIT -->
+      <!-- MAIN SPLIT: SEPARATED TABLES WITH CLEAN GAP -->
       <div class="split-tables">
-        <!-- LEFT: SALES CHANNELS -->
-        <div class="table-pane">
-          <div class="pane-hdr">SALES CHANNELS</div>
-          <table class="tracker" id="salesTable">
+        <!-- LEFT: SALES CHANNELS CARD -->
+        <div class="table-pane-card">
+          <div class="pane-hdr sales-hdr">SALES CHANNELS</div>
+          <table class="tracker sales-tbl" id="salesTable">
             <thead>
               <tr>
                 <th style="width:34px;">Sl</th>
@@ -272,7 +291,7 @@
                 <th>OTHER</th>
                 <th style="background:#2E7D32;color:#FFF;width:75px;">Sales</th>
               </tr>
-              <tr class="subtotal-line">
+              <tr class="subtotal-line sales-sub">
                 <td style="text-align:center;">TOTAL</td>
                 <td class="val" id="subCash">₹0.00</td>
                 <td class="val" id="subSwiggy">₹0.00</td>
@@ -288,19 +307,19 @@
           </div>
         </div>
 
-        <!-- RIGHT: EXPENSES (NO YELLOW FILL) & CASH DETAILS -->
-        <div class="table-pane right-side-container">
-          <!-- EXPENSES TABLE -->
-          <div style="border-right: 1px solid var(--rule-strong);">
-            <div class="pane-hdr" style="background:#A94442;">EXPENSES</div>
-            <table class="tracker" id="expTable">
+        <!-- RIGHT: EXPENSES (TERRACOTTA IDENTITY) + CASH DETAILS -->
+        <div class="table-pane-card right-side-container">
+          <!-- COMPACT EXPENSES PANE -->
+          <div>
+            <div class="pane-hdr exp-hdr">EXPENSES</div>
+            <table class="tracker exp-tbl" id="expTable">
               <thead>
                 <tr>
-                  <th style="text-align:left;padding-left:6px;">Category</th>
-                  <th style="width:75px;">Amount</th>
+                  <th style="text-align:left;padding-left:8px;">Category</th>
+                  <th style="width:80px;">Amount (₹)</th>
                   <th style="width:20px;"></th>
                 </tr>
-                <tr class="subtotal-line">
+                <tr class="subtotal-line exp-sub">
                   <td style="text-align:center;">Total</td>
                   <td class="val exp" id="subExp">₹0.00</td>
                   <td></td>
@@ -309,13 +328,13 @@
               <tbody id="expTbody"></tbody>
             </table>
             <div class="mobile-add-strip" id="expMobileStrip">
-              <button class="mobile-next-btn" onclick="addNewExpLine(true)">+ Add Expense</button>
+              <button class="mobile-next-btn exp-btn" onclick="addNewExpLine(true)">+ Add Expense</button>
             </div>
           </div>
 
-          <!-- VERTICAL CASH DETAILS (RECONCILIATION) -->
+          <!-- CASH DETAILS PANEL (MATCHING PHYSICAL DRAWERS) -->
           <div class="cash-reconcile-panel">
-            <div class="pane-hdr" style="background:#4A1525;">CASH DETAILS</div>
+            <div class="pane-hdr cash-hdr">CASH DETAILS</div>
             <table class="cash-tbl">
               <tbody>
                 <tr>
@@ -326,13 +345,13 @@
                   <td class="c-label">Today cash</td>
                   <td class="c-val" id="reconcileTodayCash">0</td>
                 </tr>
-                <tr style="border-top:1px solid #333;border-bottom:1px solid #333;">
+                <tr style="border-top:1px solid #CCC;border-bottom:1px solid #CCC;background:#FAF8F6;">
                   <td class="c-label" style="font-weight:700;">Total</td>
                   <td class="c-val" style="font-weight:700;" id="reconcileTotalInflow">0</td>
                 </tr>
                 <tr>
                   <td class="c-label">Expenses</td>
-                  <td class="c-val" id="reconcileCashExp">0</td>
+                  <td class="c-val highlight-expenses" id="reconcileCashExp">0</td>
                 </tr>
                 <tr style="border-top:2px solid #00ACC1;">
                   <td class="c-label" style="font-weight:700;">Actual cash</td>
@@ -348,17 +367,17 @@
       <div class="waste-box">
         <div class="waste-hdr">
           <span>🍰 END-OF-DAY FINISHED GOODS SPOILAGE (Enter Selling Price Only)</span>
-          <span style="font-size:11px;font-weight:normal;">Actual Cost Loss (40%): <strong id="wasteTotalHdr" style="color:#FFF;">₹0.00</strong></span>
+          <span style="font-size:11.5px;font-weight:normal;">Actual Cost Loss (40%): <strong id="wasteTotalHdr" style="color:#FFF;">₹0.00</strong></span>
         </div>
         <table class="tracker" id="wasteTable">
           <thead>
             <tr style="background:#803525;">
-              <th style="text-align:left;padding-left:8px;">Discarded Finished Item</th>
+              <th style="text-align:left;padding-left:10px;">Discarded Finished Item</th>
               <th style="width:65px;">Qty</th>
               <th style="width:105px;">Selling Price (₹)</th>
-              <th style="width:100px;text-align:right;">Auto Cost (40%)</th>
+              <th style="width:105px;text-align:right;">Auto Cost (40%)</th>
               <th style="width:105px;text-align:right;">Lost Retail (₹)</th>
-              <th style="width:130px;">Reason</th>
+              <th style="width:140px;">Reason</th>
               <th style="width:24px;"></th>
             </tr>
           </thead>
@@ -373,7 +392,7 @@
     <!-- PANEL 2: PREVIOUS DAY / HISTORICAL REPORT -->
     <section class="panel" id="panel-reports">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;" id="reportsHeading">Previous Day Ledger</h2>
-      <p style="font-size:11.5px;color:var(--ink-soft);margin-bottom:12px;" id="reportsSubtext">Review the concluded day's counter records.</p>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:14px;" id="reportsSubtext">Review the concluded day's counter records.</p>
       
       <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
         <div class="form-group" style="margin:0;"><label id="datePickerLabel">Select Date</label><input type="date" id="historyDateInput"></div>
@@ -392,14 +411,14 @@
       <div id="monthlyReportArea" style="display:none;">
         <div class="report-box" id="monthlyPrintContainer">
           <h3 style="color:var(--maroon-hdr);font-size:16px;" id="repMonthTitle">MONTHLY PERFORMANCE</h3>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0;">
-            <div style="background:#FFF;padding:8px;border:1px solid var(--rule);"><span style="font-size:10px;">TOTAL SALES</span><div id="mRepSales" style="font-weight:700;">₹0.00</div></div>
-            <div style="background:#FCE4E4;padding:8px;border:1px solid #FFCDD2;"><span style="font-size:10px;color:#C62828;">TOTAL EXPENSES</span><div id="mRepExp" style="font-weight:700;color:#C62828;">₹0.00</div></div>
-            <div style="background:#FFF8EB;padding:8px;border:1px solid var(--rule);"><span style="font-size:10px;color:var(--gold);">SPOILAGE COST (40%)</span><div id="mRepWaste" style="font-weight:700;color:var(--gold);">₹0.00</div></div>
-            <div style="background:var(--net-green);color:#FFF;padding:8px;"><span style="font-size:10px;color:#D8EAC8;">NET SALES</span><div id="mRepNet" style="font-weight:700;">₹0.00</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin:12px 0;">
+            <div style="background:#FFF;padding:10px;border:1px solid var(--rule);"><span style="font-size:10px;">TOTAL SALES</span><div id="mRepSales" style="font-weight:700;font-size:14px;">₹0.00</div></div>
+            <div style="background:#FDEDEC;padding:10px;border:1px solid #F5B7B1;"><span style="font-size:10px;color:var(--exp-hdr);">TOTAL EXPENSES</span><div id="mRepExp" style="font-weight:700;color:var(--exp-hdr);font-size:14px;">₹0.00</div></div>
+            <div style="background:#FFF8EB;padding:10px;border:1px solid var(--rule);"><span style="font-size:10px;color:var(--gold);">SPOILAGE COST (40%)</span><div id="mRepWaste" style="font-weight:700;color:var(--gold);font-size:14px;">₹0.00</div></div>
+            <div style="background:var(--net-green);color:#FFF;padding:10px;"><span style="font-size:10px;color:#D8EAC8;">NET SALES</span><div id="mRepNet" style="font-weight:700;font-size:14px;">₹0.00</div></div>
           </div>
-          <h4 style="margin:10px 0 4px;font-size:12px;">Partner Profit Sharing:</h4>
-          <div id="mRepPartners" style="background:#FFF;border:1px solid var(--rule);padding:8px 10px;line-height:1.8;"></div>
+          <h4 style="margin:12px 0 6px;font-size:13px;">Partner Profit Sharing:</h4>
+          <div id="mRepPartners" style="background:#FFF;border:1px solid var(--rule);padding:10px 12px;line-height:1.9;"></div>
         </div>
       </div>
     </section>
@@ -407,9 +426,9 @@
     <!-- PANEL 4: POS & INVOICES -->
     <section class="panel" id="panel-invoice">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Customer Sale &amp; Bill Generator</h2>
-      <p style="font-size:11.5px;color:var(--ink-soft);margin-bottom:12px;">Generate customer bills upon request. <strong>Does not add entries to the Daily Sales table.</strong></p>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:14px;">Generate customer bills upon request. <strong>Does not add entries to the Daily Sales table.</strong></p>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
         <div class="form-group"><label>Customer Name</label><input type="text" id="invCustName" placeholder="Walk-in Customer"></div>
         <div class="form-group"><label>WhatsApp Phone</label><input type="text" id="invCustPhone" placeholder="10-digit number"></div>
         <div class="form-group"><label>Payment Mode</label>
@@ -423,36 +442,36 @@
 
       <table style="width:100%;border-collapse:collapse;margin-bottom:12px;" class="tracker">
         <thead>
-          <tr>
-            <th style="text-align:left;padding-left:8px;">Item Description</th>
+          <tr style="background:var(--maroon-banner);color:#FFF;">
+            <th style="text-align:left;padding-left:10px;">Item Description</th>
             <th style="width:80px;">Qty</th>
-            <th style="width:100px;">Rate (₹)</th>
-            <th style="width:100px;text-align:right;padding-right:8px;">Amount</th>
+            <th style="width:110px;">Rate (₹)</th>
+            <th style="width:110px;text-align:right;padding-right:10px;">Amount</th>
             <th style="width:30px;"></th>
           </tr>
         </thead>
         <tbody id="invItemsBody"></tbody>
       </table>
 
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <button class="btn-s" onclick="addInvoiceItemRow()">+ Add Item</button>
         <div style="font-size:16px;font-weight:700;">Bill Total: <span id="invTotalBadge" style="color:var(--maroon-banner);">₹0.00</span></div>
       </div>
 
-      <div style="display:flex;gap:8px;margin-bottom:20px;">
+      <div style="display:flex;gap:8px;margin-bottom:22px;">
         <button class="btn-p" onclick="saveAndPrintInvoice()">Save Bill &amp; Print Receipt</button>
         <button class="btn-s" onclick="resetInvoiceForm()">Clear Bill</button>
       </div>
 
       <hr style="border:none;border-top:1px solid var(--rule-strong);margin:20px 0 16px;">
 
-      <h3 style="font-family:'Fraunces',serif;font-size:15px;margin-bottom:8px;">Past Invoices &amp; Bill Records</h3>
+      <h3 style="font-family:'Fraunces',serif;font-size:15px;margin-bottom:10px;">Past Invoices &amp; Bill Records</h3>
       <div style="overflow-x:auto;">
         <table class="tracker" style="width:100%;background:#FFF;">
           <thead>
-            <tr>
+            <tr style="background:var(--maroon-hdr);color:#FFF;">
               <th style="width:90px;">Date</th>
-              <th style="text-align:left;padding-left:6px;">Customer</th>
+              <th style="text-align:left;padding-left:8px;">Customer</th>
               <th>Phone</th>
               <th>Mode</th>
               <th>Total (₹)</th>
@@ -469,7 +488,7 @@
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Profit Summary</h2>
       <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;margin-top:10px;" class="profit-table">
-          <thead><tr style="border-bottom:2px solid var(--ink);font-size:11px;"><th style="text-align:left;padding:6px;">Month</th><th>Sales</th><th>Expenses</th><th>Net Profit</th><th>Prakash (43%)</th><th>Preveen (28%)</th><th>Preetham (14.5%)</th><th>Umesh (14.5%)</th></tr></thead>
+          <thead><tr style="border-bottom:2px solid var(--ink);font-size:11.5px;"><th style="text-align:left;padding:8px;">Month</th><th>Sales</th><th>Expenses</th><th>Net Profit</th><th>Prakash (43%)</th><th>Preveen (28%)</th><th>Preetham (14.5%)</th><th>Umesh (14.5%)</th></tr></thead>
           <tbody id="profitTableBody"></tbody>
         </table>
       </div>
@@ -492,9 +511,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v24";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v25";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v24";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v25";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -667,7 +686,7 @@ function renderDailyGrids(){
   if(!sheet.expenses || sheet.expenses.length === 0){ sheet.expenses = [{ category:'', amount:'', method:'Cash' }]; }
   if(!sheet.wastage) sheet.wastage = [];
 
-  // Sales Table
+  // 1. Sales Table (No delete buttons)
   var sTbody = document.getElementById('salesTbody');
   sTbody.innerHTML = '';
   var sl = 1;
@@ -709,14 +728,14 @@ function renderDailyGrids(){
 
   document.getElementById('salesMobileStrip').style.display = sEditable ? 'flex' : 'none';
 
-  // Expense Table
+  // 2. Expense Table (Terracotta Palette, Compact Category Area)
   var eTbody = document.getElementById('expTbody');
   eTbody.innerHTML = '';
 
   sheet.expenses.forEach(function(row, idx){
     var tr = document.createElement('tr');
     tr.innerHTML =
-      '<td><input type="text" enterkeyhint="next" class="cell-input text-left" data-exp-idx="' + idx + '" data-f="category" value="' + (row.category||'') + '" placeholder="e.g. Sugar, Gas, Milk" ' + (!eEditable?'disabled':'') + '></td>' +
+      '<td><input type="text" enterkeyhint="next" class="cell-input text-left" data-exp-idx="' + idx + '" data-f="category" value="' + (row.category||'') + '" placeholder="e.g. Flower, Gas, Milk" ' + (!eEditable?'disabled':'') + '></td>' +
       '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" style="font-weight:600;" data-exp-idx="' + idx + '" data-f="amount" value="' + (row.amount||'') + '" ' + (!eEditable?'disabled':'') + ' placeholder="0"></td>' +
       '<td style="text-align:center;">' + (eEditable && sheet.expenses.length > 1 ? '<button class="row-del-btn">&times;</button>' : '') + '</td>';
 
@@ -951,22 +970,19 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
   document.getElementById('reconcileActualCash').textContent = Math.round(actualCash);
 }
 
-// 3-PAGE EXCEL EXPORT (Daily_Sales, Expenses, Average_Sales)
+// 3-PAGE EXCEL EXPORT (EXACT FORMAT MATCHING YOUR DAILY TEMPLATE)
 function exportActiveDayToExcel(){
   if(typeof XLSX === 'undefined'){ alert('Excel library is loading, please try again.'); return; }
   var dKey = state.activeDate;
   var sheetData = state.daily[dKey] || { sales:[], expenses:[], wastage:[] };
 
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wTot = 0;
+  var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
   sheetData.sales.forEach(function(r){
     c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0;
   });
   sheetData.expenses.forEach(function(e){ ex += Number(e.amount)||0; });
-  (sheetData.wastage||[]).forEach(function(w){ wTot += ((Number(w.qty)||0) * (Number(w.sp)||0)) * 0.40; });
 
   var todayTotSales = c + sw + z + ot;
-  var todayNetSales = todayTotSales - ex;
-
   var parts = dKey.split('-');
   var curMonthSuffix = parts[1] + '-' + parts[2];
   var activeDay = parseInt(parts[0], 10);
@@ -997,89 +1013,89 @@ function exportActiveDayToExcel(){
 
   // Page 1: Daily_Sales
   var p1 = [
-    ["7TH HEAVEN NASHIK — DAILY SALES & EXPENDITURE", "", "", "", "", "", "", "", "", ""],
-    [],
-    ["ACTIVE DATE", dKey, "TODAY TOTAL SALES", todayTotSales, "TOTAL EXPENSES", ex, "SPOILAGE COST (40%)", wTot, "NET SALES", todayNetSales],
-    [],
-    ["SALES CHANNELS", "", "", "", "", "EXPENSES", "", "CASH DETAILS", ""],
-    ["Sl No", "CASH (₹)", "SWIGGY (₹)", "ZOMATO (₹)", "OTHER (₹)", "Category", "Amount (₹)", "Item", "Amount (₹)"],
-    ["TOTAL", c, sw, z, ot, "Total Expenses", ex, "OPENING CASH", prevCashCarry]
+    ["Nashik"],
+    ["7th Heaven Nashik,Indiranagar"],
+    [dKey],
+    ["CASH", "SWIGGY", "ZOMATO", "UPI", "Other", "Sales", "", "EXPENSES", "", "", "CASH DETAILS", ""]
   ];
 
-  var sLines = sheetData.sales.filter(hasAnySaleVal);
-  var eLines = sheetData.expenses.filter(function(e){ return (Number(e.amount)||0) > 0; });
-  var maxLen = Math.max(sLines.length, eLines.length, 5);
+  var sLines = sheetData.sales || [];
+  var eLines = sheetData.expenses || [];
+  var maxLen = Math.max(sLines.length, eLines.length, 12);
 
-  var cashItems = [
+  var cashLines = [
+    ["OPENING CASH", prevCashCarry],
     ["Today cash", c],
+    ["", ""],
     ["Total", prevCashCarry + c],
+    ["", ""],
     ["Expenses", ex],
+    ["", ""],
+    ["", ""],
+    ["", ""],
     ["Actual cash", (prevCashCarry + c - ex)]
   ];
 
   for (var i = 0; i < maxLen; i++) {
     var sl = sLines[i] || {};
     var el = eLines[i] || {};
-    var ci = cashItems[i] || ["", ""];
+    var cl = cashLines[i] || ["", ""];
+    var lineTot = (Number(sl.cash)||0) + (Number(sl.swiggy)||0) + (Number(sl.zomato)||0) + (Number(sl.other)||0);
 
     p1.push([
-      sLines[i] ? (i + 1) : "",
       sl.cash !== undefined && sl.cash !== "" ? Number(sl.cash) : "",
       sl.swiggy !== undefined && sl.swiggy !== "" ? Number(sl.swiggy) : "",
       sl.zomato !== undefined && sl.zomato !== "" ? Number(sl.zomato) : "",
+      "",
       sl.other !== undefined && sl.other !== "" ? Number(sl.other) : "",
+      lineTot > 0 ? lineTot : "",
+      "",
       el.category || "",
+      "",
       el.amount !== undefined && el.amount !== "" ? Number(el.amount) : "",
-      ci[0],
-      ci[1]
+      cl[0],
+      cl[1]
     ]);
   }
 
-  p1.push([]);
-  p1.push(["FINISHED GOODS SPOILAGE (40%)", "", "", "", "", ""]);
-  p1.push(["Discarded Item", "Qty", "Selling Price (₹)", "Auto Cost Loss (40%)", "Retail Loss (₹)", "Reason"]);
-  if(sheetData.wastage && sheetData.wastage.length > 0){
-    sheetData.wastage.forEach(function(w){
-      var spVal = Number(w.sp) || 0;
-      var qVal = Number(w.qty) || 0;
-      var ret = qVal * spVal;
-      p1.push([w.item, qVal, spVal, ret * 0.40, ret, w.reason]);
-    });
-  } else {
-    p1.push(["None", 0, 0, 0, 0, "-"]);
-  }
+  p1.push([c, sw, z, 0, ot, todayTotSales, "", "Total Expenses", "", ex, "", ""]);
   var ws1 = XLSX.utils.aoa_to_sheet(p1);
   XLSX.utils.book_append_sheet(wb, ws1, "Daily_Sales");
 
-  // Page 2: Expenses
-  var p2 = [
-    ["DATE", "EXPENSE CATEGORY", "PAYMENT METHOD", "AMOUNT (INR)"]
-  ];
-  if(eLines.length > 0){
-    eLines.forEach(function(e){
-      p2.push([dKey, e.category || "General", e.method || "Cash", Number(e.amount)||0]);
-    });
-  } else {
-    p2.push([dKey, "No expenses recorded", "-", 0]);
-  }
-  p2.push([]);
-  p2.push(["", "TOTAL EXPENSES", "", ex]);
+  // Page 2: EXPENSES (14 Columns Matrix)
+  var expHeaders = ['DATE:', 'General Expenses', 'Raw material', 'Daily Expenses', 'Staff Food', 'Salary', 'Royalty', 'Electricity Bill', 'Shop & Room Rent', 'GST', 'Online Comm', 'Packaging Material', 'Other', 'Total'];
+  var p2 = [expHeaders];
+  var expRowData = [dKey, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ex];
+  eLines.forEach(function(e){
+    var cat = (e.category || "").toLowerCase();
+    var amt = Number(e.amount) || 0;
+    if (cat.indexOf("raw") !== -1) expRowData[2] += amt;
+    else if (cat.indexOf("daily") !== -1) expRowData[3] += amt;
+    else if (cat.indexOf("food") !== -1) expRowData[4] += amt;
+    else if (cat.indexOf("salary") !== -1) expRowData[5] += amt;
+    else if (cat.indexOf("royalty") !== -1) expRowData[6] += amt;
+    else if (cat.indexOf("electric") !== -1) expRowData[7] += amt;
+    else if (cat.indexOf("rent") !== -1) expRowData[8] += amt;
+    else if (cat.indexOf("gst") !== -1) expRowData[9] += amt;
+    else if (cat.indexOf("online") !== -1 || cat.indexOf("comm") !== -1) expRowData[10] += amt;
+    else if (cat.indexOf("pack") !== -1) expRowData[11] += amt;
+    else expRowData[1] += amt;
+  });
+  p2.push(expRowData);
   var ws2 = XLSX.utils.aoa_to_sheet(p2);
-  XLSX.utils.book_append_sheet(wb, ws2, "Expenses");
+  XLSX.utils.book_append_sheet(wb, ws2, "EXPENSES");
 
-  // Page 3: Average_Sales
-  var avgSales = daysCounted > 0 ? (mtdS / daysCounted) : todayTotSales;
+  // Page 3: AVG_SALES
   var p3 = [
-    ["METRIC", "AMOUNT (INR)"],
-    ["Month to Date Total Sales", mtdS],
-    ["Month to Date Total Expenses", mtdE],
-    ["Operating Days Recorded", daysCounted],
-    ["AVERAGE DAILY SALES", avgSales],
-    ["AVERAGE DAILY EXPENSES", daysCounted > 0 ? (mtdE / daysCounted) : ex],
-    ["AVERAGE DAILY NET", daysCounted > 0 ? ((mtdS - mtdE) / daysCounted) : todayNetSales]
+    ["", "", "", "Total Sales", mtdS],
+    [],
+    ["", "", "Expenses", "Date", dKey],
+    ["Total Operating Expenses", "", "", mtdExp],
+    ["Operating Days Recorded", "", "", daysCounted],
+    ["Avg Sales", (daysCounted > 0 ? mtdS / daysCounted : todayTotSales)]
   ];
   var ws3 = XLSX.utils.aoa_to_sheet(p3);
-  XLSX.utils.book_append_sheet(wb, ws3, "Average_Sales");
+  XLSX.utils.book_append_sheet(wb, ws3, "AVG_SALES");
 
   XLSX.writeFile(wb, "7th_Heaven_" + dKey + ".xlsx");
 }
@@ -1103,7 +1119,7 @@ function renderInvoiceRows(){
       '<td><input type="text" class="cell-input text-left inv-desc" data-idx="' + idx + '" value="' + (item.desc||'') + '" placeholder="Item name"></td>' +
       '<td><input type="number" inputmode="decimal" class="cell-input inv-qty" data-idx="' + idx + '" value="' + (item.qty||1) + '"></td>' +
       '<td><input type="number" inputmode="decimal" step="0.01" class="cell-input inv-rate" data-idx="' + idx + '" value="' + (item.rate||'') + '" placeholder="0.00"></td>' +
-      '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:8px;" class="inv-row-total" id="invTotalRow_' + idx + '">' + formatMoney((Number(item.qty)||0) * (Number(item.rate)||0)) + '</td>' +
+      '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:10px;" class="inv-row-total" id="invTotalRow_' + idx + '">' + formatMoney((Number(item.qty)||0) * (Number(item.rate)||0)) + '</td>' +
       '<td><button class="row-del-btn" onclick="removeInvoiceItem(' + idx + ')">&times;</button></td>';
 
     var descInp = tr.querySelector('.inv-desc');
@@ -1212,10 +1228,10 @@ function renderInvoiceHistory(){
     var tr = document.createElement('tr');
     tr.innerHTML =
       '<td style="text-align:center;">' + inv.date + '</td>' +
-      '<td style="padding-left:6px;"><strong>' + inv.customer + '</strong><br><span style="font-size:10px;color:var(--ink-soft);">' + inv.id + '</span></td>' +
+      '<td style="padding-left:8px;"><strong>' + inv.customer + '</strong><br><span style="font-size:10px;color:var(--ink-soft);">' + inv.id + '</span></td>' +
       '<td style="text-align:center;">' + inv.phone + '</td>' +
       '<td style="text-align:center;">' + inv.mode + '</td>' +
-      '<td style="text-align:right;font-weight:700;padding-right:6px;color:var(--maroon-banner);">' + formatMoney(inv.total) + '</td>' +
+      '<td style="text-align:right;font-weight:700;padding-right:8px;color:var(--maroon-banner);">' + formatMoney(inv.total) + '</td>' +
       '<td style="text-align:center;">' +
         '<button class="btn-s" style="padding:3px 6px;font-size:11px;" onclick="reprintInvoice(' + idx + ')">🖨️</button> ' +
         '<button class="btn-s" style="padding:3px 6px;font-size:11px;background:#25D366;color:#FFF;border-color:#25D366;" onclick="shareInvoiceWhatsApp(' + idx + ')">📲</button>' +
@@ -1413,7 +1429,7 @@ function applyRoleUI(){
   document.getElementById('tabProfitBtn').style.display = (r === 'admin') ? 'block' : 'none';
   document.getElementById('tabPasswordsBtn').style.display = (r === 'admin') ? 'block' : 'none';
 
-  // Admin exclusive multi-day turnover strip
+  // Multi-day turnover strip is Admin-only; Today's sales KPI is visible to ALL roles
   var isPrivileged = (r === 'admin');
   document.getElementById('adminTurnoverStrip').style.display = isPrivileged ? 'grid' : 'none';
 
