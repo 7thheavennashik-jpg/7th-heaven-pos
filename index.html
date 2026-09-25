@@ -284,7 +284,7 @@
         </div>
       </div>
 
-      <!-- MAIN SPLIT: SEPARATED TABLES WITH CLEAN GAP -->
+      <!-- MAIN SPLIT -->
       <div class="split-tables">
         <!-- LEFT: SALES CHANNELS CARD -->
         <div class="table-pane-card">
@@ -315,7 +315,7 @@
           </div>
         </div>
 
-        <!-- RIGHT: EXPENSES (TERRACOTTA IDENTITY) + CASH DETAILS -->
+        <!-- RIGHT: EXPENSES + CASH DETAILS -->
         <div class="table-pane-card right-side-container">
           <div>
             <div class="pane-hdr exp-hdr">EXPENSES</div>
@@ -494,7 +494,7 @@
       </div>
     </section>
 
-    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY - POPULATES AUTOMATICALLY) -->
+    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY) -->
     <section class="panel" id="panel-profit">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Profit Summary &amp; Distribution</h2>
       <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Partner payout calculation: Prakash (43%), Preveen (28%), Preetham (14.5%), Umesh (14.5%).</p>
@@ -534,9 +534,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v27";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v28";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v27";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v28";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -548,11 +548,46 @@ var PROFIT_PARTNERS = [
   { name: 'Umesh Shetty', pct: 14.5 }
 ];
 
+var cloudSyncInitialized = false;
+
 var state = {
   currentRole: null,
   activeDate: getTodayStr(),
   daily: {},
   invoices: []
+};
+
+// Guarantee baseline history for 22-09 and 24-09 from your backup spreadsheets
+var BASELINE_BACKUPS = {
+  "22-09-2026": {
+    sales: [
+      { cash: 100, swiggy: 10, zomato: 100, other: 50 },
+      { cash: 200, swiggy: 25, zomato: 100, other: 50 },
+      { cash: 300, swiggy: 30, zomato: 0, other: 75 },
+      { cash: 400, swiggy: 15.5, zomato: 0, other: 100 },
+      { cash: 500, swiggy: 228, zomato: 0, other: 0 },
+      { cash: 550, swiggy: 3578, zomato: 0, other: 0 },
+      { cash: 1500, swiggy: 215, zomato: 0, other: 0 },
+      { cash: 19000, swiggy: 0, zomato: 0, other: 0 }
+    ],
+    expenses: [
+      { category: "Plates", amount: 250, method: "Cash" },
+      { category: "Flower", amount: 100, method: "Cash" }
+    ],
+    wastage: []
+  },
+  "24-09-2026": {
+    sales: [
+      { cash: 100, swiggy: 200, zomato: 300, other: 400 },
+      { cash: 200, swiggy: 300, zomato: 400, other: 500 },
+      { cash: 300, swiggy: 400, zomato: 500, other: 600 },
+      { cash: 400, swiggy: 500, zomato: 600, other: 700 },
+      { cash: 500, swiggy: 600, zomato: 700, other: 800 },
+      { cash: 1, swiggy: 1, zomato: 1, other: 1 }
+    ],
+    expenses: [],
+    wastage: []
+  }
 };
 
 var currentInvoiceItems = [];
@@ -589,7 +624,7 @@ function toast(msg){
 function triggerExcelDownload(wb, filename) {
   try {
     if (typeof XLSX === 'undefined') {
-      alert('Excel library is still loading. Please ensure you are connected to internet and try again.');
+      alert('Excel library is still loading. Please check your internet connection and refresh.');
       return;
     }
     var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -614,6 +649,13 @@ function canEditSales(){ return state.currentRole !== 'remote'; }
 function canEditExpenses(){ return state.currentRole !== 'remote'; }
 function canEditWaste(){ return state.currentRole !== 'remote'; }
 
+function hasAnyEntries(dObj){
+  if(!dObj) return false;
+  var sHas = (dObj.sales||[]).some(function(r){ return (Number(r.cash)||0)>0 || (Number(r.swiggy)||0)>0 || (Number(r.zomato)||0)>0 || (Number(r.other)||0)>0; });
+  var eHas = (dObj.expenses||[]).some(function(e){ return (Number(e.amount)||0)>0; });
+  return sHas || eHas;
+}
+
 function loadStateLocally(){
   try {
     var raw = localStorage.getItem(STORAGE_KEY);
@@ -628,6 +670,13 @@ function loadStateLocally(){
     }
   } catch(e){}
 
+  // Seed baseline backups if not present locally
+  Object.keys(BASELINE_BACKUPS).forEach(function(bKey){
+    if(!state.daily[bKey] || !hasAnyEntries(state.daily[bKey])){
+      state.daily[bKey] = JSON.parse(JSON.stringify(BASELINE_BACKUPS[bKey]));
+    }
+  });
+
   var today = getTodayStr();
   if(!state.daily[today]){
     state.daily[today] = {
@@ -635,7 +684,6 @@ function loadStateLocally(){
       expenses: [{ category:'', amount:'', method:'Cash' }],
       wastage: []
     };
-    saveState();
   }
   state.activeDate = today;
 }
@@ -645,12 +693,16 @@ function saveState(){
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ daily: state.daily, invoices: state.invoices }));
     localStorage.setItem(PASSWORDS_STORAGE_KEY, JSON.stringify(ROLE_PASSWORDS));
   } catch(e){}
-  clearTimeout(window._cloudSyncTimer);
-  window._cloudSyncTimer = setTimeout(pushToCloud, 800);
+  
+  // NEVER push empty or un-synced data to cloud until initial sync has succeeded
+  if(cloudSyncInitialized){
+    clearTimeout(window._cloudSyncTimer);
+    window._cloudSyncTimer = setTimeout(pushToCloud, 800);
+  }
 }
 
 function pushToCloud(){
-  if(!CLOUD_BACKEND_URL) return;
+  if(!CLOUD_BACKEND_URL || !cloudSyncInitialized) return;
   document.getElementById('syncText').textContent = 'Saving to Cloud…';
   fetch(CLOUD_BACKEND_URL, {
     method: 'POST',
@@ -672,17 +724,39 @@ function syncWithCloud(){
   fetch(CLOUD_BACKEND_URL + '?key=7th_heaven_master_data')
     .then(function(res){ return res.json(); })
     .then(function(data){
+      cloudSyncInitialized = true;
       if(data && data.value){
         var cloudObj = JSON.parse(data.value);
-        if(cloudObj.daily) state.daily = cloudObj.daily;
-        if(cloudObj.invoices) state.invoices = cloudObj.invoices;
-        if(cloudObj.passwords) Object.assign(ROLE_PASSWORDS, cloudObj.passwords);
-        document.getElementById('syncText').textContent = 'Live Cloud Synced';
-        renderAll();
-        renderInvoiceHistory();
-        renderProfitSharingPanel();
+        if(cloudObj.daily){
+          // BIDIRECTIONAL DEEP MERGE: Never wipe out cloud or local dates
+          Object.keys(cloudObj.daily).forEach(function(dKey){
+            if(!state.daily[dKey] || hasAnyEntries(cloudObj.daily[dKey])){
+              state.daily[dKey] = cloudObj.daily[dKey];
+            }
+          });
+        }
+        if(cloudObj.invoices && cloudObj.invoices.length > 0){
+          state.invoices = cloudObj.invoices;
+        }
+        if(cloudObj.passwords){
+          Object.assign(ROLE_PASSWORDS, cloudObj.passwords);
+        }
       }
+
+      // Re-verify baselines are present
+      Object.keys(BASELINE_BACKUPS).forEach(function(bKey){
+        if(!state.daily[bKey] || !hasAnyEntries(state.daily[bKey])){
+          state.daily[bKey] = JSON.parse(JSON.stringify(BASELINE_BACKUPS[bKey]));
+        }
+      });
+
+      document.getElementById('syncText').textContent = 'Live Cloud Synced';
+      saveState();
+      renderAll();
+      renderInvoiceHistory();
+      renderProfitSharingPanel();
     }).catch(function(){
+      cloudSyncInitialized = true;
       document.getElementById('syncText').textContent = 'Using Local Cache';
     });
 }
@@ -728,6 +802,10 @@ function addNewWasteLine(focusNew){
 
 function renderDailyGrids(){
   var sheet = state.daily[state.activeDate];
+  if(!sheet){
+    sheet = { sales: [{ cash:'', swiggy:'', zomato:'', other:'' }], expenses: [{ category:'', amount:'', method:'Cash' }], wastage: [] };
+    state.daily[state.activeDate] = sheet;
+  }
   var sEditable = canEditSales();
   var eEditable = canEditExpenses();
 
@@ -905,6 +983,7 @@ function handleExpAutoJump(idx){
 
 function updateTotals(){
   var sheet = state.daily[state.activeDate];
+  if(!sheet) return;
   var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wasteCostLoss = 0;
 
   sheet.sales.forEach(function(r, i){
@@ -981,12 +1060,12 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
       var dayExp = 0;
       var dayCashSales = 0;
 
-      state.daily[k].sales.forEach(function(r){
+      (state.daily[k].sales||[]).forEach(function(r){
         var c = Number(r.cash)||0;
         dayCashSales += c;
         daySales += (c + (Number(r.swiggy)||0) + (Number(r.zomato)||0) + (Number(r.other)||0));
       });
-      state.daily[k].expenses.forEach(function(e){
+      (state.daily[k].expenses||[]).forEach(function(e){
         dayExp += Number(e.amount)||0;
       });
 
