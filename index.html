@@ -92,7 +92,7 @@
   .kpi-net .lbl { color: #D8EAC8; }
   .kpi-net .amt { color: #FFF; }
 
-  .split-tables { display: grid; grid-template-columns: 52% 48%; gap: 16px; margin-bottom: 16px; }
+  .split-tables { display: grid; grid-template-columns: 56% 44%; gap: 16px; margin-bottom: 16px; }
   .table-pane-card { border: 1px solid var(--rule-strong); border-radius: 5px; background: #FFF; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
   
   .pane-hdr { padding: 7px 12px; font-size: 12px; font-weight: 700; text-align: center; letter-spacing: 0.5px; }
@@ -101,19 +101,19 @@
   .pane-hdr.cash-hdr { background: #3A121D; color: #FFF; }
 
   table.tracker { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  table.tracker th { font-size: 11px; font-weight: 600; padding: 6px 4px; text-align: center; border-right: 1px solid rgba(255,255,255,0.15); }
-  table.tracker td { padding: 3px 4px; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); height: 32px; }
+  table.tracker th { font-size: 11px; font-weight: 600; padding: 6px 3px; text-align: center; border-right: 1px solid rgba(255,255,255,0.15); }
+  table.tracker td { padding: 3px 3px; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); height: 32px; }
   table.tracker td:last-child { border-right: none; }
   
   table.tracker.sales-tbl th { background: var(--maroon-banner); color: #FFF; }
   .subtotal-line.sales-sub td { background: var(--subtotal-bg); font-weight: 700; border-bottom: 2px solid var(--maroon-hdr); }
-  .subtotal-line.sales-sub .val { font-family: 'IBM Plex Mono', monospace; font-size: 12px; text-align: right; color: var(--maroon-hdr); }
+  .subtotal-line.sales-sub .val { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; text-align: right; color: var(--maroon-hdr); }
   
   table.tracker.exp-tbl th { background: var(--exp-subhdr); color: #FFF; }
   .subtotal-line.exp-sub td { background: var(--exp-bg); font-weight: 700; border-bottom: 2px solid var(--exp-hdr); }
   .subtotal-line.exp-sub .val.exp { color: var(--exp-hdr); font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; text-align: right; font-weight: 700; }
 
-  .sl-box { text-align: center; font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--maroon-hdr); width: 34px; background: #FAF7F7; }
+  .sl-box { text-align: center; font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--maroon-hdr); width: 32px; background: #FAF7F7; }
   .cell-input { width: 100%; border: none; background: transparent; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; text-align: right; padding: 4px 2px; outline: none; }
   .cell-input.text-left { text-align: left; font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; font-size: 12px; }
   .cell-input:focus:not([disabled]) { background: #FFFDF0; }
@@ -127,7 +127,7 @@
   .mobile-next-btn { flex: 1; padding: 6px; background: #FFF; border: 1px dashed var(--maroon-hdr); color: var(--maroon-hdr); font-weight: 600; border-radius: 4px; font-size: 11.5px; cursor: pointer; }
   .mobile-next-btn.exp-btn { border-color: var(--exp-hdr); color: var(--exp-hdr); }
 
-  .right-side-container { display: grid; grid-template-columns: 52% 48%; }
+  .right-side-container { display: grid; grid-template-columns: 50% 50%; }
   .cash-reconcile-panel { border-left: 2px solid var(--rule-strong); background: #FFF; display: flex; flex-direction: column; }
   .cash-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
   .cash-tbl td { padding: 6px 9px; border-bottom: 1px solid #EFECE6; }
@@ -153,9 +153,9 @@
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   .profit-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; }
-  .profit-table th { background: var(--maroon-hdr); color: #FFF; padding: 8px; text-align: right; border: 1px solid #CCC; }
+  .profit-table th { background: var(--maroon-hdr); color: #FFF; padding: 8px 6px; text-align: right; border: 1px solid #CCC; }
   .profit-table th:first-child { text-align: left; }
-  .profit-table td { padding: 8px; border: 1px solid var(--rule); text-align: right; font-family: 'IBM Plex Mono', monospace; }
+  .profit-table td { padding: 8px 6px; border: 1px solid var(--rule); text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
   .profit-table td:first-child { text-align: left; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
   .profit-table tr:hover { background: #FFFDF0; }
 
@@ -191,7 +191,7 @@
       <div class="role-cards">
         <div class="role-box" onclick="promptRolePass('admin')">
           <h3>👑 Admin</h3>
-          <p>Full control: All historical days, monthly reports with Excel export &amp; WhatsApp share, turnover audit, and profit splits.</p>
+          <p>Full control: All historical days, monthly reports with Excel export &amp; WhatsApp share, turnover audit, and 5-partner profit splits.</p>
         </div>
         <div class="role-box" onclick="promptRolePass('store')">
           <h3>🏪 Store Partner</h3>
@@ -284,24 +284,26 @@
         </div>
       </div>
 
-      <!-- MAIN SPLIT -->
+      <!-- MAIN SPLIT: SALES CHANNELS (WITH UPI) + EXPENSES + CASH DETAILS -->
       <div class="split-tables">
-        <!-- LEFT: SALES CHANNELS CARD -->
+        <!-- LEFT: SALES CHANNELS CARD (SI | CASH | UPI | SWIGGY | ZOMATO | OTHER | Sales) -->
         <div class="table-pane-card">
           <div class="pane-hdr sales-hdr">SALES CHANNELS</div>
           <table class="tracker sales-tbl" id="salesTable">
             <thead>
               <tr>
-                <th style="width:34px;">Sl</th>
+                <th style="width:30px;">Sl</th>
                 <th>CASH</th>
+                <th>UPI</th>
                 <th>SWIGGY</th>
                 <th>ZOMATO</th>
                 <th>OTHER</th>
-                <th style="background:#2E7D32;color:#FFF;width:75px;">Sales</th>
+                <th style="background:#2E7D32;color:#FFF;width:72px;">Sales</th>
               </tr>
               <tr class="subtotal-line sales-sub">
                 <td style="text-align:center;">TOTAL</td>
                 <td class="val" id="subCash">₹0.00</td>
+                <td class="val" id="subUpi">₹0.00</td>
                 <td class="val" id="subSwiggy">₹0.00</td>
                 <td class="val" id="subZomato">₹0.00</td>
                 <td class="val" id="subOther">₹0.00</td>
@@ -339,7 +341,7 @@
             </div>
           </div>
 
-          <!-- CASH DETAILS PANEL -->
+          <!-- CASH DETAILS PANEL (STRICT PHYSICAL CASH RECONCILIATION) -->
           <div class="cash-reconcile-panel">
             <div class="pane-hdr cash-hdr">CASH DETAILS</div>
             <table class="cash-tbl">
@@ -428,7 +430,7 @@
             <div style="background:#FFF8EB;padding:10px;border:1px solid var(--rule);"><span style="font-size:10px;color:var(--gold);">SPOILAGE COST (40%)</span><div id="mRepWaste" style="font-weight:700;color:var(--gold);font-size:14px;">₹0.00</div></div>
             <div style="background:var(--net-green);color:#FFF;padding:10px;"><span style="font-size:10px;color:#D8EAC8;">NET SALES</span><div id="mRepNet" style="font-weight:700;font-size:14px;">₹0.00</div></div>
           </div>
-          <h4 style="margin:12px 0 6px;font-size:13px;">Partner Profit Sharing:</h4>
+          <h4 style="margin:12px 0 6px;font-size:13px;">Partner Profit Sharing (Agreed %):</h4>
           <div id="mRepPartners" style="background:#FFF;border:1px solid var(--rule);padding:10px 12px;line-height:1.9;"></div>
         </div>
       </div>
@@ -494,10 +496,10 @@
       </div>
     </section>
 
-    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY) -->
+    <!-- PANEL 5: PROFIT SHARING (ADMIN ONLY - 5 PARTNERS) -->
     <section class="panel" id="panel-profit">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Monthly Profit Summary &amp; Distribution</h2>
-      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Partner payout calculation: Prakash (43%), Preveen (28%), Preetham (14.5%), Umesh (14.5%).</p>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Partner payout: Prakash (28.57%), Praveen (28.57%), Preetham (14.29%), Umesh (14.29%), Goutham (14.29%).</p>
       <div style="overflow-x:auto;">
         <table class="profit-table">
           <thead>
@@ -506,10 +508,11 @@
               <th>Total Sales</th>
               <th>Total Expenses</th>
               <th>Net Profit</th>
-              <th>Prakash (43%)</th>
-              <th>Preveen (28%)</th>
-              <th>Preetham (14.5%)</th>
-              <th>Umesh (14.5%)</th>
+              <th>Prakash (28.57%)</th>
+              <th>Praveen (28.57%)</th>
+              <th>Preetham (14.29%)</th>
+              <th>Umesh (14.29%)</th>
+              <th>Goutham (14.29%)</th>
             </tr>
           </thead>
           <tbody id="profitTableBody"></tbody>
@@ -534,18 +537,20 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v28";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v29";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v28";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v29";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
 
+// 5 PARTNERS WITH UPDATED PROFIT SHARES
 var PROFIT_PARTNERS = [
-  { name: 'Prakash Shetty', pct: 43.0 },
-  { name: 'Preveen Shetty', pct: 28.0 },
-  { name: 'Preetham Shetty', pct: 14.5 },
-  { name: 'Umesh Shetty', pct: 14.5 }
+  { name: 'Prakash Shetty', pct: 28.57 },
+  { name: 'Praveen Shetty', pct: 28.57 },
+  { name: 'Preetham Shetty', pct: 14.29 },
+  { name: 'Umesh Shetty', pct: 14.29 },
+  { name: 'Goutham', pct: 14.29 }
 ];
 
 var cloudSyncInitialized = false;
@@ -557,18 +562,18 @@ var state = {
   invoices: []
 };
 
-// Guarantee baseline history for 22-09 and 24-09 from your backup spreadsheets
+// Guarantee baseline history for 22-09 and 24-09
 var BASELINE_BACKUPS = {
   "22-09-2026": {
     sales: [
-      { cash: 100, swiggy: 10, zomato: 100, other: 50 },
-      { cash: 200, swiggy: 25, zomato: 100, other: 50 },
-      { cash: 300, swiggy: 30, zomato: 0, other: 75 },
-      { cash: 400, swiggy: 15.5, zomato: 0, other: 100 },
-      { cash: 500, swiggy: 228, zomato: 0, other: 0 },
-      { cash: 550, swiggy: 3578, zomato: 0, other: 0 },
-      { cash: 1500, swiggy: 215, zomato: 0, other: 0 },
-      { cash: 19000, swiggy: 0, zomato: 0, other: 0 }
+      { cash: 100, upi: 0, swiggy: 10, zomato: 100, other: 50 },
+      { cash: 200, upi: 0, swiggy: 25, zomato: 100, other: 50 },
+      { cash: 300, upi: 0, swiggy: 30, zomato: 0, other: 75 },
+      { cash: 400, upi: 0, swiggy: 15.5, zomato: 0, other: 100 },
+      { cash: 500, upi: 0, swiggy: 228, zomato: 0, other: 0 },
+      { cash: 550, upi: 0, swiggy: 3578, zomato: 0, other: 0 },
+      { cash: 1500, upi: 0, swiggy: 215, zomato: 0, other: 0 },
+      { cash: 19000, upi: 0, swiggy: 0, zomato: 0, other: 0 }
     ],
     expenses: [
       { category: "Plates", amount: 250, method: "Cash" },
@@ -578,12 +583,12 @@ var BASELINE_BACKUPS = {
   },
   "24-09-2026": {
     sales: [
-      { cash: 100, swiggy: 200, zomato: 300, other: 400 },
-      { cash: 200, swiggy: 300, zomato: 400, other: 500 },
-      { cash: 300, swiggy: 400, zomato: 500, other: 600 },
-      { cash: 400, swiggy: 500, zomato: 600, other: 700 },
-      { cash: 500, swiggy: 600, zomato: 700, other: 800 },
-      { cash: 1, swiggy: 1, zomato: 1, other: 1 }
+      { cash: 100, upi: 0, swiggy: 200, zomato: 300, other: 400 },
+      { cash: 200, upi: 0, swiggy: 300, zomato: 400, other: 500 },
+      { cash: 300, upi: 0, swiggy: 400, zomato: 500, other: 600 },
+      { cash: 400, upi: 0, swiggy: 500, zomato: 600, other: 700 },
+      { cash: 500, upi: 0, swiggy: 600, zomato: 700, other: 800 },
+      { cash: 1, upi: 0, swiggy: 1, zomato: 1, other: 1 }
     ],
     expenses: [],
     wastage: []
@@ -620,7 +625,6 @@ function toast(msg){
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 
-// 100% Reliable Native Browser Download Trigger
 function triggerExcelDownload(wb, filename) {
   try {
     if (typeof XLSX === 'undefined') {
@@ -651,7 +655,9 @@ function canEditWaste(){ return state.currentRole !== 'remote'; }
 
 function hasAnyEntries(dObj){
   if(!dObj) return false;
-  var sHas = (dObj.sales||[]).some(function(r){ return (Number(r.cash)||0)>0 || (Number(r.swiggy)||0)>0 || (Number(r.zomato)||0)>0 || (Number(r.other)||0)>0; });
+  var sHas = (dObj.sales||[]).some(function(r){ 
+    return (Number(r.cash)||0)>0 || (Number(r.upi)||0)>0 || (Number(r.swiggy)||0)>0 || (Number(r.zomato)||0)>0 || (Number(r.other)||0)>0; 
+  });
   var eHas = (dObj.expenses||[]).some(function(e){ return (Number(e.amount)||0)>0; });
   return sHas || eHas;
 }
@@ -670,7 +676,6 @@ function loadStateLocally(){
     }
   } catch(e){}
 
-  // Seed baseline backups if not present locally
   Object.keys(BASELINE_BACKUPS).forEach(function(bKey){
     if(!state.daily[bKey] || !hasAnyEntries(state.daily[bKey])){
       state.daily[bKey] = JSON.parse(JSON.stringify(BASELINE_BACKUPS[bKey]));
@@ -680,7 +685,7 @@ function loadStateLocally(){
   var today = getTodayStr();
   if(!state.daily[today]){
     state.daily[today] = {
-      sales: [{ cash:'', swiggy:'', zomato:'', other:'' }],
+      sales: [{ cash:'', upi:'', swiggy:'', zomato:'', other:'' }],
       expenses: [{ category:'', amount:'', method:'Cash' }],
       wastage: []
     };
@@ -694,7 +699,6 @@ function saveState(){
     localStorage.setItem(PASSWORDS_STORAGE_KEY, JSON.stringify(ROLE_PASSWORDS));
   } catch(e){}
   
-  // NEVER push empty or un-synced data to cloud until initial sync has succeeded
   if(cloudSyncInitialized){
     clearTimeout(window._cloudSyncTimer);
     window._cloudSyncTimer = setTimeout(pushToCloud, 800);
@@ -728,7 +732,6 @@ function syncWithCloud(){
       if(data && data.value){
         var cloudObj = JSON.parse(data.value);
         if(cloudObj.daily){
-          // BIDIRECTIONAL DEEP MERGE: Never wipe out cloud or local dates
           Object.keys(cloudObj.daily).forEach(function(dKey){
             if(!state.daily[dKey] || hasAnyEntries(cloudObj.daily[dKey])){
               state.daily[dKey] = cloudObj.daily[dKey];
@@ -743,7 +746,6 @@ function syncWithCloud(){
         }
       }
 
-      // Re-verify baselines are present
       Object.keys(BASELINE_BACKUPS).forEach(function(bKey){
         if(!state.daily[bKey] || !hasAnyEntries(state.daily[bKey])){
           state.daily[bKey] = JSON.parse(JSON.stringify(BASELINE_BACKUPS[bKey]));
@@ -762,12 +764,12 @@ function syncWithCloud(){
 }
 
 function hasAnySaleVal(r){
-  return (Number(r.cash)||0) > 0 || (Number(r.swiggy)||0) > 0 || (Number(r.zomato)||0) > 0 || (Number(r.other)||0) > 0;
+  return (Number(r.cash)||0) > 0 || (Number(r.upi)||0) > 0 || (Number(r.swiggy)||0) > 0 || (Number(r.zomato)||0) > 0 || (Number(r.other)||0) > 0;
 }
 
 function addNewSaleLine(focusNew){
   var sheet = state.daily[state.activeDate];
-  sheet.sales.push({ cash:'', swiggy:'', zomato:'', other:'' });
+  sheet.sales.push({ cash:'', upi:'', swiggy:'', zomato:'', other:'' });
   saveState();
   renderDailyGrids();
   if(focusNew){
@@ -803,13 +805,13 @@ function addNewWasteLine(focusNew){
 function renderDailyGrids(){
   var sheet = state.daily[state.activeDate];
   if(!sheet){
-    sheet = { sales: [{ cash:'', swiggy:'', zomato:'', other:'' }], expenses: [{ category:'', amount:'', method:'Cash' }], wastage: [] };
+    sheet = { sales: [{ cash:'', upi:'', swiggy:'', zomato:'', other:'' }], expenses: [{ category:'', amount:'', method:'Cash' }], wastage: [] };
     state.daily[state.activeDate] = sheet;
   }
   var sEditable = canEditSales();
   var eEditable = canEditExpenses();
 
-  if(!sheet.sales || sheet.sales.length === 0){ sheet.sales = [{ cash:'', swiggy:'', zomato:'', other:'' }]; }
+  if(!sheet.sales || sheet.sales.length === 0){ sheet.sales = [{ cash:'', upi:'', swiggy:'', zomato:'', other:'' }]; }
   if(!sheet.expenses || sheet.expenses.length === 0){ sheet.expenses = [{ category:'', amount:'', method:'Cash' }]; }
   if(!sheet.wastage) sheet.wastage = [];
 
@@ -820,11 +822,12 @@ function renderDailyGrids(){
   sheet.sales.forEach(function(row, idx){
     var tr = document.createElement('tr');
     var curSl = hasAnySaleVal(row) ? sl++ : '';
-    var lineTot = (Number(row.cash)||0) + (Number(row.swiggy)||0) + (Number(row.zomato)||0) + (Number(row.other)||0);
+    var lineTot = (Number(row.cash)||0) + (Number(row.upi)||0) + (Number(row.swiggy)||0) + (Number(row.zomato)||0) + (Number(row.other)||0);
 
     tr.innerHTML =
       '<td class="sl-box">' + curSl + '</td>' +
       '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="cash" value="' + (row.cash||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
+      '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="upi" value="' + (row.upi||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
       '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="swiggy" value="' + (row.swiggy||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
       '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="zomato" value="' + (row.zomato||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
       '<td><input type="number" inputmode="decimal" enterkeyhint="next" class="cell-input" data-idx="' + idx + '" data-f="other" value="' + (row.other||'') + '" ' + (!sEditable?'disabled':'') + ' placeholder="0.00"></td>' +
@@ -984,20 +987,22 @@ function handleExpAutoJump(idx){
 function updateTotals(){
   var sheet = state.daily[state.activeDate];
   if(!sheet) return;
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wasteCostLoss = 0;
+  var c = 0, up = 0, sw = 0, z = 0, ot = 0, ex = 0, wasteCostLoss = 0;
 
   sheet.sales.forEach(function(r, i){
     var rc = Number(r.cash) || 0;
+    var rup = Number(r.upi) || 0;
     var rsw = Number(r.swiggy) || 0;
     var rz = Number(r.zomato) || 0;
     var rot = Number(r.other) || 0;
     c += rc;
+    up += rup;
     sw += rsw;
     z += rz;
     ot += rot;
 
     var lineTotEl = document.getElementById('saleLineTot_' + i);
-    if(lineTotEl) lineTotEl.textContent = (rc + rsw + rz + rot);
+    if(lineTotEl) lineTotEl.textContent = (rc + rup + rsw + rz + rot);
   });
 
   sheet.expenses.forEach(function(e){
@@ -1017,10 +1022,11 @@ function updateTotals(){
     if(retEl) retEl.textContent = formatMoney(lineRetail);
   });
 
-  var totalSales = c + sw + z + ot;
+  var totalSales = c + up + sw + z + ot;
   var netSales = totalSales - ex;
 
   document.getElementById('subCash').textContent = formatMoney(c);
+  document.getElementById('subUpi').textContent = formatMoney(up);
   document.getElementById('subSwiggy').textContent = formatMoney(sw);
   document.getElementById('subZomato').textContent = formatMoney(z);
   document.getElementById('subOther').textContent = formatMoney(ot);
@@ -1063,7 +1069,7 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
       (state.daily[k].sales||[]).forEach(function(r){
         var c = Number(r.cash)||0;
         dayCashSales += c;
-        daySales += (c + (Number(r.swiggy)||0) + (Number(r.zomato)||0) + (Number(r.other)||0));
+        daySales += (c + (Number(r.upi)||0) + (Number(r.swiggy)||0) + (Number(r.zomato)||0) + (Number(r.other)||0));
       });
       (state.daily[k].expenses||[]).forEach(function(e){
         dayExp += Number(e.amount)||0;
@@ -1096,19 +1102,23 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
   document.getElementById('reconcileActualCash').textContent = Math.round(actualCash);
 }
 
-// 1. EXPORT ACTIVE DAY EXCEL (3 Sheets: Daily_Sales, EXPENSES, AVG_SALES)
+// 1. EXPORT ACTIVE DAY EXCEL (3 Sheets: Daily_Sales, EXPENSES, AVG_SALES with UPI)
 function exportActiveDayToExcel(){
   try {
     var dKey = state.activeDate;
     var sheetData = state.daily[dKey] || { sales:[], expenses:[], wastage:[] };
 
-    var c = 0, sw = 0, z = 0, ot = 0, ex = 0;
+    var c = 0, up = 0, sw = 0, z = 0, ot = 0, ex = 0;
     (sheetData.sales || []).forEach(function(r){
-      c += Number(r.cash)||0; sw += Number(r.swiggy)||0; z += Number(r.zomato)||0; ot += Number(r.other)||0;
+      c += Number(r.cash)||0; 
+      up += Number(r.upi)||0;
+      sw += Number(r.swiggy)||0; 
+      z += Number(r.zomato)||0; 
+      ot += Number(r.other)||0;
     });
     (sheetData.expenses || []).forEach(function(e){ ex += Number(e.amount)||0; });
 
-    var todayTotSales = c + sw + z + ot;
+    var todayTotSales = c + up + sw + z + ot;
     var parts = dKey.split('-');
     var curMonthSuffix = parts[1] + '-' + parts[2];
     var activeDay = parseInt(parts[0], 10);
@@ -1121,7 +1131,7 @@ function exportActiveDayToExcel(){
         (state.daily[k].sales||[]).forEach(function(r){
           var sc = Number(r.cash)||0;
           dayC += sc;
-          dayS += (sc + (Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0));
+          dayS += (sc + (Number(r.upi)||0) + (Number(r.swiggy)||0) + (Number(r.zomato)||0) + (Number(r.other)||0));
         });
         (state.daily[k].expenses||[]).forEach(function(e){ dayE += Number(e.amount)||0; });
         if(dayNum <= activeDay){ 
@@ -1142,7 +1152,7 @@ function exportActiveDayToExcel(){
       ["Nashik"],
       ["7th Heaven Nashik,Indiranagar"],
       [dKey],
-      ["CASH", "SWIGGY", "ZOMATO", "UPI", "Other", "Sales", "", "EXPENSES", "", "", "CASH DETAILS", ""]
+      ["CASH", "UPI", "SWIGGY", "ZOMATO", "Other", "Sales", "", "EXPENSES", "", "", "CASH DETAILS", ""]
     ];
 
     var sLines = sheetData.sales || [];
@@ -1166,13 +1176,13 @@ function exportActiveDayToExcel(){
       var sl = sLines[i] || {};
       var el = eLines[i] || {};
       var cl = cashLines[i] || ["", ""];
-      var lineTot = (Number(sl.cash)||0) + (Number(sl.swiggy)||0) + (Number(sl.zomato)||0) + (Number(sl.other)||0);
+      var lineTot = (Number(sl.cash)||0) + (Number(sl.upi)||0) + (Number(sl.swiggy)||0) + (Number(sl.zomato)||0) + (Number(sl.other)||0);
 
       p1.push([
         sl.cash !== undefined && sl.cash !== "" ? Number(sl.cash) : "",
+        sl.upi !== undefined && sl.upi !== "" ? Number(sl.upi) : "",
         sl.swiggy !== undefined && sl.swiggy !== "" ? Number(sl.swiggy) : "",
         sl.zomato !== undefined && sl.zomato !== "" ? Number(sl.zomato) : "",
-        "",
         sl.other !== undefined && sl.other !== "" ? Number(sl.other) : "",
         lineTot > 0 ? lineTot : "",
         "",
@@ -1184,7 +1194,7 @@ function exportActiveDayToExcel(){
       ]);
     }
 
-    p1.push([c, sw, z, 0, ot, todayTotSales, "", "Total Expenses", "", ex, "", ""]);
+    p1.push([c, up, sw, z, ot, todayTotSales, "", "Total Expenses", "", ex, "", ""]);
     var ws1 = XLSX.utils.aoa_to_sheet(p1);
     XLSX.utils.book_append_sheet(wb, ws1, "Daily_Sales");
 
@@ -1229,7 +1239,7 @@ function exportActiveDayToExcel(){
   }
 }
 
-// 2. EXPORT MONTHLY REPORT EXCEL (4 Sheets)
+// 2. EXPORT MONTHLY REPORT EXCEL (4 Sheets: Monthly sales, EXPENSES, AVG_SALES, Profit share)
 function exportMonthlyReportToExcel(){
   try {
     var ym = document.getElementById('monthlyReportMonth').value;
@@ -1242,12 +1252,12 @@ function exportMonthlyReportToExcel(){
     
     var wb = XLSX.utils.book_new();
 
-    // Sheet 1: Monthly sales
+    // Sheet 1: Monthly sales (Includes UPI column)
     var p1 = [
       ["", "Nashik"],
       ["", "7th Heaven Nashik,Indiranagar"],
       ["", "Month : " + ym],
-      ["Date", "CASH", "SWIGGY", "ZOMATO", "UPI", "Other", "Sales"]
+      ["Date", "CASH", "UPI", "SWIGGY", "ZOMATO", "Other", "Sales"]
     ];
 
     // Sheet 2: EXPENSES
@@ -1255,7 +1265,7 @@ function exportMonthlyReportToExcel(){
     var p2 = [expHeaders];
 
     var grandSales = 0, grandExp = 0;
-    var grandCash = 0, grandSwiggy = 0, grandZomato = 0, grandOther = 0;
+    var grandCash = 0, grandUpi = 0, grandSwiggy = 0, grandZomato = 0, grandOther = 0;
     var operatingDays = 0;
 
     var sortedDates = Object.keys(state.daily).filter(function(k){
@@ -1266,10 +1276,11 @@ function exportMonthlyReportToExcel(){
 
     sortedDates.forEach(function(dateKey){
       var d = state.daily[dateKey];
-      var c = 0, sw = 0, z = 0, ot = 0, dayExp = 0;
+      var c = 0, up = 0, sw = 0, z = 0, ot = 0, dayExp = 0;
 
       (d.sales || []).forEach(function(r){
         c += Number(r.cash) || 0;
+        up += Number(r.upi) || 0;
         sw += Number(r.swiggy) || 0;
         z += Number(r.zomato) || 0;
         ot += Number(r.other) || 0;
@@ -1294,21 +1305,22 @@ function exportMonthlyReportToExcel(){
       });
       dayExpRow[13] = dayExp;
 
-      var dayTot = c + sw + z + ot;
+      var dayTot = c + up + sw + z + ot;
       grandSales += dayTot;
       grandExp += dayExp;
       grandCash += c;
+      grandUpi += up;
       grandSwiggy += sw;
       grandZomato += z;
       grandOther += ot;
 
       if (dayTot > 0 || dayExp > 0) operatingDays++;
 
-      p1.push([dateKey, c, sw, z, 0, ot, dayTot]);
+      p1.push([dateKey, c, up, sw, z, ot, dayTot]);
       p2.push(dayExpRow);
     });
 
-    p1.push(["TOTAL", grandCash, grandSwiggy, grandZomato, 0, grandOther, grandSales]);
+    p1.push(["TOTAL", grandCash, grandUpi, grandSwiggy, grandZomato, grandOther, grandSales]);
     p2.push(["TOTAL", "", "", "", "", "", "", "", "", "", "", "", "", grandExp]);
 
     var ws1 = XLSX.utils.aoa_to_sheet(p1);
@@ -1329,14 +1341,15 @@ function exportMonthlyReportToExcel(){
     var ws3 = XLSX.utils.aoa_to_sheet(p3);
     XLSX.utils.book_append_sheet(wb, ws3, "AVG_SALES");
 
-    // Sheet 4: Profit share
+    // Sheet 4: Profit share (5 Partners)
     var netProfit = grandSales - grandExp;
     var p4 = [
       ["Partner Name", "Agreed %", "Net Profit Share (INR)"],
-      ["Prakash Shetty", "43.0%", netProfit * 0.43],
-      ["Preveen Shetty", "28.0%", netProfit * 0.28],
-      ["Preetham Shetty", "14.5%", netProfit * 0.145],
-      ["Umesh Shetty", "14.5%", netProfit * 0.145],
+      ["Prakash Shetty", "28.57%", netProfit * 0.2857],
+      ["Praveen Shetty", "28.57%", netProfit * 0.2857],
+      ["Preetham Shetty", "14.29%", netProfit * 0.1429],
+      ["Umesh Shetty", "14.29%", netProfit * 0.1429],
+      ["Goutham", "14.29%", netProfit * 0.1429],
       ["TOTAL DISTRIBUTED", "100.0%", netProfit]
     ];
     var ws4 = XLSX.utils.aoa_to_sheet(p4);
@@ -1348,7 +1361,7 @@ function exportMonthlyReportToExcel(){
   }
 }
 
-// 3. GENERATE PROFIT SHARING TABLE IN ADMIN PANEL
+// 3. GENERATE PROFIT SHARING TABLE IN ADMIN PANEL (5 PARTNERS)
 function renderProfitSharingPanel(){
   var tbody = document.getElementById('profitTableBody');
   if(!tbody) return;
@@ -1364,7 +1377,7 @@ function renderProfitSharingPanel(){
       }
       var d = state.daily[dKey];
       (d.sales || []).forEach(function(r){
-        monthMap[mKey].sales += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0);
+        monthMap[mKey].sales += (Number(r.cash)||0) + (Number(r.upi)||0) + (Number(r.swiggy)||0) + (Number(r.zomato)||0) + (Number(r.other)||0);
       });
       (d.expenses || []).forEach(function(e){
         monthMap[mKey].exp += Number(e.amount)||0;
@@ -1374,7 +1387,7 @@ function renderProfitSharingPanel(){
 
   var sortedMonths = Object.keys(monthMap).sort().reverse();
   if(sortedMonths.length === 0){
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:12px;color:var(--ink-soft);">No sales or expense data available to calculate profit share.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:12px;color:var(--ink-soft);">No sales or expense data available to calculate profit share.</td></tr>';
     return;
   }
 
@@ -1389,10 +1402,11 @@ function renderProfitSharingPanel(){
       '<td>' + formatMoney(s) + '</td>' +
       '<td style="color:var(--brick);">' + formatMoney(e) + '</td>' +
       '<td style="font-weight:700;color:' + (net >= 0 ? 'var(--net-green)' : 'var(--brick)') + ';">' + formatMoney(net) + '</td>' +
-      '<td>' + formatMoney(net * 0.43) + '</td>' +
-      '<td>' + formatMoney(net * 0.28) + '</td>' +
-      '<td>' + formatMoney(net * 0.145) + '</td>' +
-      '<td>' + formatMoney(net * 0.145) + '</td>';
+      '<td>' + formatMoney(net * 0.2857) + '</td>' +
+      '<td>' + formatMoney(net * 0.2857) + '</td>' +
+      '<td>' + formatMoney(net * 0.1429) + '</td>' +
+      '<td>' + formatMoney(net * 0.1429) + '</td>' +
+      '<td>' + formatMoney(net * 0.1429) + '</td>';
     tbody.appendChild(tr);
   });
 }
@@ -1607,9 +1621,10 @@ function loadHistoryDateReport(){
     return;
   }
 
-  var c = 0, sw = 0, z = 0, ot = 0, ex = 0, wL = 0;
+  var c = 0, up = 0, sw = 0, z = 0, ot = 0, ex = 0, wL = 0;
   (dData.sales||[]).forEach(function(r){ 
     c += Number(r.cash)||0; 
+    up += Number(r.upi)||0;
     sw += Number(r.swiggy)||0; 
     z += Number(r.zomato)||0; 
     ot += Number(r.other)||0; 
@@ -1618,7 +1633,7 @@ function loadHistoryDateReport(){
     ex += Number(e.amount)||0; 
   });
   (dData.wastage||[]).forEach(function(w){ wL += ((Number(w.qty)||0) * (Number(w.sp)||0)) * 0.40; });
-  var totSales = c + sw + z + ot;
+  var totSales = c + up + sw + z + ot;
   var netSales = totSales - ex;
 
   var html = '<div class="report-box">' +
@@ -1629,6 +1644,7 @@ function loadHistoryDateReport(){
     '<div><strong>Total Daily Sales:</strong> ' + formatMoney(totSales) + '</div>' +
     '<div><strong>Total Daily Expenses:</strong> ' + formatMoney(ex) + '</div>' +
     '<div><strong>Cash Collected:</strong> ' + formatMoney(c) + '</div>' +
+    '<div><strong>UPI Collected:</strong> ' + formatMoney(up) + '</div>' +
     '<div style="font-size:13.5px;font-weight:700;color:' + (netSales>=0?'var(--net-green)':'var(--brick)') + ';margin:4px 0;">Net Sales: ' + formatMoney(netSales) + '</div>' +
     '<div><strong>Spoilage Loss (40%):</strong> ' + formatMoney(wL) + '</div></div>';
   out.innerHTML = html;
@@ -1646,7 +1662,9 @@ function generateMonthlyReport(){
     if(dKey.endsWith(mFilter)){
       days++;
       var d = state.daily[dKey];
-      (d.sales||[]).forEach(function(r){ totS += (Number(r.cash)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0); });
+      (d.sales||[]).forEach(function(r){ 
+        totS += (Number(r.cash)||0)+(Number(r.upi)||0)+(Number(r.swiggy)||0)+(Number(r.zomato)||0)+(Number(r.other)||0); 
+      });
       (d.expenses||[]).forEach(function(e){ totE += Number(e.amount)||0; });
       (d.wastage||[]).forEach(function(w){ totW += ((Number(w.qty)||0) * (Number(w.sp)||0)) * 0.40; });
     }
