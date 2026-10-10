@@ -537,9 +537,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v29";
+var STORAGE_KEY = "7th_heaven_unified_tracker_v30";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v29";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v30";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -625,6 +625,7 @@ function toast(msg){
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 
+// 100% Reliable Native Browser Download Trigger
 function triggerExcelDownload(wb, filename) {
   try {
     if (typeof XLSX === 'undefined') {
@@ -1252,7 +1253,7 @@ function exportMonthlyReportToExcel(){
     
     var wb = XLSX.utils.book_new();
 
-    // Sheet 1: Monthly sales (Includes UPI column)
+    // Sheet 1: Monthly sales
     var p1 = [
       ["", "Nashik"],
       ["", "7th Heaven Nashik,Indiranagar"],
