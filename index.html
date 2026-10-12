@@ -117,6 +117,7 @@
   .cell-input { width: 100%; border: none; background: transparent; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; text-align: right; padding: 4px 2px; outline: none; }
   .cell-input.text-left { text-align: left; font-family: 'Segoe UI', 'IBM Plex Sans', sans-serif; font-size: 12px; }
   .cell-input:focus:not([disabled]) { background: #FFFDF0; }
+  .cell-input[disabled] { color: #555; background: transparent; cursor: default; }
   .row-del-btn { background: none; border: none; color: #BBB; cursor: pointer; font-size: 14px; line-height: 1; }
   .row-del-btn:hover { color: var(--brick); }
 
@@ -196,7 +197,7 @@
         </div>
         <div class="role-box" onclick="promptRolePass('store')">
           <h3>🏪 Store Partner</h3>
-          <p>Counter access: Record daily sales and expenses, manage counter cash float, log spoilage, view yesterday only.</p>
+          <p>Counter access: Record today's sales and expenses. Yesterday's transactions are strictly view-only to prevent tampering.</p>
         </div>
         <div class="role-box" onclick="promptRolePass('remote')">
           <h3>👁️ Remote Partner</h3>
@@ -628,6 +629,25 @@ function toast(msg){
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 }
 
+// STRICT ROLE + DATE EDIT PERMISSIONS: Store partner can ONLY edit today's records
+function canEditSales(){
+  if (state.currentRole === 'admin') return true;
+  if (state.currentRole === 'store') return state.activeDate === getTodayStr();
+  return false;
+}
+
+function canEditExpenses(){
+  if (state.currentRole === 'admin') return true;
+  if (state.currentRole === 'store') return state.activeDate === getTodayStr();
+  return false;
+}
+
+function canEditWaste(){
+  if (state.currentRole === 'admin') return true;
+  if (state.currentRole === 'store') return state.activeDate === getTodayStr();
+  return false;
+}
+
 // 100% Reliable Native Browser Download Trigger
 function triggerExcelDownload(wb, filename) {
   try {
@@ -652,10 +672,6 @@ function triggerExcelDownload(wb, filename) {
     alert('Excel Export Error: ' + err.message);
   }
 }
-
-function canEditSales(){ return state.currentRole !== 'remote'; }
-function canEditExpenses(){ return state.currentRole !== 'remote'; }
-function canEditWaste(){ return state.currentRole !== 'remote'; }
 
 function hasAnyEntries(dObj){
   if(!dObj) return false;
@@ -772,6 +788,7 @@ function hasAnySaleVal(r){
 }
 
 function addNewSaleLine(focusNew){
+  if(!canEditSales()) return;
   var sheet = state.daily[state.activeDate];
   sheet.sales.push({ cash:'', upi:'', swiggy:'', zomato:'', other:'' });
   saveState();
@@ -783,6 +800,7 @@ function addNewSaleLine(focusNew){
 }
 
 function addNewExpLine(focusNew){
+  if(!canEditExpenses()) return;
   var sheet = state.daily[state.activeDate];
   sheet.expenses.push({ category:'', amount:'', method:'Cash' });
   saveState();
@@ -794,6 +812,7 @@ function addNewExpLine(focusNew){
 }
 
 function addNewWasteLine(focusNew){
+  if(!canEditWaste()) return;
   var sheet = state.daily[state.activeDate];
   if(!sheet.wastage) sheet.wastage = [];
   sheet.wastage.push({ item:'', qty: 1, sp: '', reason: 'Expired Shelf Life' });
@@ -806,14 +825,14 @@ function addNewWasteLine(focusNew){
   }
 }
 
-// Dedicated Arrow Key & Enter Navigation for Sales Grid (NO NUMBER VALUE ALTERATIONS)
+// Dedicated Arrow Key & Enter Navigation for Sales Grid
 function handleSaleKeyNavigation(e, idx, currentField){
   var sheet = state.daily[state.activeDate];
   var colIdx = SALES_FIELDS.indexOf(currentField);
 
   if (e.key === 'ArrowDown') {
     e.preventDefault();
-    if (idx === sheet.sales.length - 1) {
+    if (idx === sheet.sales.length - 1 && canEditSales()) {
       addNewSaleLine(false);
     }
     var target = document.querySelector('#salesTbody input[data-idx="' + (idx + 1) + '"][data-f="' + currentField + '"]');
@@ -825,7 +844,6 @@ function handleSaleKeyNavigation(e, idx, currentField){
       if (target) { target.focus(); target.select(); }
     }
   } else if (e.key === 'ArrowRight') {
-    // If cursor at end of input or empty, shift right
     if (e.target.selectionEnd === e.target.value.length || e.target.value === '') {
       e.preventDefault();
       if (colIdx < SALES_FIELDS.length - 1) {
@@ -838,7 +856,6 @@ function handleSaleKeyNavigation(e, idx, currentField){
       }
     }
   } else if (e.key === 'ArrowLeft') {
-    // If cursor at start of input or empty, shift left
     if (e.target.selectionStart === 0 || e.target.value === '') {
       e.preventDefault();
       if (colIdx > 0) {
@@ -852,7 +869,7 @@ function handleSaleKeyNavigation(e, idx, currentField){
     }
   } else if (e.key === 'Enter') {
     e.preventDefault();
-    if (idx === sheet.sales.length - 1) {
+    if (idx === sheet.sales.length - 1 && canEditSales()) {
       addNewSaleLine(false);
     }
     var nextInp = document.querySelector('#salesTbody input[data-idx="' + (idx + 1) + '"][data-f="' + currentField + '"]');
@@ -866,7 +883,7 @@ function handleExpKeyNavigation(e, idx, field){
 
   if (e.key === 'ArrowDown') {
     e.preventDefault();
-    if (idx === sheet.expenses.length - 1) {
+    if (idx === sheet.expenses.length - 1 && canEditExpenses()) {
       addNewExpLine(false);
     }
     var target = document.querySelector('#expTbody input[data-exp-idx="' + (idx + 1) + '"][data-f="' + field + '"]');
@@ -895,7 +912,7 @@ function handleExpKeyNavigation(e, idx, field){
       var amtInp = document.querySelector('#expTbody input[data-exp-idx="' + idx + '"][data-f="amount"]');
       if (amtInp) { amtInp.focus(); amtInp.select(); }
     } else {
-      if (idx === sheet.expenses.length - 1) {
+      if (idx === sheet.expenses.length - 1 && canEditExpenses()) {
         addNewExpLine(false);
       }
       var nextInp = document.querySelector('#expTbody input[data-exp-idx="' + (idx + 1) + '"][data-f="category"]');
@@ -936,7 +953,6 @@ function renderDailyGrids(){
       '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:6px;font-weight:600;" id="saleLineTot_' + idx + '">' + lineTot + '</td>';
 
     tr.querySelectorAll('input').forEach(function(inp){
-      // Disable mousewheel altering number values
       inp.addEventListener('wheel', function(e){ e.preventDefault(); }, { passive: false });
 
       inp.oninput = function(e){
@@ -950,7 +966,7 @@ function renderDailyGrids(){
       };
 
       inp.onblur = function(){
-        if(idx === sheet.sales.length - 1 && hasAnySaleVal(row)){
+        if(sEditable && idx === sheet.sales.length - 1 && hasAnySaleVal(row)){
           addNewSaleLine(false);
         }
       };
@@ -986,7 +1002,7 @@ function renderDailyGrids(){
     };
     amtInp.onkeydown = function(e){ handleExpKeyNavigation(e, idx, 'amount'); };
     amtInp.onblur = function(){
-      if(idx === sheet.expenses.length - 1 && (Number(row.amount)||0) > 0){
+      if(eEditable && idx === sheet.expenses.length - 1 && (Number(row.amount)||0) > 0){
         addNewExpLine(false);
       }
     };
@@ -1043,12 +1059,9 @@ function renderWasteGrid(){
     qInp.addEventListener('wheel', function(e){ e.preventDefault(); }, { passive: false });
     spInp.addEventListener('wheel', function(e){ e.preventDefault(); }, { passive: false });
 
-    // Arrow navigation on wastage numbers
     [qInp, spInp].forEach(function(numInp){
       numInp.addEventListener('keydown', function(e){
-        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-          e.preventDefault();
-        }
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault();
       });
     });
 
@@ -1887,7 +1900,10 @@ function renderDailyTabs(){
     var b = document.createElement('button');
     b.className = 'tab-item' + (dKey === state.activeDate ? ' active' : '');
     b.textContent = dKey === todayStr ? (dKey + ' (Today)') : (dKey === yestStr ? (dKey + ' (Yesterday)') : dKey);
-    b.onclick = function(){ state.activeDate = dKey; renderAll(); };
+    b.onclick = function(){ 
+      state.activeDate = dKey; 
+      renderAll(); 
+    };
     cont.appendChild(b);
   });
 }
