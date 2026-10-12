@@ -120,6 +120,7 @@
   .row-del-btn { background: none; border: none; color: #BBB; cursor: pointer; font-size: 14px; line-height: 1; }
   .row-del-btn:hover { color: var(--brick); }
 
+  /* Disable spin buttons */
   input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   input[type=number] { -moz-appearance: textfield; }
 
@@ -553,6 +554,8 @@ var PROFIT_PARTNERS = [
   { name: 'Goutham', pct: 14.29 }
 ];
 
+var SALES_FIELDS = ['cash', 'upi', 'swiggy', 'zomato', 'other'];
+
 var cloudSyncInitialized = false;
 
 var state = {
@@ -562,7 +565,7 @@ var state = {
   invoices: []
 };
 
-// Guarantee baseline history for 22-09 and 24-09
+// Guarantee baseline history
 var BASELINE_BACKUPS = {
   "22-09-2026": {
     sales: [
@@ -803,6 +806,104 @@ function addNewWasteLine(focusNew){
   }
 }
 
+// Dedicated Arrow Key & Enter Navigation for Sales Grid (NO NUMBER VALUE ALTERATIONS)
+function handleSaleKeyNavigation(e, idx, currentField){
+  var sheet = state.daily[state.activeDate];
+  var colIdx = SALES_FIELDS.indexOf(currentField);
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (idx === sheet.sales.length - 1) {
+      addNewSaleLine(false);
+    }
+    var target = document.querySelector('#salesTbody input[data-idx="' + (idx + 1) + '"][data-f="' + currentField + '"]');
+    if (target) { target.focus(); target.select(); }
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (idx > 0) {
+      var target = document.querySelector('#salesTbody input[data-idx="' + (idx - 1) + '"][data-f="' + currentField + '"]');
+      if (target) { target.focus(); target.select(); }
+    }
+  } else if (e.key === 'ArrowRight') {
+    // If cursor at end of input or empty, shift right
+    if (e.target.selectionEnd === e.target.value.length || e.target.value === '') {
+      e.preventDefault();
+      if (colIdx < SALES_FIELDS.length - 1) {
+        var nextField = SALES_FIELDS[colIdx + 1];
+        var target = document.querySelector('#salesTbody input[data-idx="' + idx + '"][data-f="' + nextField + '"]');
+        if (target) { target.focus(); target.select(); }
+      } else if (idx < sheet.sales.length - 1) {
+        var target = document.querySelector('#salesTbody input[data-idx="' + (idx + 1) + '"][data-f="cash"]');
+        if (target) { target.focus(); target.select(); }
+      }
+    }
+  } else if (e.key === 'ArrowLeft') {
+    // If cursor at start of input or empty, shift left
+    if (e.target.selectionStart === 0 || e.target.value === '') {
+      e.preventDefault();
+      if (colIdx > 0) {
+        var prevField = SALES_FIELDS[colIdx - 1];
+        var target = document.querySelector('#salesTbody input[data-idx="' + idx + '"][data-f="' + prevField + '"]');
+        if (target) { target.focus(); target.select(); }
+      } else if (idx > 0) {
+        var target = document.querySelector('#salesTbody input[data-idx="' + (idx - 1) + '"][data-f="other"]');
+        if (target) { target.focus(); target.select(); }
+      }
+    }
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (idx === sheet.sales.length - 1) {
+      addNewSaleLine(false);
+    }
+    var nextInp = document.querySelector('#salesTbody input[data-idx="' + (idx + 1) + '"][data-f="' + currentField + '"]');
+    if (nextInp) { nextInp.focus(); nextInp.select(); }
+  }
+}
+
+// Dedicated Arrow Key & Enter Navigation for Expenses Grid
+function handleExpKeyNavigation(e, idx, field){
+  var sheet = state.daily[state.activeDate];
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (idx === sheet.expenses.length - 1) {
+      addNewExpLine(false);
+    }
+    var target = document.querySelector('#expTbody input[data-exp-idx="' + (idx + 1) + '"][data-f="' + field + '"]');
+    if (target) { target.focus(); target.select(); }
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (idx > 0) {
+      var target = document.querySelector('#expTbody input[data-exp-idx="' + (idx - 1) + '"][data-f="' + field + '"]');
+      if (target) { target.focus(); target.select(); }
+    }
+  } else if (e.key === 'ArrowRight') {
+    if (field === 'category' && (e.target.selectionEnd === e.target.value.length || e.target.value === '')) {
+      e.preventDefault();
+      var target = document.querySelector('#expTbody input[data-exp-idx="' + idx + '"][data-f="amount"]');
+      if (target) { target.focus(); target.select(); }
+    }
+  } else if (e.key === 'ArrowLeft') {
+    if (field === 'amount' && (e.target.selectionStart === 0 || e.target.value === '')) {
+      e.preventDefault();
+      var target = document.querySelector('#expTbody input[data-exp-idx="' + idx + '"][data-f="category"]');
+      if (target) { target.focus(); target.select(); }
+    }
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (field === 'category') {
+      var amtInp = document.querySelector('#expTbody input[data-exp-idx="' + idx + '"][data-f="amount"]');
+      if (amtInp) { amtInp.focus(); amtInp.select(); }
+    } else {
+      if (idx === sheet.expenses.length - 1) {
+        addNewExpLine(false);
+      }
+      var nextInp = document.querySelector('#expTbody input[data-exp-idx="' + (idx + 1) + '"][data-f="category"]');
+      if (nextInp) { nextInp.focus(); nextInp.select(); }
+    }
+  }
+}
+
 function renderDailyGrids(){
   var sheet = state.daily[state.activeDate];
   if(!sheet){
@@ -835,17 +936,19 @@ function renderDailyGrids(){
       '<td style="text-align:right;font-family:\'IBM Plex Mono\',monospace;padding-right:6px;font-weight:600;" id="saleLineTot_' + idx + '">' + lineTot + '</td>';
 
     tr.querySelectorAll('input').forEach(function(inp){
+      // Disable mousewheel altering number values
+      inp.addEventListener('wheel', function(e){ e.preventDefault(); }, { passive: false });
+
       inp.oninput = function(e){
         row[e.target.getAttribute('data-f')] = e.target.value;
         saveState();
         updateTotals();
       };
+      
       inp.onkeydown = function(e){
-        if(e.key === 'Enter'){
-          e.preventDefault();
-          handleSaleAutoJump(idx, inp.getAttribute('data-f'));
-        }
+        handleSaleKeyNavigation(e, idx, inp.getAttribute('data-f'));
       };
+
       inp.onblur = function(){
         if(idx === sheet.sales.length - 1 && hasAnySaleVal(row)){
           addNewSaleLine(false);
@@ -871,25 +974,17 @@ function renderDailyGrids(){
     var catInp = tr.querySelector('[data-f="category"]');
     var amtInp = tr.querySelector('[data-f="amount"]');
 
+    amtInp.addEventListener('wheel', function(e){ e.preventDefault(); }, { passive: false });
+
     catInp.oninput = function(e){ row.category = e.target.value; saveState(); };
-    catInp.onkeydown = function(e){
-      if(e.key === 'Enter'){
-        e.preventDefault();
-        amtInp.focus();
-      }
-    };
+    catInp.onkeydown = function(e){ handleExpKeyNavigation(e, idx, 'category'); };
 
     amtInp.oninput = function(e){
       row.amount = e.target.value;
       saveState();
       updateTotals();
     };
-    amtInp.onkeydown = function(e){
-      if(e.key === 'Enter'){
-        e.preventDefault();
-        handleExpAutoJump(idx);
-      }
-    };
+    amtInp.onkeydown = function(e){ handleExpKeyNavigation(e, idx, 'amount'); };
     amtInp.onblur = function(){
       if(idx === sheet.expenses.length - 1 && (Number(row.amount)||0) > 0){
         addNewExpLine(false);
@@ -945,6 +1040,18 @@ function renderWasteGrid(){
     var qInp = tr.querySelector('[data-f="qty"]');
     var spInp = tr.querySelector('[data-f="sp"]');
 
+    qInp.addEventListener('wheel', function(e){ e.preventDefault(); }, { passive: false });
+    spInp.addEventListener('wheel', function(e){ e.preventDefault(); }, { passive: false });
+
+    // Arrow navigation on wastage numbers
+    [qInp, spInp].forEach(function(numInp){
+      numInp.addEventListener('keydown', function(e){
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          e.preventDefault();
+        }
+      });
+    });
+
     itInp.oninput = function(e){ row.item = e.target.value; saveState(); };
     qInp.oninput = function(e){ row.qty = e.target.value; saveState(); updateTotals(); };
     spInp.oninput = function(e){ row.sp = e.target.value; saveState(); updateTotals(); };
@@ -965,24 +1072,6 @@ function renderWasteGrid(){
   });
 
   document.getElementById('wasteMobileStrip').style.display = wEditable ? 'flex' : 'none';
-}
-
-function handleSaleAutoJump(idx, currentField){
-  var sheet = state.daily[state.activeDate];
-  if(idx === sheet.sales.length - 1){
-    addNewSaleLine(false);
-  }
-  var nextInp = document.querySelector('#salesTbody input[data-idx="' + (idx + 1) + '"][data-f="' + currentField + '"]');
-  if(nextInp) nextInp.focus();
-}
-
-function handleExpAutoJump(idx){
-  var sheet = state.daily[state.activeDate];
-  if(idx === sheet.expenses.length - 1){
-    addNewExpLine(false);
-  }
-  var nextInp = document.querySelector('#expTbody input[data-exp-idx="' + (idx + 1) + '"][data-f="category"]');
-  if(nextInp) nextInp.focus();
 }
 
 function updateTotals(){
@@ -1103,7 +1192,7 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
   document.getElementById('reconcileActualCash').textContent = Math.round(actualCash);
 }
 
-// 1. EXPORT ACTIVE DAY EXCEL (3 Sheets: Daily_Sales, EXPENSES, AVG_SALES with UPI)
+// 1. EXPORT ACTIVE DAY EXCEL
 function exportActiveDayToExcel(){
   try {
     var dKey = state.activeDate;
@@ -1240,7 +1329,7 @@ function exportActiveDayToExcel(){
   }
 }
 
-// 2. EXPORT MONTHLY REPORT EXCEL (4 Sheets: Monthly sales, EXPENSES, AVG_SALES, Profit share)
+// 2. EXPORT MONTHLY REPORT EXCEL
 function exportMonthlyReportToExcel(){
   try {
     var ym = document.getElementById('monthlyReportMonth').value;
@@ -1437,6 +1526,14 @@ function renderInvoiceRows(){
     var descInp = tr.querySelector('.inv-desc');
     var qtyInp = tr.querySelector('.inv-qty');
     var rateInp = tr.querySelector('.inv-rate');
+
+    qtyInp.addEventListener('wheel', function(e){ e.preventDefault(); }, { passive: false });
+    rateInp.addEventListener('wheel', function(e){ e.preventDefault(); }, { passive: false });
+    [qtyInp, rateInp].forEach(function(inp){
+      inp.addEventListener('keydown', function(e){
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault();
+      });
+    });
 
     descInp.oninput = function(e){ item.desc = e.target.value; };
     qtyInp.oninput = function(e){ item.qty = e.target.value; recalculateInvoiceTotal(); };
