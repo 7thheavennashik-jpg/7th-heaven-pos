@@ -121,7 +121,6 @@
   .row-del-btn { background: none; border: none; color: #BBB; cursor: pointer; font-size: 14px; line-height: 1; }
   .row-del-btn:hover { color: var(--brick); }
 
-  /* Disable spin buttons */
   input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   input[type=number] { -moz-appearance: textfield; }
 
@@ -539,9 +538,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_v30";
+var STORAGE_KEY = "7th_heaven_unified_tracker_live";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_v30";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_live";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -566,38 +565,8 @@ var state = {
   invoices: []
 };
 
-// Guarantee baseline history
-var BASELINE_BACKUPS = {
-  "22-09-2026": {
-    sales: [
-      { cash: 100, upi: 0, swiggy: 10, zomato: 100, other: 50 },
-      { cash: 200, upi: 0, swiggy: 25, zomato: 100, other: 50 },
-      { cash: 300, upi: 0, swiggy: 30, zomato: 0, other: 75 },
-      { cash: 400, upi: 0, swiggy: 15.5, zomato: 0, other: 100 },
-      { cash: 500, upi: 0, swiggy: 228, zomato: 0, other: 0 },
-      { cash: 550, upi: 0, swiggy: 3578, zomato: 0, other: 0 },
-      { cash: 1500, upi: 0, swiggy: 215, zomato: 0, other: 0 },
-      { cash: 19000, upi: 0, swiggy: 0, zomato: 0, other: 0 }
-    ],
-    expenses: [
-      { category: "Plates", amount: 250, method: "Cash" },
-      { category: "Flower", amount: 100, method: "Cash" }
-    ],
-    wastage: []
-  },
-  "24-09-2026": {
-    sales: [
-      { cash: 100, upi: 0, swiggy: 200, zomato: 300, other: 400 },
-      { cash: 200, upi: 0, swiggy: 300, zomato: 400, other: 500 },
-      { cash: 300, upi: 0, swiggy: 400, zomato: 500, other: 600 },
-      { cash: 400, upi: 0, swiggy: 500, zomato: 600, other: 700 },
-      { cash: 500, upi: 0, swiggy: 600, zomato: 700, other: 800 },
-      { cash: 1, upi: 0, swiggy: 1, zomato: 1, other: 1 }
-    ],
-    expenses: [],
-    wastage: []
-  }
-};
+// 100% CLEAN: Zero dummy/test records hardcoded
+var BASELINE_BACKUPS = {};
 
 var currentInvoiceItems = [];
 
@@ -696,12 +665,6 @@ function loadStateLocally(){
     }
   } catch(e){}
 
-  Object.keys(BASELINE_BACKUPS).forEach(function(bKey){
-    if(!state.daily[bKey] || !hasAnyEntries(state.daily[bKey])){
-      state.daily[bKey] = JSON.parse(JSON.stringify(BASELINE_BACKUPS[bKey]));
-    }
-  });
-
   var today = getTodayStr();
   if(!state.daily[today]){
     state.daily[today] = {
@@ -765,12 +728,6 @@ function syncWithCloud(){
           Object.assign(ROLE_PASSWORDS, cloudObj.passwords);
         }
       }
-
-      Object.keys(BASELINE_BACKUPS).forEach(function(bKey){
-        if(!state.daily[bKey] || !hasAnyEntries(state.daily[bKey])){
-          state.daily[bKey] = JSON.parse(JSON.stringify(BASELINE_BACKUPS[bKey]));
-        }
-      });
 
       document.getElementById('syncText').textContent = 'Live Cloud Synced';
       saveState();
