@@ -1164,15 +1164,19 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
   var activeDateParts = state.activeDate.split('-');
   var activeDay = parseInt(activeDateParts[0], 10);
   var curMonthSuffix = activeDateParts[1] + '-' + activeDateParts[2];
+  
+  // Convert DD-MM-YYYY to comparable integer YYYYMMDD
+  var activeDateNum = parseInt(activeDateParts[2] + activeDateParts[1] + activeDateParts[0], 10);
 
   var prevMonthInHand = 0;
-  var prevMonthCashCarry = 10400; // Starting physical cash drawer float
+  var prevCashCarry = 10400; // Base cash float initialized on launch
   var mtdS = 0;
   var mtdE = 0;
 
   Object.keys(state.daily).forEach(function(k){
-    if(k.endsWith(curMonthSuffix)){
-      var dayNum = parseInt(k.split('-')[0], 10);
+    var parts = k.split('-');
+    if(parts.length === 3){
+      var dNum = parseInt(parts[2] + parts[1] + parts[0], 10);
       var daySales = 0;
       var dayExp = 0;
       var dayCashSales = 0;
@@ -1186,14 +1190,18 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
         dayExp += Number(e.amount)||0;
       });
 
-      if(dayNum <= activeDay){
+      // MTD totals for the active calendar month
+      if(k.endsWith(curMonthSuffix) && dNum <= activeDateNum){
         mtdS += daySales;
         mtdE += dayExp;
       }
 
-      if(dayNum < activeDay){
-        prevMonthInHand += (daySales - dayExp);
-        prevMonthCashCarry += (dayCashSales - dayExp);
+      // Cash in hand flows chronologically across ALL prior days and months
+      if(dNum < activeDateNum){
+        prevCashCarry += (dayCashSales - dayExp);
+        if(k.endsWith(curMonthSuffix)){
+          prevMonthInHand += (daySales - dayExp);
+        }
       }
     }
   });
@@ -1203,10 +1211,10 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
   document.getElementById('mtdSalesTotal').textContent = formatMoney(mtdS);
   document.getElementById('mtdExpTotal').textContent = formatMoney(mtdE);
 
-  var totalCash = prevMonthCashCarry + todayCash;
+  var totalCash = prevCashCarry + todayCash;
   var actualCash = totalCash - todayExp;
 
-  document.getElementById('reconcileOpCash').textContent = Math.round(prevMonthCashCarry);
+  document.getElementById('reconcileOpCash').textContent = Math.round(prevCashCarry);
   document.getElementById('reconcileTodayCash').textContent = Math.round(todayCash);
   document.getElementById('reconcileTotalInflow').textContent = Math.round(totalCash);
   document.getElementById('reconcileCashExp').textContent = Math.round(todayExp);
@@ -1235,9 +1243,12 @@ function exportActiveDayToExcel(){
     var activeDay = parseInt(parts[0], 10);
     var mtdS = 0, mtdE = 0, daysCounted = 0, prevCashCarry = 10400;
 
+    var activeDateNum = parseInt(parts[2] + parts[1] + parts[0], 10);
+
     Object.keys(state.daily).forEach(function(k){
-      if(k.endsWith(curMonthSuffix)){
-        var dayNum = parseInt(k.split('-')[0], 10);
+      var kParts = k.split('-');
+      if(kParts.length === 3){
+        var dNum = parseInt(kParts[2] + kParts[1] + kParts[0], 10);
         var dayS = 0, dayE = 0, dayC = 0;
         (state.daily[k].sales||[]).forEach(function(r){
           var sc = Number(r.cash)||0;
@@ -1245,12 +1256,14 @@ function exportActiveDayToExcel(){
           dayS += (sc + (Number(r.upi)||0) + (Number(r.swiggy)||0) + (Number(r.zomato)||0) + (Number(r.other)||0));
         });
         (state.daily[k].expenses||[]).forEach(function(e){ dayE += Number(e.amount)||0; });
-        if(dayNum <= activeDay){ 
+
+        if(k.endsWith(curMonthSuffix) && dNum <= activeDateNum){ 
           mtdS += dayS; 
           mtdE += dayE; 
           if(dayS > 0 || dayE > 0) daysCounted++;
         }
-        if(dayNum < activeDay){ 
+        // Continuous carryover across months
+        if(dNum < activeDateNum){ 
           prevCashCarry += (dayC - dayE); 
         }
       }
