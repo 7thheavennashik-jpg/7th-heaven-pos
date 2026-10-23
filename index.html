@@ -121,6 +121,7 @@
   .row-del-btn { background: none; border: none; color: #BBB; cursor: pointer; font-size: 14px; line-height: 1; }
   .row-del-btn:hover { color: var(--brick); }
 
+  /* Disable spin buttons */
   input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   input[type=number] { -moz-appearance: textfield; }
 
@@ -521,15 +522,21 @@
       </div>
     </section>
 
-    <!-- PANEL 6: PASSWORDS (ADMIN ONLY) -->
+    <!-- PANEL 6: PASSWORDS & SYSTEM RESET (ADMIN ONLY) -->
     <section class="panel" id="panel-passwords">
       <h2 style="font-family:'Fraunces',serif;font-size:17px;margin-bottom:6px;">Security &amp; Passwords</h2>
-      <div style="max-width:400px;">
+      <div style="max-width:400px;margin-bottom:28px;">
         <div class="form-group"><label>Admin Password</label><input type="text" id="pwFieldAdmin"></div>
         <div class="form-group"><label>Store Partner Password</label><input type="text" id="pwFieldStore"></div>
         <div class="form-group"><label>Remote Partner Password</label><input type="text" id="pwFieldRemote"></div>
         <button class="btn-p" id="savePasswordsBtn">Save New Passwords</button>
       </div>
+
+      <hr style="border:none;border-top:1px solid var(--rule-strong);margin:24px 0 16px;">
+
+      <h3 style="color:var(--brick);font-size:15px;margin-bottom:6px;">Database Reset (Go Live)</h3>
+      <p style="font-size:12px;color:var(--ink-soft);margin-bottom:12px;">Wipe all test ledger entries, clear opening cash carryover to 0, and start with an empty database:</p>
+      <button class="btn-p" style="background:var(--brick);" onclick="factoryResetDatabaseFromUI()">🔴 Wipe All Test Data &amp; Reset to Zero</button>
     </section>
   </div>
 </div>
@@ -538,9 +545,9 @@
 
 <script>
 var CLOUD_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxI0z9d0vOH4jc0GS-oz2ir_x-fd_d0xnQJxUehOJ_DAYbCO7ql_ZogNe-GR9R6_464/exec';
-var STORAGE_KEY = "7th_heaven_unified_tracker_live";
+var STORAGE_KEY = "7th_heaven_production_live_v1";
 var SESSION_ROLE_KEY = "7th_heaven_user_session_role";
-var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_live";
+var PASSWORDS_STORAGE_KEY = "7th_heaven_passwords_live_v1";
 
 var DEFAULT_PASSWORDS = { admin: '7thHeaven@Admin', store: '7thHeaven@Store', remote: '7thHeaven@View' };
 var ROLE_PASSWORDS = Object.assign({}, DEFAULT_PASSWORDS);
@@ -564,9 +571,6 @@ var state = {
   daily: {},
   invoices: []
 };
-
-// 100% CLEAN: Zero dummy/test records hardcoded
-var BASELINE_BACKUPS = {};
 
 var currentInvoiceItems = [];
 
@@ -658,6 +662,9 @@ function loadStateLocally(){
       var p = JSON.parse(raw);
       state.daily = p.daily || {};
       state.invoices = p.invoices || [];
+    } else {
+      state.daily = {};
+      state.invoices = [];
     }
     var pwRaw = localStorage.getItem(PASSWORDS_STORAGE_KEY);
     if(pwRaw){
@@ -714,23 +721,29 @@ function syncWithCloud(){
       cloudSyncInitialized = true;
       if(data && data.value){
         var cloudObj = JSON.parse(data.value);
-        if(cloudObj.daily){
-          Object.keys(cloudObj.daily).forEach(function(dKey){
-            if(!state.daily[dKey] || hasAnyEntries(cloudObj.daily[dKey])){
-              state.daily[dKey] = cloudObj.daily[dKey];
-            }
-          });
-        }
-        if(cloudObj.invoices && cloudObj.invoices.length > 0){
-          state.invoices = cloudObj.invoices;
-        }
+        state.daily = cloudObj.daily || {};
+        state.invoices = cloudObj.invoices || [];
         if(cloudObj.passwords){
           Object.assign(ROLE_PASSWORDS, cloudObj.passwords);
         }
       }
 
+      var today = getTodayStr();
+      if(!state.daily[today]){
+        state.daily[today] = {
+          sales: [{ cash:'', upi:'', swiggy:'', zomato:'', other:'' }],
+          expenses: [{ category:'', amount:'', method:'Cash' }],
+          wastage: []
+        };
+      }
+      state.activeDate = today;
+
       document.getElementById('syncText').textContent = 'Live Cloud Synced';
-      saveState();
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ daily: state.daily, invoices: state.invoices }));
+        localStorage.setItem(PASSWORDS_STORAGE_KEY, JSON.stringify(ROLE_PASSWORDS));
+      } catch(e){}
+      
       renderAll();
       renderInvoiceHistory();
       renderProfitSharingPanel();
@@ -738,6 +751,44 @@ function syncWithCloud(){
       cloudSyncInitialized = true;
       document.getElementById('syncText').textContent = 'Using Local Cache';
     });
+}
+
+function factoryResetDatabaseFromUI(){
+  if(!confirm("Are you 100% sure you want to wipe ALL sales, expenses, and invoices?\n\nThis will reset OPENING CASH to 0 for a clean live start.")) {
+    return;
+  }
+  var freshMaster = { daily: {}, invoices: [] };
+  state.daily = {};
+  state.invoices = [];
+  var today = getTodayStr();
+  state.daily[today] = {
+    sales: [{ cash:'', upi:'', swiggy:'', zomato:'', other:'' }],
+    expenses: [{ category:'', amount:'', method:'Cash' }],
+    wastage: []
+  };
+  state.activeDate = today;
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ daily: state.daily, invoices: state.invoices }));
+
+  document.getElementById('syncText').textContent = 'Wiping Cloud Data…';
+  fetch(CLOUD_BACKEND_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      key: '7th_heaven_master_data',
+      value: JSON.stringify({ daily: {}, invoices: [], passwords: ROLE_PASSWORDS })
+    })
+  }).then(function(){
+    document.getElementById('syncText').textContent = 'Live Cloud Synced';
+    alert("Database wiped successfully! Opening Cash is now 0. You are ready for live entries.");
+    renderAll();
+    renderInvoiceRows();
+    renderInvoiceHistory();
+    renderProfitSharingPanel();
+  }).catch(function(err){
+    alert("Wiped locally. Cloud sync warning: " + err.message);
+    renderAll();
+  });
 }
 
 function hasAnySaleVal(r){
