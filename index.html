@@ -1166,7 +1166,7 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
   var curMonthSuffix = activeDateParts[1] + '-' + activeDateParts[2];
 
   var prevMonthInHand = 0;
-  var prevMonthCashCarry = 0;
+  var prevMonthCashCarry = 10400; // Starting physical cash drawer float
   var mtdS = 0;
   var mtdE = 0;
 
