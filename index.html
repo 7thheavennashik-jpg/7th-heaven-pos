@@ -1233,7 +1233,7 @@ function exportActiveDayToExcel(){
     var parts = dKey.split('-');
     var curMonthSuffix = parts[1] + '-' + parts[2];
     var activeDay = parseInt(parts[0], 10);
-    var mtdS = 0, mtdE = 0, daysCounted = 0, prevCashCarry = 0;
+    var mtdS = 0, mtdE = 0, daysCounted = 0, prevCashCarry = 10400;
 
     Object.keys(state.daily).forEach(function(k){
       if(k.endsWith(curMonthSuffix)){
