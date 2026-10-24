@@ -1393,8 +1393,11 @@ function exportMonthlyReportToExcel(){
     var grandCash = 0, grandUpi = 0, grandSwiggy = 0, grandZomato = 0, grandOther = 0;
     var operatingDays = 0;
 
-    var sortedDates = Object.keys(state.daily).filter(function(k){
-      return k.endsWith(mFilter);
+   var sortedDates = Object.keys(state.daily).filter(function(k){
+      var p = k.split('-');
+      if(p.length !== 3) return false;
+      var dNum = parseInt(p[2] + p[1] + p[0], 10);
+      return k.endsWith(mFilter) && dNum >= 20261023;
     }).sort(function(a, b){
       return parseInt(a.split('-')[0], 10) - parseInt(b.split('-')[0], 10);
     });
