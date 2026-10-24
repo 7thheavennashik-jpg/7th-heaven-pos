@@ -1173,10 +1173,11 @@ function calculateLedgerCarryAndCashReconcile(todayCash, todayExp, todayNetSales
   var mtdS = 0;
   var mtdE = 0;
 
-  Object.keys(state.daily).forEach(function(k){
-    var parts = k.split('-');
-    if(parts.length === 3){
-      var dNum = parseInt(parts[2] + parts[1] + parts[0], 10);
+ Object.keys(state.daily).forEach(function(k){
+      var parts = k.split('-');
+      if(parts.length === 3){
+        var dNum = parseInt(parts[2] + parts[1] + parts[0], 10);
+        if(dNum < 20261023) return;
       var daySales = 0;
       var dayExp = 0;
       var dayCashSales = 0;
@@ -1903,7 +1904,11 @@ function applyRoleUI(){
 function renderDailyTabs(){
   var cont = document.getElementById('sheetTabsList');
   cont.innerHTML = '';
-  var dates = Object.keys(state.daily).sort(function(a,b){
+  var dates = Object.keys(state.daily).filter(function(k){
+    var p = k.split('-');
+    if(p.length !== 3) return false;
+    return parseInt(p[2] + p[1] + p[0], 10) >= 20261023;
+  }).sort(function(a,b){
     return b.split('-').reverse().join('').localeCompare(a.split('-').reverse().join(''));
   });
 
