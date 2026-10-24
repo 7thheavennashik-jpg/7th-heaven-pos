@@ -1250,6 +1250,7 @@ function exportActiveDayToExcel(){
       var kParts = k.split('-');
       if(kParts.length === 3){
         var dNum = parseInt(kParts[2] + kParts[1] + kParts[0], 10);
+        if(dNum < 20261023) return;
         var dayS = 0, dayE = 0, dayC = 0;
         (state.daily[k].sales||[]).forEach(function(r){
           var sc = Number(r.cash)||0;
