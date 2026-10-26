@@ -1796,7 +1796,9 @@ function generateMonthlyReport(){
   
   var totS = 0, totE = 0, totW = 0, days = 0;
   Object.keys(state.daily).forEach(function(dKey){
-    if(dKey.endsWith(mFilter)){
+    var dParts = dKey.split('-');
+    var dNum = (dParts.length === 3) ? parseInt(dParts[2] + dParts[1] + dParts[0], 10) : 0;
+    if(dKey.endsWith(mFilter) && dNum >= 20261023){
       days++;
       var d = state.daily[dKey];
       (d.sales||[]).forEach(function(r){ 
