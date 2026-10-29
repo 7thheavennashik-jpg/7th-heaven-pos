@@ -434,6 +434,39 @@
           </div>
           <h4 style="margin:12px 0 6px;font-size:13px;">Partner Profit Sharing (Agreed %):</h4>
           <div id="mRepPartners" style="background:#FFF;border:1px solid var(--rule);padding:10px 12px;line-height:1.9;"></div>
+          <!-- FIXED MONTHLY OVERHEADS SECTION (ADMIN ONLY) -->
+<div style="margin-top: 20px; border-top: 2px solid var(--rule-strong, #ccc); padding-top: 14px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+    <h3 style="margin: 0; color: var(--maroon-hdr, #741B47); font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
+      Fixed Monthly Overheads - Nashik
+    </h3>
+    <button type="button" class="btn-s" onclick="saveAdminFixedOverheads()" style="background: #2E7D32; color: #fff; border: none; padding: 5px 14px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px;">
+      Save Overheads
+    </button>
+  </div>
+
+  <table class="tracker" style="width: 100%; border-collapse: collapse; font-size: 12px;">
+    <thead>
+      <tr style="background: var(--maroon-hdr, #741B47); color: #fff;">
+        <th style="padding: 6px 8px; width: 36px; text-align: center;">#</th>
+        <th style="padding: 6px 10px; text-align: left;">Description</th>
+        <th style="padding: 6px 10px; text-align: left;">Processing Schedule</th>
+        <th style="padding: 6px 10px; text-align: right; width: 140px;">Amount Paid (₹)</th>
+        <th style="padding: 6px 10px; text-align: left; width: 140px;">Payment Mode</th>
+      </tr>
+    </thead>
+    <tbody id="adminFixedOverheadsBody">
+      <!-- Populated automatically by JavaScript -->
+    </tbody>
+    <tfoot>
+      <tr style="background: #FAF7F7; font-weight: bold; border-top: 2px solid var(--maroon-hdr, #741B47);">
+        <td colspan="3" style="padding: 8px 10px; text-align: right; color: #333;">Total Fixed Overheads Paid:</td>
+        <td id="adminFixedTotalDisplay" style="padding: 8px 10px; text-align: right; font-family: 'IBM Plex Mono', monospace; color: #C62828;">₹0.00</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
         </div>
       </div>
     </section>
@@ -1825,6 +1858,7 @@ function generateMonthlyReport(){
   document.getElementById('mRepPartners').innerHTML = pHtml;
   document.getElementById('monthlyReportArea').style.display = 'block';
   renderProfitSharingPanel();
+  renderAdminFixedOverheadsTable(mFilter);
 }
 
 var targetRolePending = null;
@@ -1977,6 +2011,100 @@ var savedRole = localStorage.getItem(SESSION_ROLE_KEY);
 if(savedRole && ROLE_PASSWORDS[savedRole]){
   state.currentRole = savedRole;
   enterAppWithRole();
+}
+// ==========================================
+// ADMIN FIXED MONTHLY OVERHEADS CONTROLLER
+// ==========================================
+var FIXED_OVERHEADS_CONFIG = [
+  { id: "shop_rent", name: "Shop Rent", schedule: "1st day of the month" },
+  { id: "gst_rent", name: "GST 18% on shop Rent", schedule: "Clarification required" },
+  { id: "chef_room_rent", name: "Chef Room Rent", schedule: "1st Day of the month" },
+  { id: "chef_salary_3d", name: "Chef Salary - 3D", schedule: "10th of the Month" },
+  { id: "chef_salary_normal", name: "Chef Salary - Normal", schedule: "10th of the Month" },
+  { id: "chef_salary_helper", name: "Chef Salary - Helper", schedule: "10th of the Month" },
+  { id: "chef_food_allowance", name: "Chef's Food Allowance (3 person)", schedule: "1st (50%) & 16th (50%) of month" },
+  { id: "counter_staff_1", name: "Counter Staff 1 Salary", schedule: "5th of the Month" },
+  { id: "counter_staff_2", name: "Counter Staff 2 Salary", schedule: "5th of the Month" },
+  { id: "mgmt_allowance", name: "Management Allowance", schedule: "5th of the Month" },
+  { id: "travel_mgt", name: "Travel Expenses (mgt)", schedule: "5th of the Month" },
+  { id: "hk_lady", name: "House Keeping (lady) Salary", schedule: "1st Day of the month" },
+  { id: "hk_security", name: "House Keeping (Security) Salary", schedule: "5th of the Month" },
+  { id: "electricity_bill", name: "Electricity Bill (approx)", schedule: "Before due date" },
+  { id: "royalty", name: "Royalty to the company", schedule: "10th of the Month" }
+];
+
+function renderAdminFixedOverheadsTable(monthKey) {
+  var tbody = document.getElementById("adminFixedOverheadsBody");
+  if (!tbody) return;
+
+  master.fixedOverheads = master.fixedOverheads || {};
+  var monthData = master.fixedOverheads[monthKey] || {};
+
+  var html = "";
+  FIXED_OVERHEADS_CONFIG.forEach(function(item, idx) {
+    var saved = monthData[item.id] || { amount: "", mode: "Bank Transfer" };
+    html += '<tr style="border-bottom: 1px solid var(--rule, #eee); height: 32px;">' +
+      '<td style="text-align: center; font-family: monospace; color: #777;">' + (idx + 1) + '</td>' +
+      '<td style="padding: 4px 10px; font-weight: 600; color: #333;">' + item.name + '</td>' +
+      '<td style="padding: 4px 10px; color: #666; font-size: 11px;">' + item.schedule + '</td>' +
+      '<td style="padding: 2px 6px;">' +
+        '<input type="number" id="adm_fixed_amt_' + item.id + '" value="' + (saved.amount !== undefined ? saved.amount : "") + '" placeholder="0" ' +
+        'oninput="calculateAdminFixedTotal()" style="width: 100%; text-align: right; padding: 4px; font-family: \'IBM Plex Mono\', monospace; border: 1px solid #ccc; border-radius: 3px;">' +
+      '</td>' +
+      '<td style="padding: 2px 6px;">' +
+        '<select id="adm_fixed_mode_' + item.id + '" style="width: 100%; padding: 4px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px;">' +
+          '<option value="Bank Transfer"' + (saved.mode === 'Bank Transfer' ? ' selected' : '') + '>Bank Transfer</option>' +
+          '<option value="UPI / GPay"' + (saved.mode === 'UPI / GPay' ? ' selected' : '') + '>UPI / GPay</option>' +
+          '<option value="Net Banking"' + (saved.mode === 'Net Banking' ? ' selected' : '') + '>Net Banking</option>' +
+          '<option value="Cheque"' + (saved.mode === 'Cheque' ? ' selected' : '') + '>Cheque</option>' +
+        '</select>' +
+      '</td>' +
+    '</tr>';
+  });
+
+  tbody.innerHTML = html;
+  calculateAdminFixedTotal();
+}
+
+function calculateAdminFixedTotal() {
+  var total = 0;
+  FIXED_OVERHEADS_CONFIG.forEach(function(item) {
+    var el = document.getElementById("adm_fixed_amt_" + item.id);
+    if (el) total += Number(el.value) || 0;
+  });
+
+  var disp = document.getElementById("adminFixedTotalDisplay");
+  if (disp) {
+    disp.textContent = "₹" + total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  return total;
+}
+
+function saveAdminFixedOverheads() {
+  var ym = document.getElementById('monthlyReportMonth') ? document.getElementById('monthlyReportMonth').value : '';
+  var activeKey = ym ? (ym.split('-')[1] + '-' + ym.split('-')[0]) : activeDateStr.substring(3);
+
+  master.fixedOverheads = master.fixedOverheads || {};
+  master.fixedOverheads[activeKey] = master.fixedOverheads[activeKey] || {};
+
+  FIXED_OVERHEADS_CONFIG.forEach(function(item) {
+    var amtEl = document.getElementById("adm_fixed_amt_" + item.id);
+    var modeEl = document.getElementById("adm_fixed_mode_" + item.id);
+    if (amtEl && modeEl) {
+      master.fixedOverheads[activeKey][item.id] = {
+        amount: amtEl.value !== "" ? Number(amtEl.value) : "",
+        mode: modeEl.value
+      };
+    }
+  });
+
+  saveMasterToLocal();
+  if (typeof syncToCloud === "function") syncToCloud();
+  alert("Fixed Overheads for " + activeKey + " saved successfully!");
+
+  if (typeof generateMonthlyReport === "function") {
+    generateMonthlyReport();
+  }
 }
 </script>
 </body>
