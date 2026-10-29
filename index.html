@@ -1516,7 +1516,36 @@ function exportMonthlyReportToExcel(){
     ];
     var ws4 = XLSX.utils.aoa_to_sheet(p4);
     XLSX.utils.book_append_sheet(wb, ws4, "Profit share");
+// --- SHEET 5: FIXED MONTHLY OVERHEADS (15 LINE ITEMS) ---
+    var fixedHdr = ['#', 'Description', 'Processing Schedule', 'Amount Paid (₹)', 'Payment Mode'];
+    var pFixed = [
+      ["Nashik"],
+      ["7th Heaven Nashik, Indiranagar"],
+      ["Month : " + ym],
+      ["FIXED MONTHLY OVERHEADS"],
+      fixedHdr
+    ];
 
+    var monthFixedData = (state.fixedOverheads && state.fixedOverheads[mFilter]) ? state.fixedOverheads[mFilter] : {};
+    var totalFixedPaid = 0;
+
+    FIXED_OVERHEADS_CONFIG.forEach(function(item, idx) {
+      var entry = monthFixedData[item.id] || { amount: 0, mode: "Bank Transfer" };
+      var amt = Number(entry.amount) || 0;
+      totalFixedPaid += amt;
+      pFixed.push([
+        idx + 1,
+        item.name,
+        item.schedule,
+        amt,
+        entry.mode || "Bank Transfer"
+      ]);
+    });
+
+    pFixed.push(["", "TOTAL FIXED OVERHEADS PAID", "", totalFixedPaid, ""]);
+
+    var wsFixed = XLSX.utils.aoa_to_sheet(pFixed);
+    XLSX.utils.book_append_sheet(wb, wsFixed, "FIXED_OVERHEADS");
     triggerExcelDownload(wb, "7th_Heaven_MONTHLY_" + ym + ".xlsx");
   } catch(err) {
     alert("Monthly export failed: " + err.message);
