@@ -2037,21 +2037,21 @@ function renderAdminFixedOverheadsTable(monthKey) {
   var tbody = document.getElementById("adminFixedOverheadsBody");
   if (!tbody) return;
 
-  master.fixedOverheads = master.fixedOverheads || {};
-  var monthData = master.fixedOverheads[monthKey] || {};
+  state.fixedOverheads = state.fixedOverheads || {};
+  var monthData = state.fixedOverheads[monthKey] || {};
 
   var html = "";
   FIXED_OVERHEADS_CONFIG.forEach(function(item, idx) {
     var saved = monthData[item.id] || { amount: "", mode: "Bank Transfer" };
     html += '<tr style="border-bottom: 1px solid var(--rule, #eee); height: 32px;">' +
       '<td style="text-align: center; font-family: monospace; color: #777;">' + (idx + 1) + '</td>' +
-      '<td style="padding: 4px 10px; font-weight: 600; color: #333;">' + item.name + '</td>' +
-      '<td style="padding: 4px 10px; color: #666; font-size: 11px;">' + item.schedule + '</td>' +
-      '<td style="padding: 2px 6px;">' +
+      '<td style="padding: 6px 10px; font-weight: 600; color: #333;">' + item.name + '</td>' +
+      '<td style="padding: 6px 10px; color: #666; font-size: 11px;">' + item.schedule + '</td>' +
+      '<td style="padding: 4px 6px;">' +
         '<input type="number" id="adm_fixed_amt_' + item.id + '" value="' + (saved.amount !== undefined ? saved.amount : "") + '" placeholder="0" ' +
         'oninput="calculateAdminFixedTotal()" style="width: 100%; text-align: right; padding: 4px; font-family: \'IBM Plex Mono\', monospace; border: 1px solid #ccc; border-radius: 3px;">' +
       '</td>' +
-      '<td style="padding: 2px 6px;">' +
+      '<td style="padding: 4px 6px;">' +
         '<select id="adm_fixed_mode_' + item.id + '" style="width: 100%; padding: 4px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px;">' +
           '<option value="Bank Transfer"' + (saved.mode === 'Bank Transfer' ? ' selected' : '') + '>Bank Transfer</option>' +
           '<option value="UPI / GPay"' + (saved.mode === 'UPI / GPay' ? ' selected' : '') + '>UPI / GPay</option>' +
@@ -2082,24 +2082,25 @@ function calculateAdminFixedTotal() {
 
 function saveAdminFixedOverheads() {
   var ym = document.getElementById('monthlyReportMonth') ? document.getElementById('monthlyReportMonth').value : '';
-  var activeKey = ym ? (ym.split('-')[1] + '-' + ym.split('-')[0]) : activeDateStr.substring(3);
+  var activeKey = ym ? (ym.split('-')[1] + '-' + ym.split('-')[0]) : '10-2026';
 
-  master.fixedOverheads = master.fixedOverheads || {};
-  master.fixedOverheads[activeKey] = master.fixedOverheads[activeKey] || {};
+  state.fixedOverheads = state.fixedOverheads || {};
+  state.fixedOverheads[activeKey] = state.fixedOverheads[activeKey] || {};
 
   FIXED_OVERHEADS_CONFIG.forEach(function(item) {
     var amtEl = document.getElementById("adm_fixed_amt_" + item.id);
     var modeEl = document.getElementById("adm_fixed_mode_" + item.id);
     if (amtEl && modeEl) {
-      master.fixedOverheads[activeKey][item.id] = {
+      state.fixedOverheads[activeKey][item.id] = {
         amount: amtEl.value !== "" ? Number(amtEl.value) : "",
         mode: modeEl.value
       };
     }
   });
 
-  saveMasterToLocal();
-  if (typeof syncToCloud === "function") syncToCloud();
+  if (typeof saveState === "function") {
+    saveState();
+  }
   alert("Fixed Overheads for " + activeKey + " saved successfully!");
 
   if (typeof generateMonthlyReport === "function") {
