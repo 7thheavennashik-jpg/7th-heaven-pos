@@ -573,7 +573,142 @@
     </section>
   </div>
 </div>
+<!-- ========================================== -->
+<!-- 🏢 FIXED EXPENSES SECTION                  -->
+<!-- ========================================== -->
+<div id="fixedExpensesBlock" style="margin-top:20px;background:#fff;border-radius:8px;border:1px solid #ddd;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+  <div style="background:#741B47;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-weight:bold;font-size:15px;">🏢 FIXED EXPENSES (Rent, Salaries, Royalty, Bills)</span>
+    <span id="fixedExpensesTotalBadge" style="background:#FFE082;color:#741B47;padding:2px 8px;border-radius:4px;font-weight:bold;font-size:13px;">Total: ₹0.00</span>
+  </div>
 
+  <!-- Store Partner & Admin Entry Row (Hidden for Remote Partner) -->
+  <div id="fixedExpInputRow" style="padding:12px 16px;background:#FFF9E6;border-bottom:1px solid #eee;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+    <div style="flex:2;min-width:220px;">
+      <label style="font-size:11px;font-weight:bold;color:#555;display:block;margin-bottom:4px;">Description (Select Only)</label>
+      <select id="feDescriptionSelect" style="width:100%;height:36px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+        <option value="">-- Choose Description --</option>
+        <option value="Shop Rent">Shop Rent</option>
+        <option value="GST 18% on shop Rent">GST 18% on shop Rent</option>
+        <option value="Chef Room Rent">Chef Room Rent</option>
+        <option value="Chef Salary - 3D">Chef Salary - 3D</option>
+        <option value="Chef Salary - Normal">Chef Salary - Normal</option>
+        <option value="Chef Salary - Helper">Chef Salary - Helper</option>
+        <option value="Chef's Food Allowance (3 person)">Chef's Food Allowance (3 person)</option>
+        <option value="Counter Staff 1 Salary">Counter Staff 1 Salary</option>
+        <option value="Counter Staff 2 Salary">Counter Staff 2 Salary</option>
+        <option value="Management Allowance">Management Allowance</option>
+        <option value="Travel Expenses (mgt)">Travel Expenses (mgt)</option>
+        <option value="House Keeping (lady) Salary">House Keeping (lady) Salary</option>
+        <option value="House Keeping (Security) Salary">House Keeping (Security) Salary</option>
+        <option value="Electricity Bill (approx)">Electricity Bill (approx)</option>
+        <option value="Royalty to the company">Royalty to the company</option>
+        <option value="Chef room Electricity (approx)">Chef room Electricity (approx)</option>
+        <option value="Other Fixed Expense">Other Fixed Expense</option>
+      </select>
+    </div>
+
+    <div style="flex:1;min-width:130px;">
+      <label style="font-size:11px;font-weight:bold;color:#555;display:block;margin-bottom:4px;">Date (DD-MM-YYYY)</label>
+      <input type="text" id="feDateInput" placeholder="e.g. 23-10-2026" style="width:100%;height:36px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+    </div>
+
+    <div style="flex:1;min-width:120px;">
+      <label style="font-size:11px;font-weight:bold;color:#555;display:block;margin-bottom:4px;">Amount (₹)</label>
+      <input type="number" id="feAmountInput" placeholder="0.00" style="width:100%;height:36px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+    </div>
+
+    <div style="min-width:90px;">
+      <button type="button" onclick="handleAddFixedExpense()" style="height:36px;background:#741B47;color:white;border:none;padding:0 16px;border-radius:4px;font-weight:bold;cursor:pointer;font-size:13px;">+ Add</button>
+    </div>
+  </div>
+
+  <!-- Read-only Table for Remote & Store -->
+  <div style="padding:10px 16px;overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="background:#F8F9FA;border-bottom:2px solid #ddd;text-align:left;">
+          <th style="padding:8px;">Date</th>
+          <th style="padding:8px;">Description</th>
+          <th style="padding:8px;text-align:right;">Amount (₹)</th>
+          <th id="feActionHeader" style="padding:8px;text-align:center;width:60px;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="fixedExpensesTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 📊 ADMIN CUSTOM DATE-RANGE AUDIT           -->
+<!-- ========================================== -->
+<div id="adminDateRangeAuditSection" style="margin-top:24px;background:#fff;border-radius:8px;border:1px solid #741B47;overflow:hidden;display:none;">
+  <div style="background:#741B47;color:#fff;padding:12px 18px;font-weight:bold;font-size:15px;">
+    📊 Complete Sales, Expenses & Account Audit (Custom Date Range)
+  </div>
+  <div style="padding:16px;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px;">
+      <div>
+        <label style="font-size:11px;font-weight:bold;color:#555;display:block;margin-bottom:4px;">From Date:</label>
+        <input type="date" id="auditFromDate" style="height:36px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:bold;color:#555;display:block;margin-bottom:4px;">To Date:</label>
+        <input type="date" id="auditToDate" style="height:36px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+      </div>
+      <div>
+        <button type="button" onclick="runCustomDateAudit()" style="height:36px;background:#741B47;color:#fff;border:none;padding:0 18px;border-radius:4px;font-weight:bold;cursor:pointer;font-size:13px;">
+          🔍 Calculate Financial Audit
+        </button>
+      </div>
+    </div>
+
+    <div id="auditResultsArea" style="display:none;">
+      <!-- KPI Metric Cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));gap:10px;margin-bottom:16px;">
+        <div style="background:#E8F5E9;border-left:4px solid #2E7D32;padding:10px 12px;border-radius:4px;">
+          <div style="font-size:10px;color:#555;text-transform:uppercase;font-weight:bold;">Total Gross Sales</div>
+          <div id="audTotalSales" style="font-size:16px;font-weight:bold;color:#2E7D32;margin-top:2px;">₹0.00</div>
+        </div>
+        <div style="background:#FFEBEE;border-left:4px solid #C62828;padding:10px 12px;border-radius:4px;">
+          <div style="font-size:10px;color:#555;text-transform:uppercase;font-weight:bold;">Daily Drawer Exp</div>
+          <div id="audDailyExpenses" style="font-size:16px;font-weight:bold;color:#C62828;margin-top:2px;">₹0.00</div>
+        </div>
+        <div style="background:#FFF3E0;border-left:4px solid #EF6C00;padding:10px 12px;border-radius:4px;">
+          <div style="font-size:10px;color:#555;text-transform:uppercase;font-weight:bold;">Fixed Expenses</div>
+          <div id="audFixedExpenses" style="font-size:16px;font-weight:bold;color:#EF6C00;margin-top:2px;">₹0.00</div>
+        </div>
+        <div style="background:#E1F5FE;border-left:4px solid #0277BD;padding:10px 12px;border-radius:4px;">
+          <div style="font-size:10px;color:#555;text-transform:uppercase;font-weight:bold;">In Account (UPI+Swiggy+Zomato)</div>
+          <div id="audBankTotal" style="font-size:16px;font-weight:bold;color:#0277BD;margin-top:2px;">₹0.00</div>
+        </div>
+        <div style="background:#FFFDE7;border-left:4px solid #FBC02D;padding:10px 12px;border-radius:4px;">
+          <div style="font-size:10px;color:#555;text-transform:uppercase;font-weight:bold;">Drawer Cash in Hand</div>
+          <div id="audCashInHand" style="font-size:16px;font-weight:bold;color:#F57F17;margin-top:2px;">₹0.00</div>
+        </div>
+        <div style="background:#F3E5F5;border-left:4px solid #6A1B9A;padding:10px 12px;border-radius:4px;">
+          <div style="font-size:10px;color:#555;text-transform:uppercase;font-weight:bold;">Net Shop Surplus</div>
+          <div id="audNetBalance" style="font-size:16px;font-weight:bold;color:#6A1B9A;margin-top:2px;">₹0.00</div>
+        </div>
+      </div>
+
+      <!-- Channel Breakdown Table -->
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:#741B47;color:#fff;text-align:left;">
+            <th style="padding:8px;">Cash Sales</th>
+            <th style="padding:8px;">UPI</th>
+            <th style="padding:8px;">Swiggy</th>
+            <th style="padding:8px;">Zomato</th>
+            <th style="padding:8px;">Other</th>
+            <th style="padding:8px;text-align:right;">Total Gross</th>
+          </tr>
+        </thead>
+        <tbody id="audChannelRow"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -2135,6 +2270,216 @@ function saveAdminFixedOverheads() {
   if (typeof generateMonthlyReport === "function") {
     generateMonthlyReport();
   }
+}
+  // ==========================================
+// 🏢 FIXED EXPENSES & AUDIT SCRIPT LOGIC
+// ==========================================
+
+// 1. Initialize fixedExpenses container inside state
+if (!state.fixedExpenses) {
+  state.fixedExpenses = [];
+}
+
+// 2. Render Fixed Expenses List & Handle Role Permissions
+function renderFixedExpenses() {
+  var isRemote = (state.currentRole === 'remote');
+  var isAdmin = (state.currentRole === 'admin');
+
+  var inputRow = document.getElementById('fixedExpInputRow');
+  var actionHeader = document.getElementById('feActionHeader');
+  var auditSection = document.getElementById('adminDateRangeAuditSection');
+
+  // Permissions: Only Store and Admin can input/delete fixed expenses
+  if (inputRow) inputRow.style.display = isRemote ? 'none' : 'flex';
+  if (actionHeader) actionHeader.style.display = isRemote ? 'none' : 'table-cell';
+  if (auditSection) auditSection.style.display = isAdmin ? 'block' : 'none';
+
+  // Pre-fill active date in the date input for convenience
+  var dtInput = document.getElementById('feDateInput');
+  if (dtInput && !dtInput.value && state.activeDate) {
+    dtInput.value = state.activeDate;
+  }
+
+  var tbody = document.getElementById('fixedExpensesTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  var allFixed = state.fixedExpenses || [];
+  var totalAmount = 0;
+
+  allFixed.forEach(function(item, idx) {
+    totalAmount += Number(item.amount) || 0;
+    var tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid #eee';
+    tr.innerHTML = `
+      <td style="padding:8px;">${item.date}</td>
+      <td style="padding:8px;font-weight:500;">${item.description}</td>
+      <td style="padding:8px;text-align:right;font-weight:bold;color:#C62828;">₹${Number(item.amount).toFixed(2)}</td>
+      ${!isRemote ? `
+        <td style="padding:8px;text-align:center;">
+          <button type="button" onclick="deleteFixedExpense(${idx})" style="background:none;border:none;color:#C62828;font-weight:bold;cursor:pointer;font-size:15px;">✕</button>
+        </td>` : ''}
+    `;
+    tbody.appendChild(tr);
+  });
+
+  if (allFixed.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:14px;color:#888;">No fixed expenses recorded yet.</td></tr>';
+  }
+
+  var badge = document.getElementById('fixedExpensesTotalBadge');
+  if (badge) badge.innerText = 'Total: ₹' + totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2});
+}
+
+// 3. Add Fixed Expense (Store / Admin)
+function handleAddFixedExpense() {
+  var desc = document.getElementById('feDescriptionSelect').value;
+  var dt = document.getElementById('feDateInput').value.trim();
+  var amt = parseFloat(document.getElementById('feAmountInput').value);
+
+  if (!desc) { alert("Please select a Description."); return; }
+  if (!dt) { alert("Please enter Date in DD-MM-YYYY format."); return; }
+  if (isNaN(amt) || amt <= 0) { alert("Please enter a valid Amount."); return; }
+
+  if (!state.fixedExpenses) state.fixedExpenses = [];
+
+  state.fixedExpenses.push({
+    description: desc,
+    date: dt,
+    amount: amt
+  });
+
+  // Reset inputs
+  document.getElementById('feDescriptionSelect').value = '';
+  document.getElementById('feAmountInput').value = '';
+
+  renderFixedExpenses();
+  if (typeof saveStateToCloud === 'function') saveStateToCloud();
+  if (typeof renderActiveDay === 'function') renderActiveDay();
+}
+
+// 4. Delete Fixed Expense
+function deleteFixedExpense(idx) {
+  if (confirm("Remove this fixed expense?")) {
+    state.fixedExpenses.splice(idx, 1);
+    renderFixedExpenses();
+    if (typeof saveStateToCloud === 'function') saveStateToCloud();
+    if (typeof renderActiveDay === 'function') renderActiveDay();
+  }
+}
+
+// 5. Calculate Fixed Expenses Occurring on or After 23-10-2026
+function getFixedExpensesDeductionFrom(startDNum) {
+  var sum = 0;
+  (state.fixedExpenses || []).forEach(function(item) {
+    var p = (item.date || '').split('-');
+    if (p.length === 3) {
+      var dNum = parseInt(p[2] + p[1] + p[0], 10);
+      if (dNum >= (startDNum || 20261023)) {
+        sum += Number(item.amount) || 0;
+      }
+    }
+  });
+  return sum;
+}
+
+// 6. Admin Custom Date-Range Financial Audit
+function runCustomDateAudit() {
+  var fVal = document.getElementById('auditFromDate').value; // YYYY-MM-DD
+  var tVal = document.getElementById('auditToDate').value;   // YYYY-MM-DD
+
+  if (!fVal || !tVal) {
+    alert("Please select both From and To dates.");
+    return;
+  }
+
+  var startNum = parseInt(fVal.replace(/-/g, ''), 10);
+  var endNum = parseInt(tVal.replace(/-/g, ''), 10);
+
+  if (startNum > endNum) {
+    alert("From date must be earlier than or equal to To date.");
+    return;
+  }
+
+  var totCash = 0, totUpi = 0, totSwiggy = 0, totZomato = 0, totOther = 0;
+  var totDailyExp = 0, totFixedExp = 0;
+  var latestDNum = 0, latestCashInHand = 0;
+
+  // Process Daily Sales & Counter Expenses
+  Object.keys(state.daily || {}).forEach(function(k) {
+    var p = k.split('-');
+    if (p.length === 3) {
+      var dNum = parseInt(p[2] + p[1] + p[0], 10);
+      if (dNum >= startNum && dNum <= endNum) {
+        var day = state.daily[k];
+        var dCash = 0, dExp = 0;
+
+        (day.sales || []).forEach(function(s) {
+          totCash += Number(s.cash) || 0;
+          totUpi += Number(s.upi) || 0;
+          totSwiggy += Number(s.swiggy) || 0;
+          totZomato += Number(s.zomato) || 0;
+          totOther += Number(s.other) || 0;
+          dCash += Number(s.cash) || 0;
+        });
+
+        (day.expenses || []).forEach(function(e) {
+          totDailyExp += Number(e.amount) || 0;
+          dExp += Number(e.amount) || 0;
+        });
+
+        if (dNum >= latestDNum) {
+          latestDNum = dNum;
+          var op = (day.openingCash !== undefined && day.openingCash !== '') ? Number(day.openingCash) : 0;
+          latestCashInHand = op + dCash - dExp;
+        }
+      }
+    }
+  });
+
+  // Process Fixed Expenses in Date Range (from 23-10-2026 onwards)
+  (state.fixedExpenses || []).forEach(function(fe) {
+    var p = (fe.date || '').split('-');
+    if (p.length === 3) {
+      var dNum = parseInt(p[2] + p[1] + p[0], 10);
+      if (dNum >= startNum && dNum <= endNum && dNum >= 20261023) {
+        totFixedExp += Number(fe.amount) || 0;
+      }
+    }
+  });
+
+  var totGross = totCash + totUpi + totSwiggy + totZomato + totOther;
+  var totOnlineInAccount = totUpi + totSwiggy + totZomato + totOther;
+  var netSurplus = totGross - totDailyExp - totFixedExp;
+
+  // Display Output
+  document.getElementById('auditResultsArea').style.display = 'block';
+  document.getElementById('audTotalSales').innerText = '₹' + totGross.toLocaleString('en-IN', {minimumFractionDigits: 2});
+  document.getElementById('audDailyExpenses').innerText = '₹' + totDailyExp.toLocaleString('en-IN', {minimumFractionDigits: 2});
+  document.getElementById('audFixedExpenses').innerText = '₹' + totFixedExp.toLocaleString('en-IN', {minimumFractionDigits: 2});
+  document.getElementById('audBankTotal').innerText = '₹' + totOnlineInAccount.toLocaleString('en-IN', {minimumFractionDigits: 2});
+  document.getElementById('audCashInHand').innerText = '₹' + latestCashInHand.toLocaleString('en-IN', {minimumFractionDigits: 2});
+  document.getElementById('audNetBalance').innerText = '₹' + netSurplus.toLocaleString('en-IN', {minimumFractionDigits: 2});
+
+  document.getElementById('audChannelRow').innerHTML = `
+    <tr style="border-bottom:1px solid #ddd;font-weight:bold;">
+      <td style="padding:8px;">₹${totCash.toFixed(2)}</td>
+      <td style="padding:8px;color:#0277BD;">₹${totUpi.toFixed(2)}</td>
+      <td style="padding:8px;color:#EF6C00;">₹${totSwiggy.toFixed(2)}</td>
+      <td style="padding:8px;color:#C62828;">₹${totZomato.toFixed(2)}</td>
+      <td style="padding:8px;">₹${totOther.toFixed(2)}</td>
+      <td style="padding:8px;text-align:right;color:#2E7D32;">₹${totGross.toFixed(2)}</td>
+    </tr>
+  `;
+}
+
+// 7. Auto-run render when switching roles or loading day
+if (typeof renderActiveDay === 'function') {
+  var originalRenderActiveDay = renderActiveDay;
+  renderActiveDay = function() {
+    originalRenderActiveDay.apply(this, arguments);
+    renderFixedExpenses();
+  };
 }
 </script>
 </body>
