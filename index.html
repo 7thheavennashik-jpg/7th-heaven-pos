@@ -2196,13 +2196,25 @@ var FIXED_OVERHEADS_CONFIG = [
   { id: "electricity_bill", name: "Electricity Bill (approx)", schedule: "Before due date" },
   { id: "royalty", name: "Royalty to the company", schedule: "10th of the Month" }
 ];
-
+// Restore saved overheads from localStorage on load
+(function() {
+  try {
+    var rawBackup = localStorage.getItem("7th_heaven_monthly_overheads_master_v1");
+    if (rawBackup) {
+      var parsed = JSON.parse(rawBackup);
+      state.fixedOverheads = Object.assign({}, parsed, state.fixedOverheads || {});
+    }
+  } catch(e) {
+    console.error("Overheads load error:", e);
+  }
+})();
 function renderAdminFixedOverheadsTable(monthKey) {
   var tbody = document.getElementById("adminFixedOverheadsBody");
   if (!tbody) return;
 
   state.fixedOverheads = state.fixedOverheads || {};
-  var monthData = state.fixedOverheads[monthKey] || {};
+  var revKey = (monthKey && monthKey.indexOf('-') !== -1) ? (monthKey.split('-')[1] + '-' + monthKey.split('-')[0]) : monthKey;
+  var monthData = state.fixedOverheads[monthKey] || state.fixedOverheads[revKey] || {};
 
   var html = "";
  FIXED_OVERHEADS_CONFIG.forEach(function(item, idx) {
@@ -2269,7 +2281,7 @@ function handleOverheadLiveStyle(itemId) {
 }
 function saveAdminFixedOverheads() {
   var ym = document.getElementById('monthlyReportMonth') ? document.getElementById('monthlyReportMonth').value : '';
-  var activeKey = ym ? (ym.split('-')[1] + '-' + ym.split('-')[0]) : '10-2026';
+  var activeKey = ym || (state.activeMonth || '2026-11');
 
   state.fixedOverheads = state.fixedOverheads || {};
   state.fixedOverheads[activeKey] = state.fixedOverheads[activeKey] || {};
