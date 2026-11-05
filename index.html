@@ -609,8 +609,8 @@
     </div>
 
     <div style="flex:1;min-width:130px;">
-      <label style="font-size:11px;font-weight:bold;color:#555;display:block;margin-bottom:4px;">Date (DD-MM-YYYY)</label>
-      <input type="text" id="feDateInput" placeholder="e.g. 23-10-2026" style="width:100%;height:36px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+     <label style="font-size:11px;font-weight:bold;color:#555;display:block;margin-bottom:4px;">Date (Calendar)</label>
+<input type="date" id="feDateInput" style="width:100%;height:36px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
     </div>
 
     <div style="flex:1;min-width:120px;">
@@ -2272,45 +2272,55 @@ function saveAdminFixedOverheads() {
   }
 }
   // ==========================================
-// 🏢 FIXED EXPENSES & AUDIT SCRIPT LOGIC
+// 🏢 FIXED EXPENSES & AUDIT (Admin-Only Entry, Store Audit View)
 // ==========================================
 
-// 1. Initialize fixedExpenses container inside state
+var FIXED_STORAGE_KEY = "7th_heaven_fixed_expenses_master_v1";
+
+// Ensure state container and load local backup
 if (!state.fixedExpenses) {
   state.fixedExpenses = [];
 }
+(function initFixedExpensesStorage() {
+  try {
+    var saved = localStorage.getItem(FIXED_STORAGE_KEY);
+    if (saved) {
+      state.fixedExpenses = JSON.parse(saved);
+    }
+  } catch(e) {
+    console.error("Storage load error", e);
+  }
+})();
 
-// 2. Render Fixed Expenses List & Handle Role Permissions
+// 1. Render Fixed Expenses List with Updated Role Restrictions
 function renderFixedExpenses() {
   var block = document.getElementById('fixedExpensesBlock');
   if (!block) return;
 
-  // HIDE FROM HOME / ROLE-SELECTION SCREEN:
-  // Only display if a role has been logged in
-  if (!state.currentRole) {
+  var rawRole = state.currentRole || sessionStorage.getItem('7th_heaven_user_session_role') || '';
+  var role = rawRole.toString().toLowerCase().trim();
+
+  // Hide completely on Home / Role selection screen
+  if (!role || role === 'null' || role === 'undefined') {
     block.style.display = 'none';
     return;
   } else {
     block.style.display = 'block';
   }
 
-  var isRemote = (state.currentRole === 'remote');
-  var isAdmin = (state.currentRole === 'admin');
+  var isAdmin = (role.indexOf('admin') !== -1);
+  var isStore = (role.indexOf('store') !== -1);
 
   var inputRow = document.getElementById('fixedExpInputRow');
   var actionHeader = document.getElementById('feActionHeader');
   var auditSection = document.getElementById('adminDateRangeAuditSection');
 
-  // Permissions: Only Store and Admin can input/delete fixed expenses
-  if (inputRow) inputRow.style.display = isRemote ? 'none' : 'flex';
-  if (actionHeader) actionHeader.style.display = isRemote ? 'none' : 'table-cell';
-  if (auditSection) auditSection.style.display = isAdmin ? 'block' : 'none';
+  // PERMISSION 1: ONLY Admin can add or delete fixed expenses
+  if (inputRow) inputRow.style.display = isAdmin ? 'flex' : 'none';
+  if (actionHeader) actionHeader.style.display = isAdmin ? 'table-cell' : 'none';
 
-  // Pre-fill active date in the date input
-  var dtInput = document.getElementById('feDateInput');
-  if (dtInput && !dtInput.value && state.activeDate) {
-    dtInput.value = state.activeDate;
-  }
+  // PERMISSION 2: BOTH Admin and Store team can access the custom date-range audit tool
+  if (auditSection) auditSection.style.display = (isAdmin || isStore) ? 'block' : 'none';
 
   var tbody = document.getElementById('fixedExpensesTableBody');
   if (!tbody) return;
@@ -2327,7 +2337,7 @@ function renderFixedExpenses() {
       <td style="padding:8px;">${item.date}</td>
       <td style="padding:8px;font-weight:500;">${item.description}</td>
       <td style="padding:8px;text-align:right;font-weight:bold;color:#C62828;">₹${Number(item.amount).toFixed(2)}</td>
-      ${!isRemote ? `
+      ${isAdmin ? `
         <td style="padding:8px;text-align:center;">
           <button type="button" onclick="deleteFixedExpense(${idx})" style="background:none;border:none;color:#C62828;font-weight:bold;cursor:pointer;font-size:15px;">✕</button>
         </td>` : ''}
@@ -2336,90 +2346,83 @@ function renderFixedExpenses() {
   });
 
   if (allFixed.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:14px;color:#888;">No fixed expenses recorded yet.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="' + (isAdmin ? '4' : '3') + '" style="text-align:center;padding:14px;color:#888;">No fixed expenses logged yet.</td></tr>';
   }
 
   var badge = document.getElementById('fixedExpensesTotalBadge');
   if (badge) badge.innerText = 'Total: ₹' + totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2});
 }
 
-// 3. Add Fixed Expense (Store / Admin) - Correctly Saves to System
+// 2. Add Fixed Expense (Admin Only with Calendar Picker & Permanent Storage)
 function handleAddFixedExpense() {
+  var rawRole = state.currentRole || sessionStorage.getItem('7th_heaven_user_session_role') || '';
+  if (rawRole.toString().toLowerCase().indexOf('admin') === -1) {
+    alert("Unauthorized: Only Admin can log fixed expenses.");
+    return;
+  }
+
   var desc = document.getElementById('feDescriptionSelect').value;
-  var dt = document.getElementById('feDateInput').value.trim();
+  var dtRaw = document.getElementById('feDateInput').value; // Returns YYYY-MM-DD from calendar picker
   var amt = parseFloat(document.getElementById('feAmountInput').value);
 
   if (!desc) { alert("Please select a Description."); return; }
-  if (!dt) { alert("Please enter Date in DD-MM-YYYY format."); return; }
+  if (!dtRaw) { alert("Please pick a Date from the calendar."); return; }
   if (isNaN(amt) || amt <= 0) { alert("Please enter a valid Amount."); return; }
+
+  // Format to standard DD-MM-YYYY for display
+  var parts = dtRaw.split('-');
+  var dtDisplay = parts[2] + '-' + parts[1] + '-' + parts[0];
 
   if (!state.fixedExpenses) state.fixedExpenses = [];
 
   state.fixedExpenses.push({
     description: desc,
-    date: dt,
+    date: dtDisplay,
+    dateRaw: dtRaw,
     amount: amt
   });
 
-  // Reset inputs
+  // Save to persistent storage so it survives reloads
+  try {
+    localStorage.setItem(FIXED_STORAGE_KEY, JSON.stringify(state.fixedExpenses));
+  } catch(e) {}
+
+  // Clear inputs
   document.getElementById('feDescriptionSelect').value = '';
+  document.getElementById('feDateInput').value = '';
   document.getElementById('feAmountInput').value = '';
 
   renderFixedExpenses();
 
-  // SAVE TO MASTER STORAGE & CLOUD
-  if (typeof saveState === 'function') {
-    saveState();
-  }
-  if (typeof syncToCloud === 'function') {
-    syncToCloud();
-  }
-  if (typeof showToast === 'function') {
-    showToast("Fixed expense saved successfully!");
-  }
-  if (typeof renderActiveDay === 'function') {
-    renderActiveDay();
-  }
+  if (typeof saveState === 'function') saveState();
+  if (typeof syncToCloud === 'function') syncToCloud();
+  if (typeof showToast === 'function') showToast("Fixed expense saved successfully!");
+  if (typeof renderActiveDay === 'function') renderActiveDay();
 }
 
-// 4. Delete Fixed Expense - Correctly Saves to System
+// 3. Delete Fixed Expense (Admin Only)
 function deleteFixedExpense(idx) {
+  var rawRole = state.currentRole || sessionStorage.getItem('7th_heaven_user_session_role') || '';
+  if (rawRole.toString().toLowerCase().indexOf('admin') === -1) {
+    alert("Unauthorized: Only Admin can remove fixed expenses.");
+    return;
+  }
+
   if (confirm("Remove this fixed expense?")) {
     state.fixedExpenses.splice(idx, 1);
-    renderFixedExpenses();
+    try {
+      localStorage.setItem(FIXED_STORAGE_KEY, JSON.stringify(state.fixedExpenses));
+    } catch(e) {}
 
-    // SAVE TO MASTER STORAGE & CLOUD
-    if (typeof saveState === 'function') {
-      saveState();
-    }
-    if (typeof syncToCloud === 'function') {
-      syncToCloud();
-    }
-    if (typeof showToast === 'function') {
-      showToast("Fixed expense deleted.");
-    }
-    if (typeof renderActiveDay === 'function') {
-      renderActiveDay();
-    }
+    renderFixedExpenses();
+    if (typeof saveState === 'function') saveState();
+    if (typeof syncToCloud === 'function') syncToCloud();
+    if (typeof showToast === 'function') showToast("Fixed expense removed.");
+    if (typeof renderActiveDay === 'function') renderActiveDay();
   }
 }
 
-// 5. Calculate Fixed Expenses Occurring on or After 23-10-2026
-function getFixedExpensesDeductionFrom(startDNum) {
-  var sum = 0;
-  (state.fixedExpenses || []).forEach(function(item) {
-    var p = (item.date || '').split('-');
-    if (p.length === 3) {
-      var dNum = parseInt(p[2] + p[1] + p[0], 10);
-      if (dNum >= (startDNum || 20261023)) {
-        sum += Number(item.amount) || 0;
-      }
-    }
-  });
-  return sum;
-}
-
-// 6. Admin Custom Date-Range Financial Audit
+// 4. Custom Date-Range Financial Audit (Admin & Store Accessible)
 function runCustomDateAudit() {
   var fVal = document.getElementById('auditFromDate').value; // YYYY-MM-DD
   var tVal = document.getElementById('auditToDate').value;   // YYYY-MM-DD
@@ -2441,7 +2444,7 @@ function runCustomDateAudit() {
   var totDailyExp = 0, totFixedExp = 0;
   var latestDNum = 0, latestCashInHand = 0;
 
-  // Process Daily Sales & Counter Expenses
+  // Aggregate Daily Sales & Counter Expenses
   Object.keys(state.daily || {}).forEach(function(k) {
     var p = k.split('-');
     if (p.length === 3) {
@@ -2473,7 +2476,7 @@ function runCustomDateAudit() {
     }
   });
 
-  // Process Fixed Expenses in Date Range (from 23-10-2026 onwards)
+  // Aggregate Fixed Expenses within date range (from 23-10-2026 onwards)
   (state.fixedExpenses || []).forEach(function(fe) {
     var p = (fe.date || '').split('-');
     if (p.length === 3) {
@@ -2488,7 +2491,7 @@ function runCustomDateAudit() {
   var totOnlineInAccount = totUpi + totSwiggy + totZomato + totOther;
   var netSurplus = totGross - totDailyExp - totFixedExp;
 
-  // Display Output
+  // Display summary metrics
   document.getElementById('auditResultsArea').style.display = 'block';
   document.getElementById('audTotalSales').innerText = '₹' + totGross.toLocaleString('en-IN', {minimumFractionDigits: 2});
   document.getElementById('audDailyExpenses').innerText = '₹' + totDailyExp.toLocaleString('en-IN', {minimumFractionDigits: 2});
@@ -2508,7 +2511,6 @@ function runCustomDateAudit() {
     </tr>
   `;
 }
-
 // 7. Auto-run render when switching roles or loading day
 if (typeof renderActiveDay === 'function') {
   var originalRenderActiveDay = renderActiveDay;
