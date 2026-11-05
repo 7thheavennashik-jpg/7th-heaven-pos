@@ -576,7 +576,7 @@
 <!-- ========================================== -->
 <!-- 🏢 FIXED EXPENSES SECTION                  -->
 <!-- ========================================== -->
-<div id="fixedExpensesBlock" style="margin-top:20px;background:#fff;border-radius:8px;border:1px solid #ddd;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+<div id="fixedExpensesBlock" style="display:none;margin-top:20px;background:#fff;border-radius:8px;border:1px solid #ddd;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.05);">
   <div style="background:#741B47;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;">
     <span style="font-weight:bold;font-size:15px;">🏢 FIXED EXPENSES (Rent, Salaries, Royalty, Bills)</span>
     <span id="fixedExpensesTotalBadge" style="background:#FFE082;color:#741B47;padding:2px 8px;border-radius:4px;font-weight:bold;font-size:13px;">Total: ₹0.00</span>
@@ -2282,6 +2282,18 @@ if (!state.fixedExpenses) {
 
 // 2. Render Fixed Expenses List & Handle Role Permissions
 function renderFixedExpenses() {
+  var block = document.getElementById('fixedExpensesBlock');
+  if (!block) return;
+
+  // HIDE FROM HOME / ROLE-SELECTION SCREEN:
+  // Only display if a role has been logged in
+  if (!state.currentRole) {
+    block.style.display = 'none';
+    return;
+  } else {
+    block.style.display = 'block';
+  }
+
   var isRemote = (state.currentRole === 'remote');
   var isAdmin = (state.currentRole === 'admin');
 
@@ -2294,7 +2306,7 @@ function renderFixedExpenses() {
   if (actionHeader) actionHeader.style.display = isRemote ? 'none' : 'table-cell';
   if (auditSection) auditSection.style.display = isAdmin ? 'block' : 'none';
 
-  // Pre-fill active date in the date input for convenience
+  // Pre-fill active date in the date input
   var dtInput = document.getElementById('feDateInput');
   if (dtInput && !dtInput.value && state.activeDate) {
     dtInput.value = state.activeDate;
@@ -2331,7 +2343,7 @@ function renderFixedExpenses() {
   if (badge) badge.innerText = 'Total: ₹' + totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2});
 }
 
-// 3. Add Fixed Expense (Store / Admin)
+// 3. Add Fixed Expense (Store / Admin) - Correctly Saves to System
 function handleAddFixedExpense() {
   var desc = document.getElementById('feDescriptionSelect').value;
   var dt = document.getElementById('feDateInput').value.trim();
@@ -2354,17 +2366,41 @@ function handleAddFixedExpense() {
   document.getElementById('feAmountInput').value = '';
 
   renderFixedExpenses();
-  if (typeof saveStateToCloud === 'function') saveStateToCloud();
-  if (typeof renderActiveDay === 'function') renderActiveDay();
+
+  // SAVE TO MASTER STORAGE & CLOUD
+  if (typeof saveState === 'function') {
+    saveState();
+  }
+  if (typeof syncToCloud === 'function') {
+    syncToCloud();
+  }
+  if (typeof showToast === 'function') {
+    showToast("Fixed expense saved successfully!");
+  }
+  if (typeof renderActiveDay === 'function') {
+    renderActiveDay();
+  }
 }
 
-// 4. Delete Fixed Expense
+// 4. Delete Fixed Expense - Correctly Saves to System
 function deleteFixedExpense(idx) {
   if (confirm("Remove this fixed expense?")) {
     state.fixedExpenses.splice(idx, 1);
     renderFixedExpenses();
-    if (typeof saveStateToCloud === 'function') saveStateToCloud();
-    if (typeof renderActiveDay === 'function') renderActiveDay();
+
+    // SAVE TO MASTER STORAGE & CLOUD
+    if (typeof saveState === 'function') {
+      saveState();
+    }
+    if (typeof syncToCloud === 'function') {
+      syncToCloud();
+    }
+    if (typeof showToast === 'function') {
+      showToast("Fixed expense deleted.");
+    }
+    if (typeof renderActiveDay === 'function') {
+      renderActiveDay();
+    }
   }
 }
 
