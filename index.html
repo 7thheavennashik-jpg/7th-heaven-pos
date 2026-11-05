@@ -2205,22 +2205,33 @@ function renderAdminFixedOverheadsTable(monthKey) {
   var monthData = state.fixedOverheads[monthKey] || {};
 
   var html = "";
-  FIXED_OVERHEADS_CONFIG.forEach(function(item, idx) {
-    var saved = monthData[item.id] || { amount: "", mode: "Bank Transfer" };
-    html += '<tr style="border-bottom: 1px solid var(--rule, #eee); height: 32px;">' +
+ FIXED_OVERHEADS_CONFIG.forEach(function(item, idx) {
+    var saved = monthData[item.id] || { amount: "", mode: "Bank Transfer", date: "" };
+    var isPaid = saved.amount !== undefined && saved.amount !== "" && Number(saved.amount) > 0;
+    var rowBg = isPaid ? "#e8f5e9" : "transparent";
+    var amtColor = isPaid ? "#1b5e20" : "#333";
+    var amtWeight = isPaid ? "bold" : "normal";
+
+    html += '<tr id="row_overhead_' + item.id + '" style="border-bottom: 1px solid var(--rule, #eee); height: 36px; background-color: ' + rowBg + '; transition: background 0.2s;">' +
       '<td style="text-align: center; font-family: monospace; color: #777;">' + (idx + 1) + '</td>' +
-      '<td style="padding: 6px 10px; font-weight: 600; color: #333;">' + item.name + '</td>' +
-      '<td style="padding: 6px 10px; color: #666; font-size: 11px;">' + item.schedule + '</td>' +
+      '<td style="padding: 6px 10px; font-weight: 600; color: #333;">' + item.name + (isPaid ? ' <span style="font-size: 10px; background: #2e7d32; color: #fff; padding: 2px 6px; border-radius: 4px; vertical-align: middle;">PAID</span>' : '') + '</td>' +
       '<td style="padding: 4px 6px;">' +
-        '<input type="number" id="adm_fixed_amt_' + item.id + '" value="' + (saved.amount !== undefined ? saved.amount : "") + '" placeholder="0" ' +
-        'oninput="calculateAdminFixedTotal()" style="width: 100%; text-align: right; padding: 4px; font-family: \'IBM Plex Mono\', monospace; border: 1px solid #ccc; border-radius: 3px;">' +
+        '<input type="date" id="adm_fixed_date_' + item.id + '" value="' + (saved.date || "") + '" ' +
+          'onchange="handleOverheadLiveStyle(\'' + item.id + '\')" ' +
+          'style="width: 100%; height: 28px; padding: 2px 4px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; background: #fff;">' +
       '</td>' +
       '<td style="padding: 4px 6px;">' +
-        '<select id="adm_fixed_mode_' + item.id + '" style="width: 100%; padding: 4px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px;">' +
+        '<input type="number" id="adm_fixed_amt_' + item.id + '" value="' + (saved.amount !== undefined ? saved.amount : "") + '" placeholder="0" ' +
+          'oninput="calculateAdminFixedTotal(); handleOverheadLiveStyle(\'' + item.id + '\')" ' +
+          'style="width: 100%; height: 28px; text-align: right; padding: 2px 6px; font-family: \'IBM Plex Mono\', monospace; font-size: 12px; font-weight: ' + amtWeight + '; color: ' + amtColor + '; border: 1px solid ' + (isPaid ? '#2e7d32' : '#ccc') + '; border-radius: 3px; background: #fff;">' +
+      '</td>' +
+      '<td style="padding: 4px 6px;">' +
+        '<select id="adm_fixed_mode_' + item.id + '" style="width: 100%; height: 28px; padding: 2px 4px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; background: #fff;">' +
           '<option value="Bank Transfer"' + (saved.mode === 'Bank Transfer' ? ' selected' : '') + '>Bank Transfer</option>' +
           '<option value="UPI / GPay"' + (saved.mode === 'UPI / GPay' ? ' selected' : '') + '>UPI / GPay</option>' +
           '<option value="Net Banking"' + (saved.mode === 'Net Banking' ? ' selected' : '') + '>Net Banking</option>' +
           '<option value="Cheque"' + (saved.mode === 'Cheque' ? ' selected' : '') + '>Cheque</option>' +
+          '<option value="Cash"' + (saved.mode === 'Cash' ? ' selected' : '') + '>Cash</option>' +
         '</select>' +
       '</td>' +
     '</tr>';
@@ -2243,7 +2254,19 @@ function calculateAdminFixedTotal() {
   }
   return total;
 }
+function handleOverheadLiveStyle(itemId) {
+  var row = document.getElementById('row_overhead_' + itemId);
+  var amtInput = document.getElementById('adm_fixed_amt_' + itemId);
+  if (!row || !amtInput) return;
 
+  var val = parseFloat(amtInput.value);
+  var isPaid = !isNaN(val) && val > 0;
+
+  row.style.backgroundColor = isPaid ? '#e8f5e9' : 'transparent';
+  amtInput.style.borderColor = isPaid ? '#2e7d32' : '#ccc';
+  amtInput.style.color = isPaid ? '#1b5e20' : '#333';
+  amtInput.style.fontWeight = isPaid ? 'bold' : 'normal';
+}
 function saveAdminFixedOverheads() {
   var ym = document.getElementById('monthlyReportMonth') ? document.getElementById('monthlyReportMonth').value : '';
   var activeKey = ym ? (ym.split('-')[1] + '-' + ym.split('-')[0]) : '10-2026';
@@ -2253,15 +2276,19 @@ function saveAdminFixedOverheads() {
 
   FIXED_OVERHEADS_CONFIG.forEach(function(item) {
     var amtEl = document.getElementById("adm_fixed_amt_" + item.id);
-    var modeEl = document.getElementById("adm_fixed_mode_" + item.id);
-    if (amtEl && modeEl) {
-      state.fixedOverheads[activeKey][item.id] = {
-        amount: amtEl.value !== "" ? Number(amtEl.value) : "",
-        mode: modeEl.value
-      };
-    }
+var modeEl = document.getElementById("adm_fixed_mode_" + item.id);
+var dateEl = document.getElementById("adm_fixed_date_" + item.id);
+if (amtEl && modeEl) {
+  state.fixedOverheads[activeKey][item.id] = {
+    amount: amtEl.value !== "" ? Number(amtEl.value) : "",
+    mode: modeEl.value,
+    date: dateEl ? dateEl.value : ""
+  };
+}
   });
-
+try {
+      localStorage.setItem("7th_heaven_monthly_overheads_master_v1", JSON.stringify(state.fixedOverheads));
+    } catch(e) {}
   if (typeof saveState === "function") {
     saveState();
   }
