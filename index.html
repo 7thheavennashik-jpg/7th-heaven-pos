@@ -1522,14 +1522,14 @@ function exportMonthlyReportToExcel(){
     ];
 
     // Sheet 2: EXPENSES
-    var expHeaders = ['DATE:', 'General Expenses', 'Raw material', 'Daily Expenses', 'Staff Food', 'Salary', 'Royalty', 'Electricity Bill', 'Shop & Room Rent', 'GST', 'Online Comm', 'Packaging Material', 'Other', 'Total'];
+    var expHeaders = ['DATE:', 'General Expenses', 'Total'];
     var p2 = [expHeaders];
 
     var grandSales = 0, grandExp = 0;
     var grandCash = 0, grandUpi = 0, grandSwiggy = 0, grandZomato = 0, grandOther = 0;
     var operatingDays = 0;
 
-   var sortedDates = Object.keys(state.daily).filter(function(k){
+    var sortedDates = Object.keys(state.daily).filter(function(k){
       var p = k.split('-');
       if(p.length !== 3) return false;
       var dNum = parseInt(p[2] + p[1] + p[0], 10);
@@ -1550,24 +1550,9 @@ function exportMonthlyReportToExcel(){
         ot += Number(r.other) || 0;
       });
 
-      var dayExpRow = [dateKey, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       (d.expenses || []).forEach(function(e){
-        var amt = Number(e.amount) || 0;
-        dayExp += amt;
-        var cat = (e.category || "").toLowerCase();
-        if (cat.indexOf("raw") !== -1) dayExpRow[2] += amt;
-        else if (cat.indexOf("daily") !== -1) dayExpRow[3] += amt;
-        else if (cat.indexOf("food") !== -1) dayExpRow[4] += amt;
-        else if (cat.indexOf("salary") !== -1) dayExpRow[5] += amt;
-        else if (cat.indexOf("royalty") !== -1) dayExpRow[6] += amt;
-        else if (cat.indexOf("electric") !== -1) dayExpRow[7] += amt;
-        else if (cat.indexOf("rent") !== -1) dayExpRow[8] += amt;
-        else if (cat.indexOf("gst") !== -1) dayExpRow[9] += amt;
-        else if (cat.indexOf("online") !== -1 || cat.indexOf("comm") !== -1) dayExpRow[10] += amt;
-        else if (cat.indexOf("pack") !== -1) dayExpRow[11] += amt;
-        else dayExpRow[1] += amt;
+        dayExp += Number(e.amount) || 0;
       });
-      dayExpRow[13] = dayExp;
 
       var dayTot = c + up + sw + z + ot;
       grandSales += dayTot;
@@ -1581,12 +1566,11 @@ function exportMonthlyReportToExcel(){
       if (dayTot > 0 || dayExp > 0) operatingDays++;
 
       p1.push([dateKey, c, up, sw, z, ot, dayTot]);
-      p2.push(dayExpRow);
+      p2.push([dateKey, dayExp, dayExp]);
     });
 
     p1.push(["TOTAL", grandCash, grandUpi, grandSwiggy, grandZomato, grandOther, grandSales]);
-    p2.push(["TOTAL", "", "", "", "", "", "", "", "", "", "", "", "", grandExp]);
-
+    p2.push(["TOTAL", grandExp, grandExp]);
     var ws1 = XLSX.utils.aoa_to_sheet(p1);
     var ws2 = XLSX.utils.aoa_to_sheet(p2);
     XLSX.utils.book_append_sheet(wb, ws1, "Monthly sales");
@@ -1618,36 +1602,7 @@ function exportMonthlyReportToExcel(){
     ];
     var ws4 = XLSX.utils.aoa_to_sheet(p4);
     XLSX.utils.book_append_sheet(wb, ws4, "Profit share");
-// --- SHEET 5: FIXED MONTHLY OVERHEADS (15 LINE ITEMS) ---
-    var fixedHdr = ['#', 'Description', 'Processing Schedule', 'Amount Paid (₹)', 'Payment Mode'];
-    var pFixed = [
-      ["Nashik"],
-      ["7th Heaven Nashik, Indiranagar"],
-      ["Month : " + ym],
-      ["FIXED MONTHLY OVERHEADS"],
-      fixedHdr
-    ];
 
-    var monthFixedData = (state.fixedOverheads && state.fixedOverheads[mFilter]) ? state.fixedOverheads[mFilter] : {};
-    var totalFixedPaid = 0;
-
-    FIXED_OVERHEADS_CONFIG.forEach(function(item, idx) {
-      var entry = monthFixedData[item.id] || { amount: 0, mode: "Bank Transfer" };
-      var amt = Number(entry.amount) || 0;
-      totalFixedPaid += amt;
-      pFixed.push([
-        idx + 1,
-        item.name,
-        item.schedule,
-        amt,
-        entry.mode || "Bank Transfer"
-      ]);
-    });
-
-    pFixed.push(["", "TOTAL FIXED OVERHEADS PAID", "", totalFixedPaid, ""]);
-
-    var wsFixed = XLSX.utils.aoa_to_sheet(pFixed);
-    XLSX.utils.book_append_sheet(wb, wsFixed, "FIXED_OVERHEADS");
     triggerExcelDownload(wb, "7th_Heaven_MONTHLY_" + ym + ".xlsx");
   } catch(err) {
     alert("Monthly export failed: " + err.message);
