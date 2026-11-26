@@ -2495,8 +2495,8 @@ function runCustomDateAudit() {
     </tr>
   `;
 }
-  // ==========================================
-// 💵 COUNTER DENOMINATION CALCULATOR & ROLE LOCK
+ // ==========================================
+// 💵 COUNTER DENOMINATION CALCULATOR & STRICT REMOTE PARTNER LOCK
 // ==========================================
 var DENOM_VALUES = [500, 200, 100, 50, 20, 10, 5, 2, 1];
 var DENOM_STORAGE_KEY = "7th_heaven_counter_denominations_v1";
@@ -2515,19 +2515,48 @@ function saveDenomBackup(allData) {
   } catch (e) {}
 }
 
+// Strict permission check: ONLY Admin and Store Partner can edit; Remote Partner is locked
+function canEditCounterDenomination() {
+  var bannerText = "";
+  var allEls = document.querySelectorAll("div, span, p, strong");
+  for (var i = 0; i < allEls.length; i++) {
+    var txt = (allEls[i].textContent || "").trim();
+    if (txt.indexOf("Signed in as:") === 0 && txt.length < 80) {
+      bannerText = txt.toLowerCase();
+      break;
+    }
+  }
+
+  var rawRole = (
+    bannerText ||
+    (typeof state !== "undefined" && (state.currentRole || state.role)) ||
+    sessionStorage.getItem("7th_heaven_user_session_role") ||
+    localStorage.getItem("7th_heaven_user_session_role") ||
+    ""
+  ).toString().toLowerCase().trim();
+
+  // Block Remote Partner / View Only roles immediately
+  if (rawRole.indexOf("remote") !== -1 || rawRole.indexOf("view") !== -1) {
+    return false;
+  }
+
+  // Allow Admin and Store Partner
+  if (rawRole.indexOf("admin") !== -1 || rawRole.indexOf("store") !== -1) {
+    return true;
+  }
+
+  return false;
+}
+
 function renderCounterDenomination() {
   var tbody = document.getElementById("counterDenominationBody");
   if (!tbody) return;
 
-  var activeDate = state.activeDate || "";
-  var day = (state.daily && state.daily[activeDate]) ? state.daily[activeDate] : {};
+  var activeDate = (typeof state !== "undefined" && state.activeDate) ? state.activeDate : "";
+  var day = (typeof state !== "undefined" && state.daily && state.daily[activeDate]) ? state.daily[activeDate] : {};
   var backup = getDenomBackup();
   var savedDenoms = day.denominations || backup[activeDate] || {};
-
-  // Role Lock: ONLY Admin and Store can edit
-  var rawRole = state.currentRole || sessionStorage.getItem("7th_heaven_user_session_role") || "";
-  var role = rawRole.toString().toLowerCase().trim();
-  var canEdit = (role.indexOf("admin") !== -1 || role.indexOf("store") !== -1);
+  var canEdit = canEditCounterDenomination();
 
   var html = "";
   var grandTotal = 0;
@@ -2543,8 +2572,8 @@ function renderCounterDenomination() {
         '<input type="number" min="0" id="denom_count_' + val + '" ' +
           'value="' + (count > 0 ? count : '') + '" ' +
           'placeholder="0" ' +
-          (canEdit ? 'oninput="updateCounterDenomination()"' : 'disabled') + ' ' +
-          'style="width: 90%; height: 26px; text-align: center; font-weight: bold; border: 1px solid ' + (canEdit ? '#bbb' : 'transparent') + '; border-radius: 3px; background: ' + (canEdit ? '#fff' : '#f5f5f5') + ';">' +
+          (canEdit ? 'oninput="updateCounterDenomination()"' : 'disabled readonly') + ' ' +
+          'style="width: 90%; height: 26px; text-align: center; font-weight: bold; border: 1px solid ' + (canEdit ? '#bbb' : '#e0e0e0') + '; border-radius: 3px; background: ' + (canEdit ? '#fff' : '#eeeeee') + '; color: ' + (canEdit ? '#000' : '#666') + '; cursor: ' + (canEdit ? 'text' : 'not-allowed') + ';">' +
       '</td>' +
       '<td id="denom_total_' + val + '" style="padding: 6px 8px; text-align: right; font-weight: 600; color: #222;">' +
         rowTotal.toLocaleString("en-IN") +
@@ -2561,9 +2590,7 @@ function renderCounterDenomination() {
 }
 
 function updateCounterDenomination() {
-  var rawRole = state.currentRole || sessionStorage.getItem("7th_heaven_user_session_role") || "";
-  var role = rawRole.toString().toLowerCase().trim();
-  if (role.indexOf("admin") === -1 && role.indexOf("store") === -1) return;
+  if (!canEditCounterDenomination()) return;
 
   var activeDate = state.activeDate;
   if (!activeDate || !state.daily[activeDate]) return;
@@ -2600,17 +2627,19 @@ function updateCounterDenomination() {
   if (typeof saveState === "function") saveState();
   if (typeof syncToCloud === "function") syncToCloud();
 }
-// 7. Auto-run render when switching roles or loading day
+
+// Auto-run render when switching roles, changing dates, or loading page
 if (typeof renderActiveDay === 'function') {
   var originalRenderActiveDay = renderActiveDay;
   renderActiveDay = function() {
     originalRenderActiveDay.apply(this, arguments);
-    renderFixedExpenses();
+    if (typeof renderFixedExpenses === 'function') renderFixedExpenses();
     renderCounterDenomination();
   };
 }
-  renderCounterDenomination();
+renderCounterDenomination();
 setTimeout(renderCounterDenomination, 300);
+setTimeout(renderCounterDenomination, 1000);
 </script>
 </body>
 </html>
