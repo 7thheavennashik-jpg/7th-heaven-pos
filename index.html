@@ -2705,17 +2705,16 @@ function updateMonthlySafeDropTotal() {
   }
 }
 function isSafeDropEditable() {
-  var bodyText = document.body ? document.body.innerText : "";
-  if (bodyText.indexOf("Remote Partner") !== -1 || bodyText.indexOf("View Only") !== -1) {
-    return false;
+  var statusLine = "";
+  var allEls = document.querySelectorAll("div, span, p");
+  for (var i = 0; i < allEls.length; i++) {
+    var txt = (allEls[i].textContent || "").trim();
+    if (txt.indexOf("Signed in as:") === 0 && txt.length < 80) {
+      statusLine = txt;
+      break;
+    }
   }
-  if (typeof canEditCounterDenomination === "function") {
-    return canEditCounterDenomination();
-  }
-  if (typeof currentRole !== "undefined" && String(currentRole).toLowerCase().indexOf("remote") !== -1) {
-    return false;
-  }
-  if (typeof userRole !== "undefined" && String(userRole).toLowerCase().indexOf("remote") !== -1) {
+  if (statusLine.indexOf("Remote Partner") !== -1 || statusLine.indexOf("View Only") !== -1) {
     return false;
   }
   return true;
