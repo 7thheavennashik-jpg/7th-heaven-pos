@@ -371,6 +371,29 @@
               </tbody>
             </table>
           </div>
+         <!-- COUNTER DENOMINATION TABLE (Below Cash Details) -->
+<div id="counterDenominationCard" style="margin-top: 14px; background: #fff; border: 1px solid #4A1521; border-radius: 6px; overflow: hidden;">
+  <div style="background: #C0CA33; color: #1B1B1B; padding: 8px 10px; font-weight: bold; text-align: center; border-bottom: 1px solid #4A1521; font-size: 13px;">
+    Counter Denomination
+  </div>
+  <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: center;">
+    <thead>
+      <tr style="background: #F5F5F5; border-bottom: 1px solid #ccc; font-size: 11px; color: #555;">
+        <th style="padding: 5px; border-right: 1px solid #ccc; width: 30%;">Note / Coin</th>
+        <th style="padding: 5px; border-right: 1px solid #ccc; width: 35%;">Count</th>
+        <th style="padding: 5px; width: 35%;">Amount (₹)</th>
+      </tr>
+    </thead>
+    <tbody id="counterDenominationBody">
+    </tbody>
+    <tfoot>
+      <tr style="background: #E0F7FA; border-top: 2px solid #4A1521; font-weight: bold;">
+        <td colspan="2" style="padding: 8px; text-align: right; border-right: 1px solid #ccc;">TOTAL CASH:</td>
+        <td id="denomGrandTotal" style="padding: 8px; text-align: right; color: #006064; font-size: 14px;">₹0</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
         </div>
       </div>
 
@@ -2472,12 +2495,118 @@ function runCustomDateAudit() {
     </tr>
   `;
 }
+  // ==========================================
+// 💵 COUNTER DENOMINATION CALCULATOR & ROLE LOCK
+// ==========================================
+var DENOM_VALUES = [500, 200, 100, 50, 20, 10, 5, 2, 1];
+var DENOM_STORAGE_KEY = "7th_heaven_counter_denominations_v1";
+
+function getDenomBackup() {
+  try {
+    return JSON.parse(localStorage.getItem(DENOM_STORAGE_KEY) || "{}");
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveDenomBackup(allData) {
+  try {
+    localStorage.setItem(DENOM_STORAGE_KEY, JSON.stringify(allData));
+  } catch (e) {}
+}
+
+function renderCounterDenomination() {
+  var tbody = document.getElementById("counterDenominationBody");
+  if (!tbody) return;
+
+  var activeDate = state.activeDate || "";
+  var day = (state.daily && state.daily[activeDate]) ? state.daily[activeDate] : {};
+  var backup = getDenomBackup();
+  var savedDenoms = day.denominations || backup[activeDate] || {};
+
+  // Role Lock: ONLY Admin and Store can edit
+  var rawRole = state.currentRole || sessionStorage.getItem("7th_heaven_user_session_role") || "";
+  var role = rawRole.toString().toLowerCase().trim();
+  var canEdit = (role.indexOf("admin") !== -1 || role.indexOf("store") !== -1);
+
+  var html = "";
+  var grandTotal = 0;
+
+  DENOM_VALUES.forEach(function(val) {
+    var count = Number(savedDenoms[val]) || 0;
+    var rowTotal = val * count;
+    grandTotal += rowTotal;
+
+    html += '<tr style="border-bottom: 1px solid #ddd;">' +
+      '<td style="padding: 6px; font-weight: bold; color: #4A1521; border-right: 1px solid #ccc; background: #FAFAFA;">' + val + '</td>' +
+      '<td style="padding: 4px; border-right: 1px solid #ccc;">' +
+        '<input type="number" min="0" id="denom_count_' + val + '" ' +
+          'value="' + (count > 0 ? count : '') + '" ' +
+          'placeholder="0" ' +
+          (canEdit ? 'oninput="updateCounterDenomination()"' : 'disabled') + ' ' +
+          'style="width: 90%; height: 26px; text-align: center; font-weight: bold; border: 1px solid ' + (canEdit ? '#bbb' : 'transparent') + '; border-radius: 3px; background: ' + (canEdit ? '#fff' : '#f5f5f5') + ';">' +
+      '</td>' +
+      '<td id="denom_total_' + val + '" style="padding: 6px 8px; text-align: right; font-weight: 600; color: #222;">' +
+        rowTotal.toLocaleString("en-IN") +
+      '</td>' +
+    '</tr>';
+  });
+
+  tbody.innerHTML = html;
+
+  var grandTotalEl = document.getElementById("denomGrandTotal");
+  if (grandTotalEl) {
+    grandTotalEl.innerText = "₹" + grandTotal.toLocaleString("en-IN");
+  }
+}
+
+function updateCounterDenomination() {
+  var rawRole = state.currentRole || sessionStorage.getItem("7th_heaven_user_session_role") || "";
+  var role = rawRole.toString().toLowerCase().trim();
+  if (role.indexOf("admin") === -1 && role.indexOf("store") === -1) return;
+
+  var activeDate = state.activeDate;
+  if (!activeDate || !state.daily[activeDate]) return;
+
+  var denomObj = {};
+  var grandTotal = 0;
+
+  DENOM_VALUES.forEach(function(val) {
+    var inp = document.getElementById("denom_count_" + val);
+    var count = inp ? (parseInt(inp.value, 10) || 0) : 0;
+    if (count < 0) count = 0;
+
+    denomObj[val] = count;
+    var rowTotal = val * count;
+    grandTotal += rowTotal;
+
+    var rowTotalEl = document.getElementById("denom_total_" + val);
+    if (rowTotalEl) {
+      rowTotalEl.innerText = rowTotal.toLocaleString("en-IN");
+    }
+  });
+
+  state.daily[activeDate].denominations = denomObj;
+
+  var backup = getDenomBackup();
+  backup[activeDate] = denomObj;
+  saveDenomBackup(backup);
+
+  var grandTotalEl = document.getElementById("denomGrandTotal");
+  if (grandTotalEl) {
+    grandTotalEl.innerText = "₹" + grandTotal.toLocaleString("en-IN");
+  }
+
+  if (typeof saveState === "function") saveState();
+  if (typeof syncToCloud === "function") syncToCloud();
+}
 // 7. Auto-run render when switching roles or loading day
 if (typeof renderActiveDay === 'function') {
   var originalRenderActiveDay = renderActiveDay;
   renderActiveDay = function() {
     originalRenderActiveDay.apply(this, arguments);
     renderFixedExpenses();
+    renderCounterDenomination();
   };
 }
 </script>
