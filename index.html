@@ -2704,6 +2704,23 @@ function updateMonthlySafeDropTotal() {
     monthEl.innerText = "₹" + monthSum.toLocaleString("en-IN");
   }
 }
+function isSafeDropEditable() {
+  var bodyText = document.body ? document.body.innerText : "";
+  if (bodyText.indexOf("Remote Partner") !== -1 || bodyText.indexOf("View Only") !== -1) {
+    return false;
+  }
+  if (typeof canEditCounterDenomination === "function") {
+    return canEditCounterDenomination();
+  }
+  if (typeof currentRole !== "undefined" && String(currentRole).toLowerCase().indexOf("remote") !== -1) {
+    return false;
+  }
+  if (typeof userRole !== "undefined" && String(userRole).toLowerCase().indexOf("remote") !== -1) {
+    return false;
+  }
+  return true;
+}
+
 function applySafeDropToCashDetails() {
   var activeDate = (typeof state !== "undefined" && state.activeDate) ? state.activeDate : "";
   var inp = document.getElementById("reconcileSafeDropInput");
@@ -2714,12 +2731,16 @@ function applySafeDropToCashDetails() {
   var safeDropVal = getSavedSafeDropForDate(activeDate);
 
   if (inp) {
-    var canEdit = (typeof canEditCounterDenomination === "function") ? canEditCounterDenomination() : true;
+    var canEdit = isSafeDropEditable();
     inp.value = safeDropVal > 0 ? safeDropVal : "";
     inp.disabled = !canEdit;
     inp.readOnly = !canEdit;
+    inp.tabIndex = canEdit ? 0 : -1;
     inp.style.background = canEdit ? "#FFFDE7" : "#EEEEEE";
+    inp.style.color = canEdit ? "#4A1521" : "#666666";
+    inp.style.borderColor = canEdit ? "#bbb" : "#d5d5d5";
     inp.style.cursor = canEdit ? "text" : "not-allowed";
+    inp.style.pointerEvents = canEdit ? "auto" : "none";
   }
 
   if (totalEl && expEl && actualEl) {
@@ -2727,7 +2748,8 @@ function applySafeDropToCashDetails() {
     var cashExp = parseFloat((expEl.innerText || "0").replace(/[^0-9.-]/g, "")) || 0;
     var netActualCash = totalInflow - cashExp - safeDropVal;
     actualEl.innerText = netActualCash.toLocaleString("en-IN");
-updateMonthlySafeDropTotal();
+    updateMonthlySafeDropTotal();
+
     if (typeof state !== "undefined" && state.daily && state.daily[activeDate]) {
       state.daily[activeDate].actualCash = netActualCash;
       state.daily[activeDate].closingCash = netActualCash;
@@ -2736,7 +2758,10 @@ updateMonthlySafeDropTotal();
 }
 
 function updateSafeDropAmount() {
-  if (typeof canEditCounterDenomination === "function" && !canEditCounterDenomination()) return;
+  if (!isSafeDropEditable()) {
+    applySafeDropToCashDetails();
+    return;
+  }
 
   var activeDate = (typeof state !== "undefined" && state.activeDate) ? state.activeDate : "";
   if (!activeDate) return;
@@ -2758,7 +2783,6 @@ function updateSafeDropAmount() {
   if (typeof saveState === "function") saveState();
   if (typeof syncToCloud === "function") syncToCloud();
 }
-
 // Re-apply safe drop calculation whenever renderActiveDay runs
 if (typeof renderActiveDay === "function") {
   var prevRenderActiveDayWithSafeDrop = renderActiveDay;
