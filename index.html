@@ -370,7 +370,7 @@
                 </tr>
               </tbody>
             </table>
-          </div>
+  
          <!-- COUNTER DENOMINATION TABLE (Below Cash Details) -->
 <div id="counterDenominationCard" style="margin-top: 14px; background: #fff; border: 1px solid #4A1521; border-radius: 6px; overflow: hidden;">
   <div style="background: #C0CA33; color: #1B1B1B; padding: 8px 10px; font-weight: bold; text-align: center; border-bottom: 1px solid #4A1521; font-size: 13px;">
@@ -2609,6 +2609,8 @@ if (typeof renderActiveDay === 'function') {
     renderCounterDenomination();
   };
 }
+  renderCounterDenomination();
+setTimeout(renderCounterDenomination, 300);
 </script>
 </body>
 </html>
