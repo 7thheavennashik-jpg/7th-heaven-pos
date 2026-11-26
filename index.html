@@ -2767,6 +2767,13 @@ if (typeof renderActiveDay === "function") {
     applySafeDropToCashDetails();
   };
 }
+  if (typeof saveState === "function") {
+  var prevSaveStateWithSafeDrop = saveState;
+  saveState = function() {
+    prevSaveStateWithSafeDrop.apply(this, arguments);
+    applySafeDropToCashDetails();
+  };
+}
 applySafeDropToCashDetails();
 setTimeout(applySafeDropToCashDetails, 400);
 setTimeout(applySafeDropToCashDetails, 1100);
