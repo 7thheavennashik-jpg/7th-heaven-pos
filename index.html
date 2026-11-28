@@ -2802,10 +2802,11 @@ if (typeof renderActiveDay === "function") {
     applySafeDropToCashDetails();
   };
 }
-  // ==========================================
-// 🔒 ADMIN-ONLY OPENING CASH OVERRIDE (Locked for Store & Remote Partners)
+ // ==========================================
+// 🔒 CONTINUOUS DAILY OPENING CASH CARRY-FORWARD (Resets clean from Admin baseline)
 // ==========================================
-var MANUAL_OP_CASH_KEY = "7th_heaven_manual_op_cash_v1";
+var MANUAL_OP_CASH_KEY = "7th_heaven_daily_op_cash_v2";
+var CASH_RESET_BASELINE_DATE = "28-11-2026"; // Ignores all old historical carryovers before this date
 
 function isAdminRoleOnly() {
   var allEls = document.querySelectorAll("div, span, p");
@@ -2826,42 +2827,77 @@ function getManualOpCashBackup() {
   }
 }
 
-function getEffectiveOpeningCashForDate(dateStr) {
+function parseDateDDMMYYYY(dateStr) {
+  var p = String(dateStr || "").split("-");
+  if (p.length !== 3) return 0;
+  return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0])).getTime();
+}
+
+function getDayCashSalesFromState(dayObj) {
+  if (!dayObj) return 0;
+  if (Array.isArray(dayObj.sales)) {
+    var sum = 0;
+    dayObj.sales.forEach(function(r) {
+      sum += Number(r.cash !== undefined ? r.cash : (r.CASH || 0)) || 0;
+    });
+    return sum;
+  }
+  return Number(dayObj.cashSales) || 0;
+}
+
+function getDayExpensesFromState(dayObj) {
+  if (!dayObj) return 0;
+  if (Array.isArray(dayObj.expenses)) {
+    var sum = 0;
+    dayObj.expenses.forEach(function(e) {
+      sum += Number(e.amount !== undefined ? e.amount : (e.amt || 0)) || 0;
+    });
+    return sum;
+  }
+  return Number(dayObj.totalExpenses) || 0;
+}
+
+function getOpeningCashForDate(dateStr) {
+  if (!dateStr) return 0;
   var backup = getManualOpCashBackup();
   var day = (typeof state !== "undefined" && state.daily && state.daily[dateStr]) ? state.daily[dateStr] : {};
+
+  // 1. If Admin explicitly set an Opening Cash on this date, use it
   if (day.manualOpeningCash !== undefined) return Number(day.manualOpeningCash) || 0;
   if (backup[dateStr] !== undefined) return Number(backup[dateStr]) || 0;
 
-  // Walk backward from previous days to carry forward from the most recent revised Actual cash
+  // 2. Ignore all old historical carryovers on or before the reset baseline date
+  var targetTs = parseDateDDMMYYYY(dateStr);
+  var baselineTs = parseDateDDMMYYYY(CASH_RESET_BASELINE_DATE);
+  if (targetTs <= baselineTs) return 0;
+
+  // 3. Automatically carry forward previous day's closing Actual cash
+  var allDateMap = {};
   if (typeof state !== "undefined" && state.daily) {
-    var sortedDates = Object.keys(state.daily).sort(function(a, b) {
-      var pa = a.split("-"), pb = b.split("-");
-      return new Date(pa[2], pa[1] - 1, pa[0]) - new Date(pb[2], pb[1] - 1, pb[0]);
-    });
-    var idx = sortedDates.indexOf(dateStr);
-    if (idx > 0) {
-      var prevDate = sortedDates[idx - 1];
-      var prevDay = state.daily[prevDate] || {};
-      var prevOp = getEffectiveOpeningCashForDate(prevDate);
-      var prevCashSales = 0;
-      if (Array.isArray(prevDay.sales)) {
-        prevDay.sales.forEach(function(r) { prevCashSales += Number(r.cash || r.CASH || 0) || 0; });
-      } else if (prevDay.cashSales !== undefined) {
-        prevCashSales = Number(prevDay.cashSales) || 0;
-      }
-      var prevExp = 0;
-      if (Array.isArray(prevDay.expenses)) {
-        prevDay.expenses.forEach(function(e) { prevExp += Number(e.amount || e.amt || 0) || 0; });
-      } else if (prevDay.totalExpenses !== undefined) {
-        prevExp = Number(prevDay.totalExpenses) || 0;
-      }
-      var prevDrop = (typeof getSavedSafeDropForDate === "function") ? getSavedSafeDropForDate(prevDate) : (Number(prevDay.safeDrop) || 0);
+    Object.keys(state.daily).forEach(function(d) { allDateMap[d] = true; });
+  }
+  Object.keys(backup).forEach(function(d) { allDateMap[d] = true; });
+  allDateMap[dateStr] = true;
+
+  var sortedDates = Object.keys(allDateMap).sort(function(a, b) {
+    return parseDateDDMMYYYY(a) - parseDateDDMMYYYY(b);
+  });
+
+  var idx = sortedDates.indexOf(dateStr);
+  if (idx > 0) {
+    var prevDate = sortedDates[idx - 1];
+    if (parseDateDDMMYYYY(prevDate) >= baselineTs) {
+      var prevDay = (typeof state !== "undefined" && state.daily && state.daily[prevDate]) ? state.daily[prevDate] : {};
+      var prevOp = getOpeningCashForDate(prevDate);
+      var prevCashSales = getDayCashSalesFromState(prevDay);
+      var prevExp = getDayExpensesFromState(prevDay);
+      var prevDrop = (typeof getSavedSafeDropForDate === "function")
+        ? getSavedSafeDropForDate(prevDate)
+        : (Number(prevDay.safeDrop) || 0);
       return prevOp + prevCashSales - prevExp - prevDrop;
     }
   }
-
-  var hiddenSpan = document.getElementById("reconcileOpCash");
-  return hiddenSpan ? (parseFloat((hiddenSpan.innerText || "0").replace(/[^0-9.-]/g, "")) || 0) : 0;
+  return 0;
 }
 
 function syncOpeningCashInput() {
@@ -2872,11 +2908,14 @@ function syncOpeningCashInput() {
   var totalEl = document.getElementById("reconcileTotalInflow");
   if (!inp || !hiddenSpan) return;
 
-  var opVal = getEffectiveOpeningCashForDate(activeDate);
+  var opVal = getOpeningCashForDate(activeDate);
   var isAdmin = isAdminRoleOnly();
 
-  inp.value = opVal;
+  if (document.activeElement !== inp) {
+    inp.value = opVal;
+  }
   hiddenSpan.innerText = opVal;
+
   inp.disabled = !isAdmin;
   inp.readOnly = !isAdmin;
   inp.tabIndex = isAdmin ? 0 : -1;
@@ -2928,9 +2967,24 @@ function recalculateAllCashDetails() {
   }
 }
 
+if (typeof renderActiveDay === "function") {
+  var prevRenderForOpCash = renderActiveDay;
+  renderActiveDay = function() {
+    prevRenderForOpCash.apply(this, arguments);
+    recalculateAllCashDetails();
+  };
+}
+if (typeof saveState === "function") {
+  var prevSaveForOpCash = saveState;
+  saveState = function() {
+    prevSaveForOpCash.apply(this, arguments);
+    recalculateAllCashDetails();
+  };
+}
+
 recalculateAllCashDetails();
-setTimeout(recalculateAllCashDetails, 300);
-setTimeout(recalculateAllCashDetails, 900);
+setTimeout(recalculateAllCashDetails, 350);
+setTimeout(recalculateAllCashDetails, 1000);
 </script>
 </body>
 </html>
