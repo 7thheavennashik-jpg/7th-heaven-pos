@@ -2981,10 +2981,25 @@ if (typeof saveState === "function") {
     recalculateAllCashDetails();
   };
 }
-
-recalculateAllCashDetails();
-setTimeout(recalculateAllCashDetails, 350);
-setTimeout(recalculateAllCashDetails, 1000);
-</script>
+// Watch for asynchronous Cloud Sync DOM overwrites and re-apply immediately
+(function attachCashDetailsObserver() {
+  var isApplying = false;
+  var targets = ["reconcileTotalInflow", "reconcileTodayCash", "reconcileCashExp", "reconcileActualCash"];
+  var observer = new MutationObserver(function() {
+    if (isApplying) return;
+    isApplying = true;
+    setTimeout(function() {
+      recalculateAllCashDetails();
+      isApplying = false;
+    }, 30);
+  });
+  targets.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      observer.observe(el, { childList: true, characterData: true, subtree: true });
+    }
+  });
+})();
+  </script>
 </body>
 </html>
