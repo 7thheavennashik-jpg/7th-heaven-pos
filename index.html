@@ -2826,6 +2826,44 @@ function getManualOpCashBackup() {
   }
 }
 
+function getEffectiveOpeningCashForDate(dateStr) {
+  var backup = getManualOpCashBackup();
+  var day = (typeof state !== "undefined" && state.daily && state.daily[dateStr]) ? state.daily[dateStr] : {};
+  if (day.manualOpeningCash !== undefined) return Number(day.manualOpeningCash) || 0;
+  if (backup[dateStr] !== undefined) return Number(backup[dateStr]) || 0;
+
+  // Walk backward from previous days to carry forward from the most recent revised Actual cash
+  if (typeof state !== "undefined" && state.daily) {
+    var sortedDates = Object.keys(state.daily).sort(function(a, b) {
+      var pa = a.split("-"), pb = b.split("-");
+      return new Date(pa[2], pa[1] - 1, pa[0]) - new Date(pb[2], pb[1] - 1, pb[0]);
+    });
+    var idx = sortedDates.indexOf(dateStr);
+    if (idx > 0) {
+      var prevDate = sortedDates[idx - 1];
+      var prevDay = state.daily[prevDate] || {};
+      var prevOp = getEffectiveOpeningCashForDate(prevDate);
+      var prevCashSales = 0;
+      if (Array.isArray(prevDay.sales)) {
+        prevDay.sales.forEach(function(r) { prevCashSales += Number(r.cash || r.CASH || 0) || 0; });
+      } else if (prevDay.cashSales !== undefined) {
+        prevCashSales = Number(prevDay.cashSales) || 0;
+      }
+      var prevExp = 0;
+      if (Array.isArray(prevDay.expenses)) {
+        prevDay.expenses.forEach(function(e) { prevExp += Number(e.amount || e.amt || 0) || 0; });
+      } else if (prevDay.totalExpenses !== undefined) {
+        prevExp = Number(prevDay.totalExpenses) || 0;
+      }
+      var prevDrop = (typeof getSavedSafeDropForDate === "function") ? getSavedSafeDropForDate(prevDate) : (Number(prevDay.safeDrop) || 0);
+      return prevOp + prevCashSales - prevExp - prevDrop;
+    }
+  }
+
+  var hiddenSpan = document.getElementById("reconcileOpCash");
+  return hiddenSpan ? (parseFloat((hiddenSpan.innerText || "0").replace(/[^0-9.-]/g, "")) || 0) : 0;
+}
+
 function syncOpeningCashInput() {
   var activeDate = (typeof state !== "undefined" && state.activeDate) ? state.activeDate : "";
   var hiddenSpan = document.getElementById("reconcileOpCash");
@@ -2834,15 +2872,11 @@ function syncOpeningCashInput() {
   var totalEl = document.getElementById("reconcileTotalInflow");
   if (!inp || !hiddenSpan) return;
 
-  var backup = getManualOpCashBackup();
-  var day = (typeof state !== "undefined" && state.daily && state.daily[activeDate]) ? state.daily[activeDate] : {};
-  var hasManual = (day.manualOpeningCash !== undefined) || (backup[activeDate] !== undefined);
-  var opVal = hasManual
-    ? (Number(day.manualOpeningCash !== undefined ? day.manualOpeningCash : backup[activeDate]) || 0)
-    : (parseFloat((hiddenSpan.innerText || "0").replace(/[^0-9.-]/g, "")) || 0);
-
+  var opVal = getEffectiveOpeningCashForDate(activeDate);
   var isAdmin = isAdminRoleOnly();
+
   inp.value = opVal;
+  hiddenSpan.innerText = opVal;
   inp.disabled = !isAdmin;
   inp.readOnly = !isAdmin;
   inp.tabIndex = isAdmin ? 0 : -1;
@@ -2852,10 +2886,12 @@ function syncOpeningCashInput() {
   inp.style.cursor = isAdmin ? "text" : "not-allowed";
   inp.style.pointerEvents = isAdmin ? "auto" : "none";
 
-  if (hasManual && todayEl && totalEl) {
+  if (todayEl && totalEl) {
     var todayCash = parseFloat((todayEl.innerText || "0").replace(/[^0-9.-]/g, "")) || 0;
     totalEl.innerText = (opVal + todayCash).toLocaleString("en-IN");
-    if (day) day.openingCash = opVal;
+  }
+  if (typeof state !== "undefined" && state.daily && state.daily[activeDate]) {
+    state.daily[activeDate].openingCash = opVal;
   }
 }
 
@@ -2880,20 +2916,21 @@ function updateManualOpeningCash() {
   backup[activeDate] = val;
   try { localStorage.setItem(MANUAL_OP_CASH_KEY, JSON.stringify(backup)); } catch (e) {}
 
-  syncOpeningCashInput();
-  if (typeof applySafeDropToCashDetails === "function") applySafeDropToCashDetails();
+  recalculateAllCashDetails();
   if (typeof saveState === "function") saveState();
   if (typeof syncToCloud === "function") syncToCloud();
 }
 
-var prevApplySafeDropWithOp = applySafeDropToCashDetails;
-applySafeDropToCashDetails = function() {
+function recalculateAllCashDetails() {
   syncOpeningCashInput();
-  prevApplySafeDropWithOp.apply(this, arguments);
-};
-applySafeDropToCashDetails();
-setTimeout(applySafeDropToCashDetails, 400);
-setTimeout(applySafeDropToCashDetails, 1100);
+  if (typeof applySafeDropToCashDetails === "function") {
+    applySafeDropToCashDetails();
+  }
+}
+
+recalculateAllCashDetails();
+setTimeout(recalculateAllCashDetails, 300);
+setTimeout(recalculateAllCashDetails, 900);
 </script>
 </body>
 </html>
